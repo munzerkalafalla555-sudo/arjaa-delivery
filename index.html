@@ -703,9 +703,12 @@
                   <select id="ncVehicle"><option>سيارة</option><option>دراجة نارية</option><option>دراجة هوائية</option></select></div>
                 <div><label for="ncPlate">رقم اللوحة / وصف المركبة</label><input id="ncPlate" placeholder="مثال: أ ب ج 1234" /></div>
                 <div><label for="ncCapacity">القدرة التشغيلية (أقصى طلبات نشطة معاً)</label><input id="ncCapacity" type="number" min="1" max="30" value="5" /></div>
+                <div><label for="ncPassword">كلمة مرور دخول المندوب</label><input id="ncPassword" type="password" dir="ltr" style="text-align:left" placeholder="اتركها فارغة — تُنشأ تلقائياً" />
+                  <p class="small muted" style="margin:4px 0 0">إن تركتها فارغة تُنشأ للمندوب كلمة مرور قوية عشوائية لا يمكن تخمينها، وتظهر لك مرة واحدة بعد الإضافة لتعطيها له.</p></div>
               </div>
-              <button class="btn-green" type="submit" style="margin-top:12px;min-width:200px">إضافة المندوب</button>
-              <p class="small muted">يُنشأ للمندوب رقم وظيفي داخلي تلقائياً وتُحفظ بياناته في قاعدة البيانات فوراً. حساب الدخول الخاص به (برقمه وكلمة مرور) يُنشأ من إدارة حسابات النظام في Supabase قبل أول دخول له.</p>
+              <button class="btn-green" type="submit" id="ncSubmit" style="margin-top:12px;min-width:200px">إضافة المندوب وإنشاء حساب دخوله</button>
+              <div id="ncResult" class="hidden" style="background:var(--green-soft);border:1.5px solid var(--green);border-radius:14px;padding:14px 16px;margin-top:12px;line-height:2"></div>
+              <p class="small muted">يُنشأ للمندوب رقم وظيفي داخلي تلقائياً، ويُنشأ حساب دخوله في نفس اللحظة ويُربط بسجله — يدخل فوراً من لوحة المندوب برقمه وكلمة المرور الظاهرة لك بعد الإضافة، دون أي خطوة إضافية في Supabase.</p>
             </form>
           </div>
           <div id="courierList"></div>
@@ -1064,6 +1067,47 @@ sbSession=d; connOk(); return d;
 });
 }).catch(function(err){
 if(sbIsNetErr(err)){ connFail(); throw new Error("تعذر الاتصال بقاعدة البيانات رغم إعادة المحاولة عدة مرات. بدّل بين الواي فاي وبيانات الجوال، أو أغلق الصفحة وافتحها من جديد، ثم حاول مرة أخرى (تفاصيل: "+(sbLastErrDetail||sbErrDetail(err))+")");}
+throw err;
+});
+}
+/* كلمة مرور عشوائية قوية لحساب مندوب جديد: تُولّد بمولّد أرقام عشوائية آمن
+   (crypto.getRandomValues) من حروف وأرقام بلا رموز ملتبسة الشكل، مع رمز @
+   وأرقام مضمونة — لا تتبع أي نمط مرتبط برقم المندوب فلا يمكن تخمينها،
+   وتُعرض للمشرف مرة واحدة في صندوق النتيجة بعد الإضافة ليعطيها للمندوب. */
+function genDriverPassword(){
+var letters="ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz";
+var digits="23456789";
+function pick(set,n){
+var out="", buf=new Uint32Array(n), i;
+if(window.crypto && crypto.getRandomValues) crypto.getRandomValues(buf);
+else for(i=0;i<n;i++) buf[i]=Math.floor(Math.random()*4294967296);
+for(i=0;i<n;i++) out+=set.charAt(buf[i]%set.length);
+return out;
+}
+return pick(letters,5)+pick(digits,2)+"@"+pick(letters,4)+pick(digits,1);
+}
+/* إنشاء حساب دخول مندوب جديد في Supabase Auth من داخل لوحة المشرف:
+   يُستدعى /auth/v1/signup بمفتاح anon فقط. جلسة المشرف محفوظة في متغير
+   sbSession داخل ذاكرة الصفحة ولا يمسّها هذا الطلب إطلاقاً، فيبقى المشرف
+   مسجلاً دخوله بحسابه طوال العملية. يعود معرف المستخدم الجديد (أو علم
+   «موجود مسبقاً») لربطه بصف المندوب في جدول drivers عبر auth_user_id. */
+function sbCreateDriverAccount(email, password){
+return sbFetch(SB_URL+"/auth/v1/signup",{method:"POST",headers:{"apikey":SB_KEY,"Content-Type":"application/json"},body:JSON.stringify({email:email,password:password})},2)
+.then(function(r){
+return r.text().then(function(t){
+var d=null; try{ d=JSON.parse(t);}catch(e){}
+if(!r.ok){
+var m=(d&&(d.msg||d.error_description||d.message))||"";
+if(/already/i.test(m)) return {exists:true};
+throw new Error(m||("تعذر إنشاء حساب الدخول ("+r.status+")"));
+}
+var user=(d&&d.user)||d;
+if(user && user.identities && user.identities.length===0) return {exists:true};
+if(user && user.id) return {userId:user.id};
+return {exists:true};
+});
+}).catch(function(err){
+if(sbIsNetErr(err)) throw new Error("تعذر الاتصال بقاعدة البيانات — تحقق من اتصال الإنترنت وحاول مرة أخرى");
 throw err;
 });
 }
@@ -1892,14 +1936,39 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
     });
     $("addCourierForm").addEventListener("submit", function(e){
       e.preventDefault();
+      var form=e.target;
+      var name=$("ncName").value.trim();
       var vehicle=$("ncVehicle").value + ($("ncPlate").value.trim() ? " — "+$("ncPlate").value.trim() : "");
       var no=String(nextCourierSeq);
-      var body={driver_no:no, name:$("ncName").value.trim(), phone:$("ncPhone").value.trim()||null, vehicle:vehicle, capacity:parseInt($("ncCapacity").value,10)||5, is_online:false};
-      e.target.reset();
-      toast("جارٍ إضافة المندوب إلى قاعدة البيانات…");
-      syncAfter([ sbInsert("drivers",body),
-                  writeLog(null,"driver_added","أُضيف المندوب "+body.name+" برقم وظيفي "+no+" من لوحة المشرف") ])
-        .then(function(){ toast("أُضيف المندوب "+body.name+" — رقمه الوظيفي "+no+" (يُنشأ حساب دخوله من إدارة Supabase قبل أول استخدام)"); });
+      var pw=$("ncPassword").value.trim() || genDriverPassword();
+      var email="driver"+no+"@arjaa.local";
+      var cap=parseInt($("ncCapacity").value,10)||5;
+      var phone=$("ncPhone").value.trim()||null;
+      var btn=$("ncSubmit"), resBox=$("ncResult");
+      btn.disabled=true; btn.textContent="جارٍ إنشاء حساب الدخول وإضافة المندوب…";
+      resBox.classList.add("hidden"); resBox.innerHTML="";
+      /* الخطوة 1: إنشاء حساب الدخول في Supabase Auth (جلسة المشرف لا تتأثر).
+         الخطوة 2: حفظ صف المندوب مرتبطاً بالحساب الجديد عبر auth_user_id. */
+      sbCreateDriverAccount(email, pw).then(function(acc){
+        var body={driver_no:no, name:name, phone:phone, vehicle:vehicle, capacity:cap, is_online:false};
+        if(acc.userId) body.auth_user_id=acc.userId;
+        return sbInsert("drivers",body).then(function(){
+          return writeLog(null,"driver_added","أُضيف المندوب "+name+" برقم وظيفي "+no+(acc.exists?" (حساب الدخول كان موجوداً مسبقاً)":" وأُنشئ حساب دخوله تلقائياً")+" من لوحة المشرف");
+        }).then(function(){ return acc; });
+      }).then(function(acc){
+        form.reset();
+        return loadAllData().then(function(){ renderCurrent(); }).catch(function(){}).then(function(){
+          if(acc.exists){
+            resBox.innerHTML="<strong>أُضيف المندوب "+esc(name)+"</strong> — رقمه الوظيفي <strong>"+no+"</strong>.<br />تنبيه: حساب الدخول لهذا الرقم كان موجوداً من قبل، فلم يُنشأ حساب جديد وكلمة المرور هي التي عُيّنت له سابقاً (ليست بالضرورة <span dir='ltr'>"+esc(pw)+"</span>).";
+          }else{
+            resBox.innerHTML="<strong>تمت إضافة المندوب "+esc(name)+" وأُنشئ حساب دخوله بنجاح.</strong><br />أعطِ المندوب بيانات دخوله:<br />رقم المندوب: <strong>"+no+"</strong><br />كلمة المرور: <strong dir='ltr'>"+esc(pw)+"</strong><br />يدخل بها من رابط لوحة تحكم المندوب مباشرة.";
+          }
+          resBox.classList.remove("hidden");
+          toast(acc.exists? "أُضيف المندوب "+name+" — حساب دخوله كان موجوداً مسبقاً" : "أُضيف المندوب "+name+" وأُنشئ حساب دخوله — رقمه "+no);
+        });
+      }).catch(function(err){
+        toast("تعذر إكمال الإضافة: "+((err && err.message)||err)+" — لم يُحفظ المندوب، حاول مرة أخرى");
+      }).then(function(){ btn.disabled=false; btn.textContent="إضافة المندوب وإنشاء حساب دخوله"; });
     });
 
     /* ============ Admin: orders ============ */
