@@ -62,6 +62,33 @@
       .view-switch button.active{background:var(--bg);color:var(--navy);font-weight:700}
       @media (prefers-color-scheme: dark){.view-switch button.active{color:var(--ink)}}
 
+      /* ===== فصل اللوحتين: شاشة دخول مستقلة، ولكل لوحة رابطها وترويستها الخاصة ===== */
+      .area-line{margin-top:12px;padding:.65rem 2px;color:#cfe0f2;font-weight:600;font-size:1rem}
+      .entry-intro{margin-top:20px}
+      .entry-intro h2{font-size:1.55rem}
+      .entry-intro p{font-size:1.08rem;line-height:1.9}
+      .entry-grid{display:grid;gap:16px;margin-top:16px}
+      @media(min-width:760px){.entry-grid{grid-template-columns:1fr 1fr}}
+      .entry-card{border-radius:20px;padding:24px;color:#fff;box-shadow:var(--shadow)}
+      .entry-card.driver{background:linear-gradient(135deg,var(--green-dark) 0%,var(--green) 100%)}
+      .entry-card.admin{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 100%)}
+      .entry-card .entry-ic{width:58px;height:58px;border-radius:16px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center}
+      .entry-card .entry-ic svg{width:32px;height:32px}
+      .entry-card h3{color:#fff;font-size:1.45rem;margin-top:12px}
+      .entry-card ul{margin:10px 0 0;padding-inline-start:22px;font-size:1.05rem;line-height:1.95}
+      .entry-card a{display:flex;align-items:center;justify-content:center;background:#fff;border-radius:14px;min-height:60px;font-size:1.15rem;font-weight:800;text-decoration:none;margin-top:18px;padding:.6rem 1rem;text-align:center}
+      .entry-card.driver a{color:var(--green-dark)}
+      .entry-card.admin a{color:var(--navy)}
+      .entry-note{margin-top:16px;font-size:1.02rem;line-height:1.9}
+      .panel-head{display:flex;gap:12px;align-items:center;flex-wrap:wrap;border-radius:var(--radius);padding:14px 18px;margin-top:16px;border:1.5px solid var(--line);background:var(--surface);box-shadow:var(--shadow)}
+      .panel-head .ph-ic{width:50px;height:50px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;color:#fff}
+      .panel-head .ph-ic svg{width:28px;height:28px}
+      .panel-head.driver-head .ph-ic{background:var(--green)}
+      .panel-head.admin-head .ph-ic{background:var(--navy)}
+      .panel-head h2{font-size:1.3rem}
+      .panel-head p{margin:0;color:var(--ink-2);font-size:.98rem}
+      .panel-head a{margin-inline-start:auto;flex:none;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border-radius:12px;padding:.55rem 1.1rem;font-weight:700;min-height:48px;background:var(--surface-2);color:var(--ink);border:1.5px solid var(--line)}
+
       .demo-strip{background:var(--amber-soft);color:var(--ink);border-bottom:2px solid var(--amber);padding:.55rem 0;font-size:.95rem}
       .demo-strip .wrap{padding-bottom:0}
       .demo-strip strong{color:var(--amber)}
@@ -421,10 +448,7 @@
           </div>
           <span class="phase-badge">قاعدة بيانات حقيقية + تتبع GPS مباشر</span>
         </div>
-        <nav class="view-switch" aria-label="التبديل بين الواجهتين">
-          <button id="tabDriver" class="active" type="button">تطبيق المندوب</button>
-          <button id="tabAdmin" type="button">لوحة تحكم المشرف</button>
-        </nav>
+        <div class="area-line" id="areaLabel">شاشة الدخول — اختر لوحتك</div>
       </div>
     </header>
 
@@ -434,8 +458,48 @@
 
     <main class="wrap">
 
+      <!-- ================= ENTRY: شاشة الدخول — اللوحتان منفصلتان ================= -->
+      <section id="viewHome">
+        <div class="entry-intro">
+          <h2>اختر لوحتك</h2>
+          <p class="muted">لوحة المندوب ولوحة المشرفين منفصلتان تماماً: لكل لوحة شاشتها الخاصة ورابطها الخاص، ولا تظهر أي لوحة داخل الأخرى. اختر اللوحة التي تخصك:</p>
+        </div>
+        <div class="entry-grid">
+          <div class="entry-card driver">
+            <div class="entry-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/></svg></div>
+            <h3>لوحة تحكم المندوب</h3>
+            <ul>
+              <li>طلباتي المسندة إليّ فقط</li>
+              <li>استلام طلبات اليوم وبدء العمل</li>
+              <li>مشاركة موقعي GPS أثناء العمل</li>
+            </ul>
+            <a href="#driver">دخول المندوب</a>
+          </div>
+          <div class="entry-card admin">
+            <div class="entry-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></div>
+            <h3>لوحة تحكم المشرفين</h3>
+            <ul>
+              <li>إدارة الطلبات وتوزيعها على المناديب</li>
+              <li>الخريطة المباشرة والتقارير الكاملة</li>
+              <li>إدارة المناديب والشركات والتنبيهات</li>
+            </ul>
+            <a href="#admin">دخول المشرف</a>
+          </div>
+        </div>
+        <p class="entry-note muted">لحفظ أيقونة منفصلة لكل لوحة على شاشة هاتفك: افتح اللوحة التي تريدها من الأعلى، ثم من قائمة المتصفح اختر «إضافة إلى الشاشة الرئيسية» — تُحفظ أيقونة خاصة بهذه اللوحة وحدها وتفتحها مباشرة.</p>
+      </section>
+
       <!-- ================= DRIVER VIEW ================= -->
-      <section id="viewDriver">
+      <section id="viewDriver" class="hidden">
+
+        <div class="panel-head driver-head">
+          <div class="ph-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/></svg></div>
+          <div style="flex:1;min-width:200px">
+            <h2>لوحة تحكم المندوب</h2>
+            <p>لوحة خاصة بالمندوب فقط — طلباتك واستلامك وموقعك. لوحة المشرفين ليست هنا؛ لها شاشتها المنفصلة.</p>
+          </div>
+          <a href="#home">شاشة الدخول</a>
+        </div>
 
         <!-- Login -->
         <div class="card" id="driverLogin">
@@ -563,6 +627,14 @@
 
       <!-- ================= ADMIN VIEW ================= -->
       <section id="viewAdmin" class="hidden">
+        <div class="panel-head admin-head">
+          <div class="ph-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></div>
+          <div style="flex:1;min-width:200px">
+            <h2>لوحة تحكم المشرفين</h2>
+            <p>لوحة خاصة بالمشرفين فقط — الإدارة والتوزيع والتقارير والخريطة. لوحة المندوب ليست هنا؛ لها شاشتها المنفصلة.</p>
+          </div>
+          <a href="#home">شاشة الدخول</a>
+        </div>
         <div class="card" id="adminLogin">
           <h2>تسجيل دخول المشرف</h2>
           <p class="muted">لوحة المشرف محمية بدخول حقيقي عبر قاعدة البيانات. ادخل بالبريد الإلكتروني وكلمة المرور.</p>
@@ -829,7 +901,7 @@
             <div class="guide-step"><span class="guide-num">1</span><div>افتح هذه الصفحة من متصفح هاتفك (Xiaomi أو Samsung) — تعمل كما هي على الجوال والكمبيوتر.</div></div>
             <div class="guide-step"><span class="guide-num">2</span><div>من قائمة المتصفح اختر «إضافة إلى الشاشة الرئيسية» فتظهر أيقونة ARJAA DELIVERY وتفتح بملء الشاشة مثل التطبيق.</div></div>
             <div class="guide-step"><span class="guide-num">3</span><div>سجّل الدخول كمندوب برقمك وكلمة المرور التي زوّدك بها المشرف (حساب المندوب 1001 مفعّل في قاعدة البيانات)، ثم من قسم «استلام طلبات اليوم» أدخل عدد الطلبات التي استلمتها فعلياً — عند المطابقة يبدأ العمل وتظهر المهام. فعّل مشاركة الموقع بموافقتك، ونفّذ طلباً كاملاً بالترتيب: «الذهاب إلى العميل» (يفتح موقع العميل في خرائط Google)، ثم «وصلت إلى العميل»، ثم التسليم برمز OTP.</div></div>
-            <div class="guide-step"><span class="guide-num">4</span><div>سجّل دخول المشرف من الأعلى (بالبريد وكلمة المرور) وسترى أثر كل إجراء: الإحصائيات، حالة الطلبات، التنبيهات، ومواقع المناديب المباشرة على الخريطة — كل إجراء يُحفظ في قاعدة البيانات ويظهر في الواجهة الأخرى حتى على جهاز مختلف.</div></div>
+            <div class="guide-step"><span class="guide-num">4</span><div>ارجع إلى «شاشة الدخول» وافتح لوحة تحكم المشرفين المنفصلة وسجّل الدخول (بالبريد وكلمة المرور) وسترى أثر كل إجراء: الإحصائيات، حالة الطلبات، التنبيهات، ومواقع المناديب المباشرة على الخريطة — كل إجراء يُحفظ في قاعدة البيانات ويظهر في اللوحة الأخرى حتى على جهاز مختلف.</div></div>
           </div>
           <div class="card">
             <h2>خطة التنفيذ على مراحل — أين نقف الآن؟</h2>
@@ -1181,17 +1253,33 @@ document.addEventListener("visibilitychange", function(){
 if(!document.hidden && sbSession) loadAllData().then(function(){ renderCurrent();}).catch(function(){});
 });
 
-/* ============ View switching ============ */
-function switchView(v){
+/* ============ فصل اللوحتين: توجيه مستقل لكل لوحة ============
+   ثلاث شاشات منفصلة: شاشة الدخول (home) ولوحة المندوب (driver) ولوحة
+   المشرفين (admin). لكل لوحة رابطها الخاص: ‎#driver للوحة المندوب
+   و‎#admin للوحة المشرفين، فيمكن فتح أي لوحة مباشرة أو حفظها أيقونة
+   مستقلة على الشاشة الرئيسية. بقية روابط المرساة داخل لوحة المندوب
+   (‎#drvOrders و‎#gpsCard وغيرها) روابط تنقّل داخلية ولا تغيّر اللوحة. */
+var currentView = "home";
+function routeTo(v){
+currentView = v;
+$("viewHome").classList.toggle("hidden", v!=="home");
 $("viewDriver").classList.toggle("hidden", v!=="driver");
 $("viewAdmin").classList.toggle("hidden", v!=="admin");
-$("tabDriver").classList.toggle("active", v==="driver");
-$("tabAdmin").classList.toggle("active", v==="admin");
+var lbl=$("areaLabel");
+if(lbl) lbl.textContent = v==="driver" ? "أنت الآن في: لوحة تحكم المندوب" : (v==="admin" ? "أنت الآن في: لوحة تحكم المشرفين" : "شاشة الدخول — اختر لوحتك");
 if(v==="admin" && sbRole==="supervisor"){ setTimeout(initMaps, 60);}
 window.scrollTo({top:0});
 }
-$("tabDriver").addEventListener("click", function(){ switchView("driver");});
-$("tabAdmin").addEventListener("click", function(){ switchView("admin");});
+function viewFromHash(){
+var h=(location.hash||"").replace(/^#\/?/, "");
+if(h==="driver"||h==="admin"||h==="home") return h;
+return null;
+}
+window.addEventListener("hashchange", function(){
+var v=viewFromHash();
+if(v && v!==currentView) routeTo(v);
+});
+routeTo(viewFromHash() || "home");
 
 function resetDriverUI(){
 stopGps();
