@@ -419,7 +419,7 @@
             <h1>ARJAA DELIVERY</h1>
             <div class="ar-name">أرجاء اليمامة اللوجستية — توصيل الوجبات الصحية والطلبات داخل الرياض</div>
           </div>
-          <span class="phase-badge">المرحلة الثانية: قاعدة بيانات حقيقية</span>
+          <span class="phase-badge">قاعدة بيانات حقيقية + تتبع GPS مباشر</span>
         </div>
         <nav class="view-switch" aria-label="التبديل بين الواجهتين">
           <button id="tabDriver" class="active" type="button">تطبيق المندوب</button>
@@ -513,7 +513,7 @@
           <!-- GPS -->
           <div class="card" id="gpsCard">
             <h2>موقعي GPS</h2>
-            <p class="muted">مشاركة الموقع تتم بموافقتك الصريحة، وتعمل فقط أثناء العمل، ويُحدَّث الموقع كل 15–30 ثانية عندما يسمح الجهاز بذلك. حالياً يُعرض موقع جهازك الحقيقي هنا على جهازك؛ إرساله إلى خادم Traccar ليظهر للمشرف مباشرة يأتي في مرحلة ربط التتبع.</p>
+            <p class="muted">مشاركة الموقع تتم بموافقتك الصريحة، وتعمل فقط أثناء العمل: يُرسل موقع جهازك الحقيقي إلى قاعدة بيانات النظام كل 20 ثانية تقريباً ما دامت المشاركة مفعّلة والصفحة مفتوحة، فيراه المشرف مباشرة على خريطته من أي جهاز. يتوقف الإرسال فوراً عند إيقاف المشاركة أو إنهاء العمل أو تسجيل الخروج — لا يوجد أي تتبع خارج ساعات العمل.</p>
             <label class="checkline">
               <input type="checkbox" id="gpsConsent" />
               <span>أوافق على مشاركة موقعي مع المشرف أثناء ساعات العمل فقط، وأعلم أن بإمكاني إيقاف المشاركة في أي وقت.</span>
@@ -528,10 +528,11 @@
                 <div>خط العرض: <strong id="gpsLat">—</strong> &nbsp;|&nbsp; خط الطول: <strong id="gpsLng">—</strong></div>
                 <div>دقة الموقع: <span id="gpsAcc">—</span> متر تقريباً</div>
                 <div>آخر تحديث: <strong id="gpsTime">—</strong></div>
+                <div>إرسال الموقع إلى المشرف: <span id="gpsSentInfo">جارٍ أول إرسال…</span></div>
                 <div>بطارية الهاتف: <span id="gpsBatt">غير متاحة في هذا المتصفح</span></div>
                 <div style="margin-top:6px"><a id="gpsMapLink" href="#" target="_blank" rel="noopener">فتح موقعي الحالي في خرائط جوجل</a></div>
               </div>
-              <div class="small muted" style="margin-top:8px">سجل المسار في هذا الجهاز (جلسة العمل الحالية): <span id="gpsTrailCount">0</span> نقطة محفوظة. يُحفظ سجل المسار الكامل عند ربط خادم التتبع في مرحلته.</div>
+              <div class="small muted" style="margin-top:8px">سجل المسار في هذا الجهاز (جلسة العمل الحالية): <span id="gpsTrailCount">0</span> نقطة محفوظة في هذا الجهاز. موقعك الحالي المُرسل هو ما يراه المشرف مباشرة على خريطته.</div>
             </div>
           </div>
 
@@ -609,7 +610,7 @@
           </div>
           <div class="card">
             <h2>خريطة الرياض — مواقع المناديب</h2>
-            <p class="muted small">خريطة حقيقية من OpenStreetMap عبر مكتبة Leaflet المجانية. لا تُعرض علامة لأي مندوب إلا لموقع حقيقي معروف: موقع جهاز المندوب المسجل دخوله على هذا الجهاز عند تفعيله مشاركة GPS بنفسه — التتبع المباشر لكل المناديب بين الأجهزة يُفعَّل في المرحلة الرابعة بربط Traccar.</p>
+            <p class="muted small">خريطة حقيقية من OpenStreetMap عبر مكتبة Leaflet المجانية. تظهر علامة لكل مندوب أرسل موقعه الحقيقي من جهازه: المندوب يفعّل مشاركة GPS بموافقته أثناء العمل فقط، فيُحفظ موقعه في قاعدة البيانات ويظهر هنا مباشرة من أي جهاز — مع بيان ما إذا كان الموقع مباشراً الآن أو آخر موقع معروف، ووقت آخر تحديث. لا تتبع خارج ساعات العمل.</p>
             <div id="mapAdmin"></div>
           </div>
           <div class="card">
@@ -642,7 +643,7 @@
         <div class="admin-page hidden" id="page-livemap">
           <div class="card">
             <h2>الخريطة المباشرة — الرياض</h2>
-            <p class="muted">تظهر هنا قائمة المناديب من قاعدة البيانات وحالة اتصال كل منهم. موقع أي مندوب لا يظهر على الخريطة إلا إذا فعّل مشاركة GPS بنفسه من جهازه (يظهر موقع جهاز المندوب المسجل دخوله على هذا الجهاز بعلامة «موقع الجهاز الفعلي») — التتبع المباشر بين الأجهزة يُفعَّل في المرحلة الرابعة بربط Traccar. اضغط على اسم أي مندوب في القائمة لعرض تفاصيله وسجل حركته.</p>
+            <p class="muted">تظهر هنا قائمة المناديب من قاعدة البيانات وحالة اتصال كل منهم وموقعه المباشر: كل مندوب فعّل مشاركة GPS من جهازه أثناء العمل يظهر موقعه الحقيقي هنا مباشرة ويتحدث كل ثوانٍ، وتُبيّن القائمة ما إذا كان موقعه مباشراً الآن أو آخر موقع معروف مع وقت آخر تحديث. اضغط «عرض التفاصيل» عند أي مندوب لعرض تفاصيله وسجل حركته.</p>
             <div id="mapLive"></div>
           </div>
           <div class="grid" style="grid-template-columns:1fr;gap:0" id="liveLayout">
@@ -803,7 +804,7 @@
               <tbody id="reportOrdersBody"></tbody>
             </table>
             <p class="small muted" id="reportOrdersNote"></p>
-            <p class="small muted">كل الأرقام محسوبة من بيانات قاعدة البيانات الفعلية ضمن الفترة المختارة. إيرادات التوصيل هي مجموع أسعار التوصيل المتفق عليها مع الشركات عن الطلبات المكتملة. مسافات المناديب لا تدخل في التقارير حالياً لأنها تُحسب من سجل مسارات GPS عند ربط مرحلة التتبع.</p>
+            <p class="small muted">كل الأرقام محسوبة من بيانات قاعدة البيانات الفعلية ضمن الفترة المختارة. إيرادات التوصيل هي مجموع أسعار التوصيل المتفق عليها مع الشركات عن الطلبات المكتملة. مسافات المناديب لا تدخل في التقارير حالياً: التتبع المباشر يعرض الموقع الحالي فقط ولا يُحفظ سجل مسارات تاريخي بعد.</p>
             <div class="btn-row">
               <button class="btn-navy" id="exportExcelBtn" type="button">تصدير Excel</button>
               <button class="btn-green" id="exportPdfBtn" type="button">تصدير PDF</button>
@@ -828,15 +829,15 @@
             <div class="guide-step"><span class="guide-num">1</span><div>افتح هذه الصفحة من متصفح هاتفك (Xiaomi أو Samsung) — تعمل كما هي على الجوال والكمبيوتر.</div></div>
             <div class="guide-step"><span class="guide-num">2</span><div>من قائمة المتصفح اختر «إضافة إلى الشاشة الرئيسية» فتظهر أيقونة ARJAA DELIVERY وتفتح بملء الشاشة مثل التطبيق.</div></div>
             <div class="guide-step"><span class="guide-num">3</span><div>سجّل الدخول كمندوب برقمك وكلمة المرور التي زوّدك بها المشرف (حساب المندوب 1001 مفعّل في قاعدة البيانات)، ثم من قسم «استلام طلبات اليوم» أدخل عدد الطلبات التي استلمتها فعلياً — عند المطابقة يبدأ العمل وتظهر المهام. فعّل مشاركة الموقع بموافقتك، ونفّذ طلباً كاملاً بالترتيب: «الذهاب إلى العميل» (يفتح موقع العميل في خرائط Google)، ثم «وصلت إلى العميل»، ثم التسليم برمز OTP.</div></div>
-            <div class="guide-step"><span class="guide-num">4</span><div>سجّل دخول المشرف من الأعلى (بالبريد وكلمة المرور) وسترى أثر كل إجراء: الإحصائيات، حالة الطلبات، والتنبيهات — كل إجراء يُحفظ في قاعدة البيانات ويظهر في الواجهة الأخرى حتى على جهاز مختلف.</div></div>
+            <div class="guide-step"><span class="guide-num">4</span><div>سجّل دخول المشرف من الأعلى (بالبريد وكلمة المرور) وسترى أثر كل إجراء: الإحصائيات، حالة الطلبات، التنبيهات، ومواقع المناديب المباشرة على الخريطة — كل إجراء يُحفظ في قاعدة البيانات ويظهر في الواجهة الأخرى حتى على جهاز مختلف.</div></div>
           </div>
           <div class="card">
             <h2>خطة التنفيذ على مراحل — أين نقف الآن؟</h2>
             <div class="phase-row"><div><strong>المرحلة الأولى — التصميم الكامل للواجهتين</strong><div class="small muted">تطبيق المندوب + لوحة المشرف + الشركات + التقارير + التنبيهات + خريطة Leaflet.</div></div><span class="st chip chip-done">اكتملت</span></div>
-            <div class="phase-row"><div><strong>المرحلة الثانية — قاعدة البيانات وتسجيل الدخول والصلاحيات</strong><div class="small muted">Supabase (الخطة المجانية): المناديب والطلبات والشركات وسجل العمليات والاستلامات محفوظة في قاعدة البيانات، ودخول آمن منفصل للمشرف (بالبريد وكلمة المرور) وللمندوب (برقمه وكلمة المرور)، والمندوب لا يرى إلا طلباته.</div></div><span class="st chip chip-done">تم — أنت هنا الآن</span></div>
+            <div class="phase-row"><div><strong>المرحلة الثانية — قاعدة البيانات وتسجيل الدخول والصلاحيات</strong><div class="small muted">Supabase (الخطة المجانية): المناديب والطلبات والشركات وسجل العمليات والاستلامات محفوظة في قاعدة البيانات، ودخول آمن منفصل للمشرف (بالبريد وكلمة المرور) وللمندوب (برقمه وكلمة المرور)، والمندوب لا يرى إلا طلباته.</div></div><span class="st chip chip-done">اكتملت</span></div>
             <div class="phase-row"><div><strong>المرحلة الثالثة — نظام الطلبات والإسناد بين الأجهزة</strong><div class="small muted">قسم «إدارة وتوزيع الطلبات»: إسناد ونقل وإلغاء إسناد، توزيع جماعي مع تنبيه القدرة، وسجل عمليات — يعمل الآن عبر قاعدة البيانات بين الأجهزة المختلفة، وإنشاء الطلبات موحّد من قسم «الطلبات».</div></div><span class="st chip chip-done">مكتمل عبر قاعدة البيانات</span></div>
-            <div class="phase-row"><div><strong>المرحلة الرابعة — ربط GPS والتتبع الفعلي</strong><div class="small muted">Traccar Client على هاتف المندوب + Traccar Server، وعرض الموقع المباشر وسجل المسارات للمشرف. لا تتبع خارج ساعات العمل.</div></div><span class="st chip">لاحقاً</span></div>
-            <div class="phase-row"><div><strong>المرحلة الخامسة — التقارير والإحصائيات الحقيقية</strong><div class="small muted">تقارير يومية وأسبوعية وشهرية وفترة مخصصة من طلبات قاعدة البيانات الفعلية، مع تصدير Excel وPDF كامل. مسافات المناديب تدخل التقارير عند ربط التتبع في المرحلة الرابعة.</div></div><span class="st chip chip-done">اكتملت</span></div>
+            <div class="phase-row"><div><strong>المرحلة الرابعة — تتبع GPS المباشر بين الأجهزة</strong><div class="small muted">المندوب يرسل موقع جهازه الحقيقي إلى قاعدة البيانات أثناء العمل فقط وبموافقته (كل 20 ثانية تقريباً)، والمشرف يراه مباشرة على الخريطة المباشرة من أي جهاز مع وقت آخر تحديث وسجل حركة يُبنى أثناء فتح اللوحة. يتوقف الإرسال عند إيقاف المشاركة أو إنهاء العمل — لا تتبع خارج ساعات العمل، وبلا خادم إضافي أو تكلفة.</div></div><span class="st chip chip-done">اكتملت</span></div>
+            <div class="phase-row"><div><strong>المرحلة الخامسة — التقارير والإحصائيات الحقيقية</strong><div class="small muted">تقارير يومية وأسبوعية وشهرية وفترة مخصصة من طلبات قاعدة البيانات الفعلية، مع تصدير Excel وPDF كامل. مسافات المناديب لا تدخل التقارير بعد — التتبع المباشر يعرض الموقع الحالي فقط ولا يحفظ سجل مسارات تاريخياً.</div></div><span class="st chip chip-done">اكتملت</span></div>
             <div class="phase-row"><div><strong>المرحلة السادسة — الاختبار الميداني</strong><div class="small muted">اختبار على هاتف Android حقيقي ولوحة المشرف، وإصلاح الملاحظات قبل الإطلاق.</div></div><span class="st chip">لاحقاً</span></div>
           </div>
           <div class="card">
@@ -845,8 +846,7 @@
               <li><strong>هذه النسخة (المرحلة الثانية):</strong> تعمل على قاعدة بيانات Supabase بالخطة المجانية — بلا اشتراكات ولا مفاتيح مدفوعة.</li>
               <li><strong>قاعدة البيانات Supabase:</strong> خطة مجانية تكفي للبداية؛ قد تحتاج ترقية مدفوعة فقط عند نمو كبير في عدد الطلبات والمناديب.</li>
               <li><strong>الخرائط Leaflet + OpenStreetMap:</strong> مجانية ومفتوحة المصدر.</li>
-              <li><strong>خادم Traccar للتتبع المباشر:</strong> البرنامج مجاني ومفتوح المصدر، لكنه يحتاج جهاز خادم يعمل دائماً (VPS) — هذه تكلفة استضافة شهرية تُعرض عليك بالأرقام قبل أي التزام، ولن تُفعَّل أي خدمة مدفوعة دون موافقتك أولاً.</li>
-              <li><strong>تطبيق Traccar Client على هواتف المناديب:</strong> مجاني من متجر التطبيقات.</li>
+              <li><strong>تتبع GPS المباشر:</strong> يعمل من داخل هذا التطبيق نفسه عبر قاعدة بيانات Supabase المجانية — لا خادم إضافي ولا تطبيق آخر على هواتف المناديب ولا أي تكلفة.</li>
               <li><strong>حماية البيانات:</strong> كل مندوب يرى طلباته فقط، وبيانات العملاء لا تظهر إلا للمندوب المُسند إليه الطلب وللمشرف.</li>
             </ul>
           </div>
@@ -855,7 +855,7 @@
       </section>
     </main>
 
-    <footer>ARJAA DELIVERY — أرجاء اليمامة اللوجستية · الرياض · النسخة الثانية: بيانات حقيقية عبر قاعدة بيانات Supabase</footer>
+    <footer>ARJAA DELIVERY — أرجاء اليمامة اللوجستية · الرياض · بيانات حقيقية عبر قاعدة بيانات Supabase · تتبع GPS مباشر بين الأجهزة أثناء العمل فقط وبموافقة المندوب</footer>
 
     <!-- حاوية تقرير PDF: تُملأ عند التصدير وتُفتح مؤقتاً خلف غطاء التحميل أثناء الالتقاط -->
     <div id="pdfReport" aria-hidden="true"></div>
@@ -1024,7 +1024,7 @@ var couriers = [], companies = [], orders = [], notifications = [], opLog = [], 
 var driverByUuid = {}, driverByNo = {}, compIndexByUuid = {};
 var nextCourierSeq = 1001;
 var locallyDeactivated = {}; /* إيقاف حساب مندوب من اللوحة — يُحفظ داخل جلسة الصفحة (لا عمود له في الجدول بعد) */
-var state = { driverId:null, working:false, received:false, filter:"all", adminPage:"home", reportRange:"day", gpsWatch:null, gpsTrail:[], realPos:null};
+var state = { driverId:null, working:false, received:false, filter:"all", adminPage:"home", reportRange:"day", gpsWatch:null, gpsTrail:[], realPos:null, gpsLastSentAt:0, gpsSending:false};
 var PRIO_TAG = " ";
 
 function courierById(id){ return driverByNo[id] || null;}
@@ -1041,6 +1041,32 @@ var fg = type==="delivered"||type==="accepted"? "var(--green-dark)": (type==="ne
 return '<div class="ic" style="background:'+bg+'"><svg viewBox="0 0 24 24" fill="none" stroke="'+fg+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(paths[type]||paths.new)+'</svg></div>';
 }
 var NOTIF_META = {created:["new","طلب جديد"],assigned:["new","إسناد طلب"],transferred:["new","نقل طلب"],unassigned:["accepted","إلغاء إسناد"],received:["accepted","استلام طلبات وبدء عمل"],receipt_mismatch:["late","اختلاف في استلام الطلبات"],on_the_way:["accepted","مندوب في الطريق"],arrived:["accepted","وصول مندوب"],delivered:["delivered","اكتمال تسليم"],failed:["late","تعذر تسليم"],cancelled:["late","إلغاء طلب"],edited:["accepted","تعديل طلب"],bulk_assigned:["new","إسناد جماعي"],auto_distributed:["new","توزيع تلقائي"],driver_added:["accepted","مندوب جديد"],company_added:["accepted","شركة جديدة"],work_ended:["accepted","إنهاء عمل"],work_started:["accepted","بدء عمل"]};
+
+/* ============ تتبع GPS بين الأجهزة — سجل حركة يُبنى أثناء الجلسة ============
+   آخر موقع لكل مندوب محفوظ في قاعدة البيانات (drivers.last_lat/last_lng/last_loc_at)
+   ويُقرأ مع كل تحميل. سجل الحركة هنا يُبنى داخل جلسة فتح اللوحة فقط: كلما
+   تغيّر موقع مندوب أكثر من 25 متراً عن آخر نقطة مسجلة أُضيفت نقطة جديدة،
+   فلا يُدَّعى أنه سجل تاريخي كامل. */
+var trailByDriver = {};
+function distMeters(a,b){ var R=6371000; var dLa=(b[0]-a[0])*Math.PI/180, dLn=(b[1]-a[1])*Math.PI/180; var s=Math.sin(dLa/2)*Math.sin(dLa/2)+Math.cos(a[0]*Math.PI/180)*Math.cos(b[0]*Math.PI/180)*Math.sin(dLn/2)*Math.sin(dLn/2); return 2*R*Math.asin(Math.min(1,Math.sqrt(s))); }
+function attachSessionTrail(c, r){
+var tr=trailByDriver[c.uuid]; if(!tr){ tr=[]; trailByDriver[c.uuid]=tr; }
+c.trail=tr;
+if(c.lat==null || c.lng==null) return;
+var lp=tr.length?tr[tr.length-1]._p:null;
+if(!lp || distMeters(lp,[c.lat,c.lng])>25){
+var e=[fmtTime(r.last_loc_at||new Date()), "نقطة موقع: "+c.lat.toFixed(5)+", "+c.lng.toFixed(5)];
+e._p=[c.lat,c.lng];
+tr.push(e); if(tr.length>80) tr.shift();
+}
+}
+/* حداثة الموقع: «مباشر» إذا وصل آخر تحديث قبل 90 ثانية أو أقل */
+function locAgeSec(c){ if(!c || !c.lastUpdate) return null; var t=new Date(c.lastUpdate).getTime(); if(isNaN(t)) return null; return Math.max(0,(Date.now()-t)/1000); }
+function locFresh(c){ var a=locAgeSec(c); return a!==null && a<=90; }
+function locHtml(c){
+if(c.lat==null || c.lng==null || isNaN(c.lat) || isNaN(c.lng)) return ' · الموقع: لم يُرسل بعد';
+return ' · الموقع: '+(locFresh(c)?'<strong style="color:var(--green-dark)">مباشر الآن</strong>':'آخر موقع معروف')+' — <a href="'+mapsLink(c.lat,c.lng)+'" target="_blank" rel="noopener">فتح في خرائط Google</a>';
+}
 
 /* ============ تحميل البيانات من Supabase وتحويلها لشكل الواجهة ============ */
 function loadAllData(){
@@ -1068,7 +1094,10 @@ var receiptsByDriver = {};
 couriers = (driverRows||[]).map(function(r){
 var c = { uuid:r.id, id:String(r.driver_no), authUserId:r.auth_user_id||null, name:r.name||"", phone:r.phone||"", vehicle:r.vehicle||"—", plate:"",
 capacity:r.capacity||5, active:!locallyDeactivated[r.id], online:!!r.is_online, rating:0, doneToday:0, km:0, late:0,
-lat:null, lng:null, district:"الرياض", lastUpdate:null, battery:null, trail:[], receipt:null, shiftStart:null};
+lat:(r.last_lat!=null && !isNaN(Number(r.last_lat)))?Number(r.last_lat):null,
+lng:(r.last_lng!=null && !isNaN(Number(r.last_lng)))?Number(r.last_lng):null,
+district:"الرياض", lastUpdate:r.last_loc_at||null, battery:null, trail:[], receipt:null, shiftStart:null};
+attachSessionTrail(c, r);
 var rc = receiptsByDriver[r.id];
 if(rc){ c.receipt={assigned:rc.assigned_count, entered:rc.received_count, result:rc.matched?"match":"mismatch", time:rc.created_at}; if(rc.matched && rc.started_at) c.shiftStart=rc.started_at;}
 driverByUuid[r.id]=c; driverByNo[c.id]=c;
@@ -1206,7 +1235,7 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
     $("logoutBtn").addEventListener("click", function(){
       var c=courierById(state.driverId);
       var ps=[];
-      if(c && state.working){ ps.push(sbUpdate("drivers","id=eq."+c.uuid,{is_online:false}).catch(function(){})); ps.push(writeLog(null,"work_ended","أنهى المندوب "+c.name+" العمل وسجّل خروجه")); }
+      if(c && state.working){ ps.push(sbUpdate("drivers","id=eq."+c.uuid,{is_online:false, last_lat:null, last_lng:null, last_loc_at:null}).catch(function(){})); ps.push(writeLog(null,"work_ended","أنهى المندوب "+c.name+" العمل وسجّل خروجه")); }
       stopPolling();
       Promise.all(ps).then(function(){ return sbSignOut(); }).then(function(){ resetDriverUI(); toast("تم تسجيل الخروج"); });
     });
@@ -1285,7 +1314,7 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
       var gc=$("gpsConsent"); if(gc) gc.checked=false;
       $("shiftInfo").textContent="أنهيت العمل. توقفت مشاركة الموقع بالكامل — لا يتم تتبعك خارج ساعات العمل. لبدء يوم عمل جديد أكّد استلام الطلبات من قسم «استلام طلبات اليوم».";
       if(c){
-        var ps=[sbUpdate("drivers","id=eq."+c.uuid,{is_online:false}), writeLog(null,"work_ended","أنهى المندوب "+c.name+" العمل في "+fmtTime(new Date()))];
+        var ps=[sbUpdate("drivers","id=eq."+c.uuid,{is_online:false, last_lat:null, last_lng:null, last_loc_at:null}), writeLog(null,"work_ended","أنهى المندوب "+c.name+" العمل في "+fmtTime(new Date()))];
         c.online=false;
         syncAfter(ps);
       }
@@ -1401,12 +1430,36 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
     }
 
     /* ============ Driver: GPS (real device geolocation, consent-based) ============ */
+    /* إرسال موقع المندوب الحقيقي إلى قاعدة البيانات (أعمدة last_lat/last_lng/last_loc_at
+       في جدول drivers) ليراه المشرف مباشرة على خريطته من أي جهاز. الإرسال مثبّت
+       بحد أقصى مرة كل 20 ثانية، ولا يحدث إلا أثناء مشاركة موقع مفعّلة في ساعات العمل. */
+    function maybeSendLocation(lat,lng){
+      var c=courierById(state.driverId); if(!c) return;
+      if(!state.working || state.gpsWatch===null) return; /* لا إرسال خارج ساعات العمل أبداً */
+      if(state.gpsSending) return;
+      if(Date.now()-(state.gpsLastSentAt||0) < 20000) return;
+      state.gpsSending=true;
+      sbUpdate("drivers","id=eq."+c.uuid,{last_lat:lat,last_lng:lng,last_loc_at:nowIso()}).then(function(){
+        state.gpsLastSentAt=Date.now(); state.gpsSending=false;
+        var el=$("gpsSentInfo"); if(el) el.textContent="تم إرسال موقعك إلى المشرف — آخر إرسال "+fmtTime(new Date());
+      }).catch(function(){
+        state.gpsSending=false;
+        var el=$("gpsSentInfo"); if(el) el.textContent="تعذر إرسال الموقع الآن (اتصال ضعيف) — ستتم إعادة المحاولة مع التحديث التالي";
+      });
+    }
+    /* مسح الموقع المحفوظ عند إيقاف المشاركة أو إنهاء العمل أو الخروج،
+       فلا يبقى موقع قديم ظاهراً للمشرف بعد توقف المندوب عن الإرسال */
+    function clearDriverDbLocation(){
+      var c=courierById(state.driverId); if(!c) return;
+      sbUpdate("drivers","id=eq."+c.uuid,{last_lat:null,last_lng:null,last_loc_at:null}).catch(function(){});
+    }
     function stopGps(){
       if(state.gpsWatch!==null && navigator.geolocation){ navigator.geolocation.clearWatch(state.gpsWatch); }
-      state.gpsWatch=null; state.realPos=null;
+      state.gpsWatch=null; state.realPos=null; state.gpsLastSentAt=0;
       var sb=$("gpsStopBtn"), st=$("gpsStartBtn");
       if(sb) sb.classList.add("hidden"); if(st) st.classList.remove("hidden");
       var gs=$("gpsStatus"); if(gs) gs.textContent="المشاركة متوقفة حالياً.";
+      var gsi=$("gpsSentInfo"); if(gsi) gsi.textContent="جارٍ أول إرسال…";
       var gc2=$("gpsCoords"); if(gc2) gc2.classList.add("hidden");
     }
     $("gpsStartBtn").addEventListener("click", function(){
@@ -1419,13 +1472,14 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
         state.realPos={lat:lat,lng:lng};
         state.gpsTrail.push({lat:lat,lng:lng,t:new Date()});
         var c=courierById(state.driverId); if(c){ c.lat=lat; c.lng=lng; c.lastUpdate=new Date(); }
-        $("gpsStatus").innerHTML='<strong style="color:var(--green-dark)">المشاركة مفعّلة — موقعك الحقيقي من جهازك.</strong> إرسال هذا الموقع إلى المشرف مباشرة يتم عبر خادم Traccar في مرحلة ربط التتبع.';
+        $("gpsStatus").innerHTML='<strong style="color:var(--green-dark)">المشاركة مفعّلة — موقعك يُرسل إلى المشرف مباشرة الآن.</strong> يتوقف الإرسال فور إيقاف المشاركة أو إنهاء العمل.';
         $("gpsCoords").classList.remove("hidden");
         $("gpsLat").textContent=lat.toFixed(5); $("gpsLng").textContent=lng.toFixed(5);
         $("gpsAcc").textContent=Math.round(pos.coords.accuracy);
         $("gpsTime").textContent=fmtDateTime(new Date());
         $("gpsTrailCount").textContent=state.gpsTrail.length;
         $("gpsMapLink").href=mapsLink(lat,lng);
+        maybeSendLocation(lat,lng);
         $("gpsStartBtn").classList.add("hidden"); $("gpsStopBtn").classList.remove("hidden");
         if(window.__mapsReady) refreshMarkers();
       }, function(err){
@@ -1434,7 +1488,7 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
       }, {enableHighAccuracy:true, maximumAge:15000, timeout:20000});
       if(navigator.getBattery){ navigator.getBattery().then(function(b){ $("gpsBatt").textContent=Math.round(b.level*100)+"%"+(b.charging?" (يُشحن)":""); }).catch(function(){}); }
     });
-    $("gpsStopBtn").addEventListener("click", function(){ stopGps(); toast("توقفت مشاركة الموقع"); });
+    $("gpsStopBtn").addEventListener("click", function(){ clearDriverDbLocation(); stopGps(); toast("توقفت مشاركة الموقع — لم يعد موقعك يظهر للمشرف"); });
 
     /* ============ Driver: orders ============ */
     function gmapsDirectionsUrl(o){ return "https://www.google.com/maps/dir/?api=1&destination="+o.lat+","+o.lng; }
@@ -2140,7 +2194,7 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
       h+="<h3>تفاصيل الطلبات في الفترة</h3>";
       h+=pdfTable(["رقم الطلب","التاريخ","العميل","الشركة","المندوب","الحالة","الرسوم (ر.س)"],
         r.created.map(function(o){ return "<tr><td>#"+o.no+"</td><td>"+fmtDateTime(o.createdAt)+"</td><td>"+esc(o.customer)+"</td><td>"+esc(compNameOf(o))+"</td><td>"+esc(courierNameOf(o))+"</td><td>"+esc(statusLabel(o.status))+"</td><td>"+(Number(o.fee)||0)+"</td></tr>"; }).join("") || '<tr><td colspan="7">لا توجد طلبات في هذه الفترة.</td></tr>');
-      h+='<div style="font-size:11px;color:#43586a;margin-top:10px">إيرادات التوصيل هي مجموع أسعار التوصيل المتفق عليها مع الشركات عن الطلبات المكتملة ضمن الفترة. مسافات المناديب تُحسب من سجل مسارات GPS عند ربط مرحلة التتبع.</div>';
+      h+='<div style="font-size:11px;color:#43586a;margin-top:10px">إيرادات التوصيل هي مجموع أسعار التوصيل المتفق عليها مع الشركات عن الطلبات المكتملة ضمن الفترة. مسافات المناديب لا تدخل في هذا التقرير: التتبع المباشر يعرض الموقع الحالي فقط ولا يُحفظ سجل مسارات تاريخي بعد.</div>';
       return h;
     }
     /* فحص برمجي لنتيجة الالتقاط: نصغّر اللقطة إلى 48×48 ونبحث عن أي بكسل
@@ -2239,8 +2293,9 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
     }
 
     /* ============ Maps (Leaflet + OpenStreetMap) ============
-       لا تُرسم علامة إلا لموقع حقيقي معروف: موقع جهاز المندوب المسجل دخوله
-       على هذا الجهاز عند تفعيله مشاركة GPS بنفسه. لا مواقع وهمية. */
+       لا تُرسم علامة إلا لموقع حقيقي أرسله المندوب من جهازه وحُفظ في قاعدة
+       البيانات (أو موقع جهاز المندوب المسجل دخوله على هذا الجهاز نفسه).
+       لا مواقع وهمية. */
     var mapA=null, mapL=null, markersA=[], markersL=[];
     function makeMarkers(map, arr){
       couriers.forEach(function(c){
@@ -2249,7 +2304,7 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
         var lat=isReal?state.realPos.lat:c.lat, lng=isReal?state.realPos.lng:c.lng;
         if(lat==null || lng==null || isNaN(lat) || isNaN(lng)) return;
         var m=L.marker([lat,lng]).addTo(map);
-        m.bindPopup('<strong>'+esc(c.name)+'</strong><br/>الحالة: '+(c.online?"متصل":"غير متصل")+' — <b>موقع الجهاز الفعلي</b><br/>آخر تحديث: '+fmtDateTime(c.lastUpdate)+'<br/>طلبات مسندة: '+orders.filter(function(o){return o.courier===c.id&&["new","accepted","picked","onway","arrived"].indexOf(o.status)>=0;}).length);
+        m.bindPopup('<strong>'+esc(c.name)+'</strong><br/>الحالة: '+(c.online?"متصل":"غير متصل")+' — <b>'+((isReal||locFresh(c))?"موقع مباشر الآن":"آخر موقع معروف")+'</b><br/>آخر تحديث: '+fmtDateTime(c.lastUpdate)+'<br/>طلبات مسندة: '+orders.filter(function(o){return o.courier===c.id&&["new","accepted","picked","onway","arrived"].indexOf(o.status)>=0;}).length);
         arr.push(m);
       });
     }
@@ -2288,7 +2343,7 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
       el.innerHTML='<div class="card"><h2>المناديب المتصلون الآن</h2>'+(couriers.filter(function(c){return c.active;}).map(function(c){
         var assigned=orders.filter(function(o){return o.courier===c.id&&["new","accepted","picked","onway","arrived"].indexOf(o.status)>=0;});
         return '<div class="courier-row" style="box-shadow:none"><div class="avatar">'+esc((c.name||"م").trim().charAt(0))+'</div>'+
-          '<div style="flex:1;min-width:200px"><strong>'+esc(c.name)+'</strong><div class="small muted"><span class="status-dot '+(c.online?"on":"off")+'"></span>'+(c.online?"متصل":"غير متصل")+' · '+esc(c.district)+' · آخر تحديث: '+fmtDateTime(c.lastUpdate)+' · البطارية: '+(c.battery==null?"غير متاحة":c.battery+"%")+'</div>'+
+          '<div style="flex:1;min-width:200px"><strong>'+esc(c.name)+'</strong><div class="small muted"><span class="status-dot '+(c.online?"on":"off")+'"></span>'+(c.online?"متصل":"غير متصل")+' · '+esc(c.district)+' · آخر تحديث للموقع: '+fmtDateTime(c.lastUpdate)+' · البطارية: '+(c.battery==null?"غير متاحة":c.battery+"%")+locHtml(c)+'</div>'+
           '<div class="small">طلبات جارية: '+(assigned.length? assigned.map(function(o){return "#"+o.no;}).join("، ") : "لا يوجد")+'</div></div>'+
           '<button class="btn-navy" data-detail="'+c.id+'" type="button" style="flex:none;min-width:130px">عرض التفاصيل</button></div>';
       }).join("") || '<p class="muted">لا يوجد مناديب مسجلون بعد.</p>')+'</div>';
@@ -2299,8 +2354,8 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
       var assigned=orders.filter(function(o){return o.courier===c.id;});
       var box=$("courierDetail");
       var locRow = (c.lat!=null && c.lng!=null && !isNaN(c.lat) && !isNaN(c.lng))
-        ? esc(c.district)+' — <a href="'+mapsLink(c.lat,c.lng)+'" target="_blank" rel="noopener">فتح في خرائط جوجل</a> <span class="small muted">(موقع جهاز هذا المندوب على هذا الجهاز — مشاركة GPS مفعّلة)</span>'
-        : 'لا يوجد موقع معروف حالياً — يظهر الموقع عندما يفعّل المندوب مشاركة GPS من جهازه أثناء العمل (وربط التتبع المباشر بين الأجهزة في مرحلة Traccar)';
+        ? (locFresh(c)?'<strong style="color:var(--green-dark)">موقع مباشر الآن</strong>':'<strong>آخر موقع معروف</strong>')+' — أرسله المندوب من جهازه، وآخر تحديث '+fmtDateTime(c.lastUpdate)+' — <a href="'+mapsLink(c.lat,c.lng)+'" target="_blank" rel="noopener">فتح في خرائط جوجل</a>'
+        : 'لا يوجد موقع مُرسل بعد — يظهر هنا مباشرة عندما يفعّل المندوب مشاركة GPS من جهازه أثناء العمل';
       box.innerHTML='<h2>تفاصيل المندوب: '+esc(c.name)+'</h2>'+
         '<dl class="kv"><dt>الرقم الوظيفي</dt><dd>'+c.id+'</dd><dt>الهاتف</dt><dd>'+esc(c.phone||"—")+'</dd>'+
         '<dt>المركبة</dt><dd>'+esc(c.vehicle)+'</dd><dt>الحالة</dt><dd>'+(c.online?"متصل":"غير متصل")+' — '+(c.active?"الحساب مفعّل":"الحساب موقوف")+'</dd>'+
@@ -2308,7 +2363,7 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
         '<dt>آخر تحديث للموقع</dt><dd>'+fmtDateTime(c.lastUpdate)+'</dd><dt>بطارية الهاتف</dt><dd>'+(c.battery==null?"غير متاحة":c.battery+"%")+'</dd>'+
         '<dt>طلبات منجزة اليوم</dt><dd>'+c.doneToday+'</dd><dt>المسافة اليوم</dt><dd>'+c.km+' كم</dd><dt>التقييم</dt><dd>'+(c.rating?c.rating+" من 5":"لا تقييم بعد")+'</dd></dl>'+
         '<h3 style="margin-top:14px">طلباته</h3>'+(assigned.length? assigned.map(function(o){ return '<div style="padding:6px 0;border-bottom:1px solid var(--line)">طلب #'+o.no+' — '+esc(o.customer)+' — '+esc((o.district||"").split("،")[0])+' '+statusChip(o.status)+'</div>'; }).join("") : '<p class="muted">لا توجد طلبات مسندة حالياً.</p>')+
-        '<h3 style="margin-top:14px">سجل الحركة</h3>'+(c.trail.length? '<ul class="log-list">'+c.trail.map(function(t){ return '<li><strong>'+esc(t[0])+'</strong> — '+esc(t[1])+'</li>'; }).join("")+'</ul>' : '<p class="muted">لا يوجد سجل حركة بعد — يُبنى السجل من نقاط GPS الفعلية عند ربط التتبع (Traccar) في مرحلته.</p>');
+        '<h3 style="margin-top:14px">سجل الحركة</h3>'+(c.trail.length? '<ul class="log-list">'+c.trail.map(function(t){ return '<li><strong>'+esc(t[0])+'</strong> — '+esc(t[1])+'</li>'; }).join("")+'</ul><p class="small muted">سجل هذه الجلسة: يُبنى من تحديثات موقع المندوب المباشرة أثناء بقاء لوحة المشرف مفتوحة.</p>' : '<p class="muted">لا يوجد سجل حركة بعد في هذه الجلسة — يُبنى السجل هنا من تحديثات موقع المندوب المباشرة أثناء بقاء لوحة المشرف مفتوحة.</p>');
       box.classList.remove("hidden");
       box.scrollIntoView({behavior:"smooth",block:"start"});
     });
@@ -2365,14 +2420,13 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
       el.innerHTML = couriers.filter(function(c){return c.active;}).map(function(c){
         var act=activeCount(c.id), cap=c.capacity||5, pct=Math.min(100,Math.round(act/cap*100));
         var cls= act>cap ? "over" : (act>=cap ? "warn" : "");
-        var real = state.realPos && state.driverId===c.id;
         return '<div class="courier-row" style="box-shadow:none">'+
           '<div class="avatar">'+esc((c.name||"م").trim().charAt(0))+'</div>'+
           '<div style="flex:1;min-width:220px"><strong style="font-size:1.05rem">'+esc(c.name)+'</strong>'+
           '<div class="small"><span class="status-dot '+(c.online?"on":"off")+'"></span>'+(c.online?"متصل":"غير متصل")+' · '+esc(c.district)+' · آخر تحديث موقع: '+fmtDateTime(c.lastUpdate)+' · البطارية: '+(c.battery==null?"غير متاحة":c.battery+"%")+'</div>'+
           '<div class="small">الطلبات النشطة الآن: <strong>'+act+'</strong> من القدرة التشغيلية <strong>'+cap+'</strong>'+(act>cap?' <span class="chip chip-bad">تجاوز القدرة التشغيلية</span>':(act===cap?' <span class="chip chip-progress">ممتلئ</span>':""))+'</div>'+
           '<div class="cap-track"><div class="cap-fill '+cls+'" style="width:'+pct+'%"></div></div>'+
-          '<div class="small muted">'+(real?"موقع GPS فعلي من جهاز هذا المندوب الآن — مشاركته مفعّلة":"لا موقع معروفاً لهذا المندوب حتى يفعّل مشاركة GPS من جهازه")+'</div></div>'+
+          '<div class="small muted">'+((c.lat!=null&&c.lng!=null&&!isNaN(c.lat)&&!isNaN(c.lng))? (locFresh(c)?"موقع GPS مباشر الآن من جهاز المندوب — مشاركته مفعّلة":"آخر موقع GPS معروف من جهاز المندوب — أُرسل في "+fmtDateTime(c.lastUpdate)) : "لا موقع مُرسل بعد لهذا المندوب — يظهر عندما يفعّل مشاركة GPS من جهازه أثناء العمل")+'</div></div>'+
           '<button class="btn-navy" data-gotomap="'+c.id+'" type="button" style="flex:none;min-width:150px">عرض على الخريطة</button></div>';
       }).join("") || '<p class="muted">لا يوجد مناديب مفعّلون.</p>';
       var bc=$("bulkCourier");
