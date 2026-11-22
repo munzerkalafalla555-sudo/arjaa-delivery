@@ -174,6 +174,14 @@
       footer{color:var(--ink-2);text-align:center;padding:26px 14px;font-size:.92rem}
       .leaflet-popup-content{font-family:"IBM Plex Sans Arabic",sans-serif;direction:rtl;text-align:right;line-height:1.7}
 
+      /* ===== التقارير الكاملة: حاوية تقرير PDF تُبنى عند التصدير وتُرسم خارج الشاشة ===== */
+      #pdfReport{position:fixed;top:0;left:-10000px;width:760px;background:#fff;color:#12222f;padding:26px}
+      #pdfReport table{width:100%;border-collapse:collapse;margin:6px 0 16px;font-size:12.5px}
+      #pdfReport th,#pdfReport td{border:1px solid #c9d4df;padding:5px 7px;text-align:right}
+      #pdfReport th{background:#0a2540;color:#fff;font-weight:700}
+      #pdfReport h3{font-size:15px;margin:16px 0 4px;color:#0a2540}
+      #reportChart{margin-top:8px}
+
       /* ===== تحديث بصري لواجهة المندوب فقط — طبقة مظهر حديثة مستوحاة من تطبيقات المناديب الحديثة.
          كل القواعد التالية محصورة داخل #viewDriver حتى لا يتغيّر شكل لوحة المشرف إطلاقاً،
          ولم يُلمس أي كود تشغيلي أو منطق — المظهر فقط. ===== */
@@ -742,24 +750,47 @@
         <!-- Reports -->
         <div class="admin-page hidden" id="page-reports">
           <div class="card">
-            <h2>التقارير</h2>
+            <h2>التقارير الكاملة</h2>
+            <p class="muted small">تقارير يومية وأسبوعية وشهرية — أو فترة مخصصة تختارها — محسوبة من طلبات قاعدة البيانات الفعلية، مع تصدير Excel وPDF.</p>
             <div class="filter-tabs" id="reportTabs">
               <button type="button" data-r="day" class="active">تقرير يومي</button>
               <button type="button" data-r="week">تقرير أسبوعي</button>
               <button type="button" data-r="month">تقرير شهري</button>
+              <button type="button" data-r="custom">فترة مخصصة</button>
             </div>
-            <div id="reportSummary" style="margin-top:14px"></div>
-            <h3 style="margin-top:18px">أداء المناديب</h3>
-            <div class="table-scroll"><table>
-              <thead><tr><th>المندوب</th><th>طلبات منجزة</th><th>طلبات متأخرة</th><th>المسافة المقطوعة (كم)</th><th>التقييم</th><th>الأداء</th></tr></thead>
+            <div id="customRangeRow" class="hidden" style="margin-top:12px">
+              <div class="form-grid">
+                <div><label for="repFrom">من تاريخ</label><input type="date" id="repFrom" /></div>
+                <div><label for="repTo">إلى تاريخ</label><input type="date" id="repTo" /></div>
+              </div>
+              <div class="btn-row"><button class="btn-green" id="repApplyBtn" type="button">عرض التقرير للفترة المختارة</button></div>
+            </div>
+            <p style="margin-top:14px"><strong>الفترة:</strong> <span id="reportPeriod">—</span></p>
+            <div id="reportSummary"></div>
+            <h3 style="margin-top:20px">الطلبات المكتملة في الفترة</h3>
+            <div id="reportChart"></div>
+            <h3 style="margin-top:20px">أداء المناديب</h3>
+            <table class="dtable">
+              <thead><tr><th>المندوب</th><th>طلبات مسندة</th><th>مكتملة</th><th>متأخرة</th><th>فاشلة / ملغاة</th><th>نسبة الإنجاز</th><th>إيرادات التوصيل</th></tr></thead>
               <tbody id="reportBody"></tbody>
-            </table></div>
-            <p class="small muted">الأرقام هنا محسوبة من طلبات قاعدة البيانات الفعلية ضمن الفترة المختارة (اليوم / آخر 7 أيام / آخر 30 يوماً). المسافات تُحسب لاحقاً من سجل مسارات GPS الفعلي عند ربط التتبع.</p>
+            </table>
+            <h3 style="margin-top:20px">إيرادات الشركات</h3>
+            <table class="dtable">
+              <thead><tr><th>الشركة</th><th>طلبات مكتملة</th><th>سعر التوصيل المتفق</th><th>إجمالي الإيرادات</th></tr></thead>
+              <tbody id="reportCompBody"></tbody>
+            </table>
+            <h3 style="margin-top:20px">تفاصيل الطلبات في الفترة</h3>
+            <table class="dtable">
+              <thead><tr><th>رقم الطلب</th><th>التاريخ</th><th>العميل</th><th>الشركة</th><th>المندوب</th><th>الحالة</th><th>رسوم التوصيل</th></tr></thead>
+              <tbody id="reportOrdersBody"></tbody>
+            </table>
+            <p class="small muted" id="reportOrdersNote"></p>
+            <p class="small muted">كل الأرقام محسوبة من بيانات قاعدة البيانات الفعلية ضمن الفترة المختارة. إيرادات التوصيل هي مجموع أسعار التوصيل المتفق عليها مع الشركات عن الطلبات المكتملة. مسافات المناديب لا تدخل في التقارير حالياً لأنها تُحسب من سجل مسارات GPS عند ربط مرحلة التتبع.</p>
             <div class="btn-row">
-              <button class="btn-navy" id="exportCsvBtn" type="button">تصدير Excel (ملف CSV يعمل الآن)</button>
-              <button class="btn-ghost" id="exportPdfBtn" type="button">تصدير PDF</button>
+              <button class="btn-navy" id="exportExcelBtn" type="button">تصدير Excel</button>
+              <button class="btn-green" id="exportPdfBtn" type="button">تصدير PDF</button>
             </div>
-            <p class="small muted" id="pdfNote"></p>
+            <p class="small muted" id="exportNote"></p>
           </div>
         </div>
 
@@ -787,7 +818,7 @@
             <div class="phase-row"><div><strong>المرحلة الثانية — قاعدة البيانات وتسجيل الدخول والصلاحيات</strong><div class="small muted">Supabase (الخطة المجانية): المناديب والطلبات والشركات وسجل العمليات والاستلامات محفوظة في قاعدة البيانات، ودخول آمن منفصل للمشرف (بالبريد وكلمة المرور) وللمندوب (برقمه وكلمة المرور)، والمندوب لا يرى إلا طلباته.</div></div><span class="st chip chip-done">تم — أنت هنا الآن</span></div>
             <div class="phase-row"><div><strong>المرحلة الثالثة — نظام الطلبات والإسناد بين الأجهزة</strong><div class="small muted">قسم «إدارة وتوزيع الطلبات»: إسناد ونقل وإلغاء إسناد، توزيع جماعي مع تنبيه القدرة، وسجل عمليات — يعمل الآن عبر قاعدة البيانات بين الأجهزة المختلفة، وإنشاء الطلبات موحّد من قسم «الطلبات».</div></div><span class="st chip chip-done">مكتمل عبر قاعدة البيانات</span></div>
             <div class="phase-row"><div><strong>المرحلة الرابعة — ربط GPS والتتبع الفعلي</strong><div class="small muted">Traccar Client على هاتف المندوب + Traccar Server، وعرض الموقع المباشر وسجل المسارات للمشرف. لا تتبع خارج ساعات العمل.</div></div><span class="st chip">لاحقاً</span></div>
-            <div class="phase-row"><div><strong>المرحلة الخامسة — التقارير والإحصائيات الحقيقية</strong><div class="small muted">تقارير من البيانات الفعلية وسجل المسارات، مع تصدير Excel وPDF كامل.</div></div><span class="st chip">لاحقاً</span></div>
+            <div class="phase-row"><div><strong>المرحلة الخامسة — التقارير والإحصائيات الحقيقية</strong><div class="small muted">تقارير يومية وأسبوعية وشهرية وفترة مخصصة من طلبات قاعدة البيانات الفعلية، مع تصدير Excel وPDF كامل. مسافات المناديب تدخل التقارير عند ربط التتبع في المرحلة الرابعة.</div></div><span class="st chip chip-done">اكتملت</span></div>
             <div class="phase-row"><div><strong>المرحلة السادسة — الاختبار الميداني</strong><div class="small muted">اختبار على هاتف Android حقيقي ولوحة المشرف، وإصلاح الملاحظات قبل الإطلاق.</div></div><span class="st chip">لاحقاً</span></div>
           </div>
           <div class="card">
@@ -808,11 +839,16 @@
 
     <footer>ARJAA DELIVERY — أرجاء اليمامة اللوجستية · الرياض · النسخة الثانية: بيانات حقيقية عبر قاعدة بيانات Supabase</footer>
 
+    <!-- حاوية تقرير PDF: تُملأ عند التصدير وتُرسم خارج الشاشة -->
+    <div id="pdfReport" aria-hidden="true"></div>
+
     <!-- Modal root -->
     <div id="modalRoot"></div>
     <div id="toastRoot"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script>
     "use strict";
 /* ============ Supabase — اتصال قاعدة البيانات الحقيقية (المرحلة الثانية) ============
@@ -1882,63 +1918,222 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
         .then(function(){ fillCompanySelect(); toast("أُضيفت الشركة «"+body.name+"» إلى قاعدة البيانات"); });
     });
 
-    /* ============ Admin: reports — محسوبة من طلبات قاعدة البيانات ضمن الفترة ============ */
+    /* ============ Admin: reports — تقارير كاملة (يومية/أسبوعية/شهرية/فترة مخصصة)
+       محسوبة من طلبات قاعدة البيانات الفعلية، مع تصدير Excel وPDF ============ */
+    var repCustom={from:null,to:null};
+    function fmtDayShort(d){ var dt=new Date(d); if(isNaN(dt.getTime())) return "—"; return dt.getDate()+"/"+(dt.getMonth()+1)+"/"+dt.getFullYear(); }
+    function reportTitle(){ return state.reportRange==="day"?"اليومي":(state.reportRange==="week"?"الأسبوعي":(state.reportRange==="month"?"الشهري":"لفترة مخصصة")); }
+    function reportBounds(){
+      var now=new Date(), start, end=new Date(now);
+      if(state.reportRange==="week"){ start=new Date(now.getTime()-6*864e5); start.setHours(0,0,0,0); }
+      else if(state.reportRange==="month"){ start=new Date(now.getTime()-29*864e5); start.setHours(0,0,0,0); }
+      else if(state.reportRange==="custom" && repCustom.from && repCustom.to){ start=new Date(repCustom.from+"T00:00:00"); end=new Date(repCustom.to+"T23:59:59"); }
+      else { start=new Date(now); start.setHours(0,0,0,0); end=new Date(now); end.setHours(23,59,59,999); }
+      return {start:start,end:end};
+    }
+    function inRange(dstr){ if(!dstr) return false; var t=new Date(dstr).getTime(); if(isNaN(t)) return false; var b=reportBounds(); return t>=b.start.getTime() && t<=b.end.getTime(); }
+    function deliveredInRange(o){ return o.status==="delivered" && o.tDelivered && inRange(o.tDelivered); }
+    function lateInRange(o){
+      if(o.status==="delivered") return !!(o.tDelivered && inRange(o.tDelivered) && o.time && new Date(o.tDelivered) > new Date(o.time));
+      return isLate(o) && inRange(o.createdAt);
+    }
+    function reportData(){
+      var created=orders.filter(function(o){ return inRange(o.createdAt); });
+      var done=orders.filter(deliveredInRange);
+      var lateList=orders.filter(lateInRange);
+      var failedList=created.filter(function(o){ return ["failed","cancelled","rejected"].indexOf(o.status)>=0; });
+      var activeList=created.filter(function(o){ return ["new","accepted","picked","onway","arrived"].indexOf(o.status)>=0; });
+      var revenue=done.reduce(function(s,o){ return s+(Number(o.fee)||0); },0);
+      var denom=done.length+failedList.length;
+      var perCourier=couriers.map(function(c){
+        var mine=created.filter(function(o){ return o.courier===c.id; });
+        var cdone=done.filter(function(o){ return o.courier===c.id; });
+        var cfailed=mine.filter(function(o){ return ["failed","cancelled","rejected"].indexOf(o.status)>=0; }).length;
+        var cden=cdone.length+cfailed;
+        return { c:c, assigned:mine.length, done:cdone.length,
+          late:lateList.filter(function(o){ return o.courier===c.id; }).length,
+          failed:cfailed, rate:(cden? Math.round(cdone.length/cden*100): null),
+          revenue:cdone.reduce(function(s,o){ return s+(Number(o.fee)||0); },0) };
+      });
+      var perCompany=companies.map(function(co,idx){
+        var cdone=done.filter(function(o){ return o.company===idx; });
+        return { co:co, done:cdone.length, revenue:cdone.reduce(function(s,o){ return s+(Number(o.fee)||0); },0) };
+      }).filter(function(x){ return x.done>0; });
+      return { bounds:reportBounds(), created:created, done:done, late:lateList.length,
+        failed:failedList.length, active:activeList.length, revenue:revenue,
+        rate:(denom? Math.round(done.length/denom*100): null), perCourier:perCourier, perCompany:perCompany };
+    }
+    function compNameOf(o){ var co=companies[o.company]; return co? co.name: "—"; }
+    function courierNameOf(o){ var c=o.courier? courierById(o.courier): null; return c? c.name: "غير مسند"; }
+    function reportBuckets(r){
+      var start=r.bounds.start, end=r.bounds.end;
+      var spanDays=Math.floor((end.getTime()-start.getTime())/864e5)+1;
+      var buckets=[], i, d0;
+      if(spanDays<=1){
+        for(i=0;i<24;i++) buckets.push({label:(i%3===0? String(i):""), v:0});
+        r.done.forEach(function(o){ buckets[new Date(o.tDelivered).getHours()].v++; });
+      } else {
+        var n=Math.min(spanDays,31);
+        var day0=new Date(start.getFullYear(),start.getMonth(),start.getDate());
+        for(i=0;i<n;i++){ d0=new Date(day0); d0.setDate(d0.getDate()+i); buckets.push({label:d0.getDate()+"/"+(d0.getMonth()+1), v:0}); }
+        r.done.forEach(function(o){ var d=new Date(o.tDelivered); var idx=Math.floor((new Date(d.getFullYear(),d.getMonth(),d.getDate())-day0)/864e5); if(idx>=0 && idx<buckets.length) buckets[idx].v++; });
+      }
+      return buckets;
+    }
+    function renderChartSvg(buckets){
+      var max=0; buckets.forEach(function(b){ if(b.v>max) max=b.v; });
+      if(!max) return '<p class="muted">لا توجد طلبات مكتملة في هذه الفترة بعد.</p>';
+      var W=720,H=196,base=162,top=16,bw=W/buckets.length,s="";
+      s+='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;display:block" role="img" aria-label="رسم بياني بعدد الطلبات المكتملة في الفترة">';
+      s+='<line x1="0" y1="'+base+'" x2="'+W+'" y2="'+base+'" stroke="#9db2c4" stroke-width="1.5"/>';
+      buckets.forEach(function(b,i){
+        var h=Math.max(2,Math.round((b.v/max)*(base-top)));
+        var x=(i*bw+bw*0.18).toFixed(1), w=(bw*0.64).toFixed(1), cx=(i*bw+bw/2).toFixed(1);
+        s+='<rect x="'+x+'" y="'+(base-h)+'" width="'+w+'" height="'+h+'" rx="3" fill="#149a5f"/>';
+        if(b.v>0) s+='<text x="'+cx+'" y="'+(base-h-5)+'" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">'+b.v+'</text>';
+        if(b.label) s+='<text x="'+cx+'" y="'+(base+18)+'" text-anchor="middle" font-size="11" fill="currentColor" opacity=".65">'+b.label+'</text>';
+      });
+      return s+"</svg>";
+    }
+    function renderReports(){
+      var r=reportData();
+      $("reportPeriod").textContent="من "+fmtDayShort(r.bounds.start)+" إلى "+fmtDayShort(r.bounds.end)+
+        (state.reportRange==="custom" && !(repCustom.from && repCustom.to)? " — اختر تاريخي البداية والنهاية ثم اضغط «عرض التقرير للفترة المختارة» (يظهر الآن تقرير اليوم افتراضياً)":"");
+      $("reportSummary").innerHTML='<div class="grid stats-grid">'+
+        statHtml(r.created.length,"إجمالي الطلبات في الفترة","")+
+        statHtml(r.done.length,"طلبات مكتملة","green")+
+        statHtml(r.active,"قيد التنفيذ","amber")+
+        statHtml(r.failed,"فاشلة / ملغاة","red")+
+        statHtml(r.late,"طلبات متأخرة","red")+
+        statHtml(r.rate==null?"—":r.rate+"%","نسبة إنجاز التسليم","green")+
+        statHtml(r.revenue+" ر.س","إيرادات التوصيل","green")+'</div>';
+      var buckets=reportBuckets(r);
+      $("reportChart").innerHTML=renderChartSvg(buckets)+'<p class="small muted">'+(buckets.length===24?"عدد الطلبات المكتملة حسب ساعة التسليم خلال اليوم.":"عدد الطلبات المكتملة حسب يوم التسليم خلال الفترة.")+'</p>';
+      $("reportBody").innerHTML=r.perCourier.map(function(x){
+        return '<tr><td data-label="المندوب"><strong>'+esc(x.c.name)+'</strong></td><td data-label="طلبات مسندة">'+x.assigned+'</td><td data-label="مكتملة">'+x.done+'</td><td data-label="متأخرة">'+x.late+'</td><td data-label="فاشلة / ملغاة">'+x.failed+'</td><td data-label="نسبة الإنجاز">'+(x.rate==null?"—":x.rate+"%")+'</td><td data-label="إيرادات التوصيل">'+x.revenue+' ر.س</td></tr>';
+      }).join("") || '<tr><td>لا يوجد مناديب مسجلون بعد.</td></tr>';
+      $("reportCompBody").innerHTML=r.perCompany.map(function(x){
+        return '<tr><td data-label="الشركة"><strong>'+esc(x.co.name)+'</strong></td><td data-label="طلبات مكتملة">'+x.done+'</td><td data-label="سعر التوصيل المتفق">'+x.co.fee+' ر.س</td><td data-label="إجمالي الإيرادات">'+x.revenue+' ر.س</td></tr>';
+      }).join("") || '<tr><td>لا توجد طلبات مكتملة من الشركات في هذه الفترة.</td></tr>';
+      var list=r.created.slice(0,200);
+      $("reportOrdersBody").innerHTML=list.map(function(o){
+        return '<tr><td data-label="رقم الطلب"><strong>#'+o.no+'</strong></td><td data-label="التاريخ">'+fmtDateTime(o.createdAt)+'</td><td data-label="العميل">'+esc(o.customer)+'</td><td data-label="الشركة">'+esc(compNameOf(o))+'</td><td data-label="المندوب">'+esc(courierNameOf(o))+'</td><td data-label="الحالة">'+statusChip(o.status)+'</td><td data-label="رسوم التوصيل">'+(Number(o.fee)||0)+' ر.س</td></tr>';
+      }).join("") || '<tr><td>لا توجد طلبات في هذه الفترة.</td></tr>';
+      $("reportOrdersNote").textContent= r.created.length>200? "يظهر هنا أول 200 طلب — ملفا Excel وPDF يشملان جميع طلبات الفترة ("+r.created.length+" طلباً).":"";
+    }
     $("reportTabs").addEventListener("click", function(e){
       var b=e.target.closest("button"); if(!b) return;
       state.reportRange=b.getAttribute("data-r");
       var btns=$("reportTabs").querySelectorAll("button");
       for(var i=0;i<btns.length;i++) btns[i].classList.toggle("active", btns[i]===b);
+      $("customRangeRow").classList.toggle("hidden", state.reportRange!=="custom");
+      if(state.reportRange==="custom"){
+        if(!$("repFrom").value) $("repFrom").value=todayStr();
+        if(!$("repTo").value) $("repTo").value=todayStr();
+      }
       renderReports();
     });
-    function rangeStart(){
-      if(state.reportRange==="day"){ var d=new Date(); d.setHours(0,0,0,0); return d; }
-      if(state.reportRange==="week") return new Date(Date.now()-7*864e5);
-      return new Date(Date.now()-30*864e5);
-    }
-    function deliveredInRange(o){ return o.status==="delivered" && o.tDelivered && new Date(o.tDelivered) >= rangeStart(); }
-    function lateInRange(o){
-      if(state.reportRange==="day") return isLate(o);
-      return o.status==="delivered" && o.tDelivered && new Date(o.tDelivered) >= rangeStart() && o.time && new Date(o.tDelivered) > new Date(o.time);
-    }
-    function reportData(){
-      var done=orders.filter(deliveredInRange);
-      var late=orders.filter(lateInRange).length;
-      var revenue=done.reduce(function(s,o){return s+o.fee;},0);
-      var costs=Math.round(revenue*0.35);
-      return {done:done.length, late:late, revenue:revenue, costs:costs, profit:revenue-costs};
-    }
-    function renderReports(){
-      var r=reportData();
-      var lbl= state.reportRange==="day"?"اليوم":(state.reportRange==="week"?"آخر 7 أيام":"آخر 30 يوماً");
-      $("reportSummary").innerHTML='<div class="grid stats-grid">'+
-        statHtml(r.done,"طلبات مكتملة — "+lbl,"green")+
-        statHtml(r.late,"طلبات متأخرة","red")+
-        statHtml(r.revenue+" ر.س","إجمالي الإيرادات","green")+
-        statHtml(r.costs+" ر.س","تكاليف التشغيل التقديرية","amber")+
-        statHtml(r.profit+" ر.س","صافي الربح التقديري","")+'</div>';
-      $("reportBody").innerHTML=couriers.map(function(c){
-        var done=orders.filter(function(o){ return o.courier===c.id && deliveredInRange(o); }).length;
-        var late=orders.filter(function(o){ return o.courier===c.id && lateInRange(o); }).length;
-        var perf= !c.rating ? "لا تقييم بعد" : (c.rating>=4.7?"ممتاز":(c.rating>=4.4?"جيد جداً":"يحتاج متابعة"));
-        return '<tr><td><strong>'+esc(c.name)+'</strong></td><td>'+done+'</td><td>'+late+'</td><td>0</td><td>'+(c.rating?c.rating+" من 5":"—")+'</td><td>'+perf+'</td></tr>';
-      }).join("");
-    }
-    $("exportCsvBtn").addEventListener("click", function(){
-      var r=reportData();
-      var lines=["المندوب,طلبات منجزة,طلبات متأخرة,المسافة (كم),التقييم,الأداء"];
-      couriers.forEach(function(c){
-        var done=orders.filter(function(o){ return o.courier===c.id && deliveredInRange(o); }).length;
-        var late=orders.filter(function(o){ return o.courier===c.id && lateInRange(o); }).length;
-        lines.push([c.name,done,late,0,(c.rating||"—"), !c.rating?"لا تقييم بعد":(c.rating>=4.7?"ممتاز":(c.rating>=4.4?"جيد جداً":"يحتاج متابعة"))].join(","));
-      });
-      lines.push(""); lines.push("الإيرادات,"+r.revenue); lines.push("تكاليف التشغيل,"+r.costs); lines.push("صافي الربح,"+r.profit);
+    $("repApplyBtn").addEventListener("click", function(){
+      var f=$("repFrom").value, t=$("repTo").value;
+      if(!f || !t){ toast("اختر تاريخ البداية وتاريخ النهاية أولاً"); return; }
+      if(f>t){ toast("تاريخ البداية بعد تاريخ النهاية — صحّح التواريخ"); return; }
+      repCustom.from=f; repCustom.to=t;
+      renderReports();
+      toast("تم تحديث التقرير للفترة المختارة");
+    });
+    function reportFileBase(){ return "arjaa-report-"+state.reportRange+"-"+todayStr(); }
+    function downloadCsvReport(r){
+      function q(v){ v=String(v==null?"":v); return /[",\n]/.test(v)? '"'+v.replace(/"/g,'""')+'"': v; }
+      var lines=[];
+      lines.push(["التقرير","التقرير "+reportTitle()].map(q).join(","));
+      lines.push(["الفترة","من "+fmtDayShort(r.bounds.start)+" إلى "+fmtDayShort(r.bounds.end)].map(q).join(","));
+      lines.push("");
+      lines.push(["المؤشر","القيمة"].map(q).join(","));
+      lines.push(["إجمالي الطلبات في الفترة",r.created.length].join(","));
+      lines.push(["طلبات مكتملة",r.done.length].join(","));
+      lines.push(["طلبات قيد التنفيذ",r.active].join(","));
+      lines.push(["طلبات فاشلة / ملغاة",r.failed].join(","));
+      lines.push(["طلبات متأخرة",r.late].join(","));
+      lines.push(["نسبة إنجاز التسليم",r.rate==null?"—":r.rate+"%"].map(q).join(","));
+      lines.push(["إيرادات التوصيل (ر.س)",r.revenue].join(","));
+      lines.push("");
+      lines.push(["المندوب","طلبات مسندة","مكتملة","متأخرة","فاشلة / ملغاة","نسبة الإنجاز","إيرادات التوصيل (ر.س)"].map(q).join(","));
+      r.perCourier.forEach(function(x){ lines.push([x.c.name,x.assigned,x.done,x.late,x.failed,(x.rate==null?"—":x.rate+"%"),x.revenue].map(q).join(",")); });
+      lines.push("");
+      lines.push(["الشركة","طلبات مكتملة","سعر التوصيل المتفق (ر.س)","إجمالي الإيرادات (ر.س)"].map(q).join(","));
+      r.perCompany.forEach(function(x){ lines.push([x.co.name,x.done,x.co.fee,x.revenue].map(q).join(",")); });
+      lines.push("");
+      lines.push(["رقم الطلب","التاريخ","العميل","الشركة","المندوب","الحالة","رسوم التوصيل (ر.س)"].map(q).join(","));
+      r.created.forEach(function(o){ lines.push([o.no,fmtDateTime(o.createdAt),o.customer,compNameOf(o),courierNameOf(o),statusLabel(o.status),(Number(o.fee)||0)].map(q).join(",")); });
       var blob=new Blob(["\ufeff"+lines.join("\n")],{type:"text/csv;charset=utf-8"});
       var a=document.createElement("a"); a.href=URL.createObjectURL(blob);
-      a.download="arjaa-report-"+state.reportRange+".csv"; document.body.appendChild(a); a.click(); a.remove();
-      toast("تم تنزيل ملف التقرير — يفتح في Excel مباشرة");
+      a.download=reportFileBase()+".csv"; document.body.appendChild(a); a.click(); a.remove();
+    }
+    $("exportExcelBtn").addEventListener("click", function(){
+      var r=reportData();
+      if(typeof XLSX==="undefined"){
+        downloadCsvReport(r);
+        $("exportNote").textContent="تعذر تحميل مكتبة Excel من الإنترنت، فنُزّل التقرير بصيغة CSV — وهي تفتح في Excel مباشرة.";
+        toast("تم تنزيل التقرير بصيغة CSV");
+        return;
+      }
+      var wb=XLSX.utils.book_new();
+      var sum=[["أرجاء اليمامة اللوجستية — ARJAA DELIVERY"],["التقرير "+reportTitle()],["الفترة","من "+fmtDayShort(r.bounds.start)+" إلى "+fmtDayShort(r.bounds.end)],["تاريخ إنشاء التقرير",fmtDateTime(new Date())],[],
+        ["المؤشر","القيمة"],
+        ["إجمالي الطلبات في الفترة",r.created.length],["طلبات مكتملة",r.done.length],["طلبات قيد التنفيذ",r.active],["طلبات فاشلة / ملغاة",r.failed],["طلبات متأخرة",r.late],["نسبة إنجاز التسليم",r.rate==null?"—":r.rate+"%"],["إيرادات التوصيل (ر.س)",r.revenue]];
+      XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(sum),"الملخص");
+      var pc=[["المندوب","طلبات مسندة","مكتملة","متأخرة","فاشلة / ملغاة","نسبة الإنجاز","إيرادات التوصيل (ر.س)"]];
+      r.perCourier.forEach(function(x){ pc.push([x.c.name,x.assigned,x.done,x.late,x.failed,x.rate==null?"—":x.rate+"%",x.revenue]); });
+      XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(pc),"أداء المناديب");
+      var pco=[["الشركة","طلبات مكتملة","سعر التوصيل المتفق (ر.س)","إجمالي الإيرادات (ر.س)"]];
+      r.perCompany.forEach(function(x){ pco.push([x.co.name,x.done,x.co.fee,x.revenue]); });
+      XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(pco),"إيرادات الشركات");
+      var po=[["رقم الطلب","التاريخ","العميل","الشركة","المندوب","الحالة","رسوم التوصيل (ر.س)"]];
+      r.created.forEach(function(o){ po.push([o.no,fmtDateTime(o.createdAt),o.customer,compNameOf(o),courierNameOf(o),statusLabel(o.status),Number(o.fee)||0]); });
+      XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(po),"تفاصيل الطلبات");
+      XLSX.writeFile(wb, reportFileBase()+".xlsx");
+      $("exportNote").textContent="";
+      toast("تم تنزيل تقرير Excel — أربع أوراق: الملخص، أداء المناديب، إيرادات الشركات، تفاصيل الطلبات");
     });
+    function pdfTable(headers, rowsHtml){
+      return '<table><thead><tr>'+headers.map(function(h){ return "<th>"+h+"</th>"; }).join("")+"</tr></thead><tbody>"+rowsHtml+"</tbody></table>";
+    }
+    function buildPdfHtml(r){
+      var h='<div style="border-bottom:3px solid #0a2540;padding-bottom:10px;margin-bottom:6px">';
+      h+='<div style="font-size:20px;font-weight:800;color:#0a2540">أرجاء اليمامة اللوجستية — ARJAA DELIVERY</div>';
+      h+='<div style="font-size:14px;font-weight:700">تقرير '+reportTitle()+' — الفترة من '+fmtDayShort(r.bounds.start)+' إلى '+fmtDayShort(r.bounds.end)+'</div>';
+      h+='<div style="font-size:12px;color:#43586a">أُنشئ في '+fmtDateTime(new Date())+' — جميع الأرقام محسوبة من طلبات قاعدة البيانات الفعلية</div></div>';
+      h+="<h3>ملخص الفترة</h3>";
+      h+=pdfTable(["المؤشر","القيمة"],
+        "<tr><td>إجمالي الطلبات في الفترة</td><td>"+r.created.length+"</td></tr>"+
+        "<tr><td>طلبات مكتملة</td><td>"+r.done.length+"</td></tr>"+
+        "<tr><td>طلبات قيد التنفيذ</td><td>"+r.active+"</td></tr>"+
+        "<tr><td>طلبات فاشلة / ملغاة</td><td>"+r.failed+"</td></tr>"+
+        "<tr><td>طلبات متأخرة</td><td>"+r.late+"</td></tr>"+
+        "<tr><td>نسبة إنجاز التسليم</td><td>"+(r.rate==null?"—":r.rate+"%")+"</td></tr>"+
+        "<tr><td>إيرادات التوصيل</td><td>"+r.revenue+" ر.س</td></tr>");
+      h+="<h3>أداء المناديب</h3>";
+      h+=pdfTable(["المندوب","مسندة","مكتملة","متأخرة","فاشلة / ملغاة","نسبة الإنجاز","إيرادات (ر.س)"],
+        r.perCourier.map(function(x){ return "<tr><td>"+esc(x.c.name)+"</td><td>"+x.assigned+"</td><td>"+x.done+"</td><td>"+x.late+"</td><td>"+x.failed+"</td><td>"+(x.rate==null?"—":x.rate+"%")+"</td><td>"+x.revenue+"</td></tr>"; }).join(""));
+      h+="<h3>إيرادات الشركات</h3>";
+      h+=pdfTable(["الشركة","طلبات مكتملة","سعر التوصيل المتفق (ر.س)","إجمالي الإيرادات (ر.س)"],
+        r.perCompany.map(function(x){ return "<tr><td>"+esc(x.co.name)+"</td><td>"+x.done+"</td><td>"+x.co.fee+"</td><td>"+x.revenue+"</td></tr>"; }).join("") || '<tr><td colspan="4">لا توجد طلبات مكتملة من الشركات في هذه الفترة.</td></tr>');
+      h+="<h3>تفاصيل الطلبات في الفترة</h3>";
+      h+=pdfTable(["رقم الطلب","التاريخ","العميل","الشركة","المندوب","الحالة","الرسوم (ر.س)"],
+        r.created.map(function(o){ return "<tr><td>#"+o.no+"</td><td>"+fmtDateTime(o.createdAt)+"</td><td>"+esc(o.customer)+"</td><td>"+esc(compNameOf(o))+"</td><td>"+esc(courierNameOf(o))+"</td><td>"+esc(statusLabel(o.status))+"</td><td>"+(Number(o.fee)||0)+"</td></tr>"; }).join("") || '<tr><td colspan="7">لا توجد طلبات في هذه الفترة.</td></tr>');
+      h+='<div style="font-size:11px;color:#43586a;margin-top:10px">إيرادات التوصيل هي مجموع أسعار التوصيل المتفق عليها مع الشركات عن الطلبات المكتملة ضمن الفترة. مسافات المناديب تُحسب من سجل مسارات GPS عند ربط مرحلة التتبع.</div>';
+      return h;
+    }
     $("exportPdfBtn").addEventListener("click", function(){
-      $("pdfNote").textContent="تصدير PDF الكامل (بترويسة الشركة وتنسيق رسمي) يُفعَّل في مرحلة لاحقة مع التقارير المتقدمة. حالياً يمكنك تصدير Excel من الزر المجاور، أو طباعة هذه الصفحة من متصفحك.";
+      var btn=this;
+      var r=reportData();
+      $("pdfReport").innerHTML=buildPdfHtml(r);
+      if(typeof html2pdf==="undefined"){ $("exportNote").textContent="تعذر تحميل مكتبة PDF من الإنترنت — تحقق من الاتصال وحاول مجدداً، أو استخدم تصدير Excel."; return; }
+      btn.disabled=true; btn.textContent="جارٍ إنشاء ملف PDF…";
+      html2pdf().set({ margin:10, filename:reportFileBase()+".pdf", image:{type:"jpeg",quality:0.96}, html2canvas:{scale:2,useCORS:true,logging:false}, jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}, pagebreak:{mode:["css","legacy"]} }).from($("pdfReport")).save()
+      .then(function(){ $("exportNote").textContent=""; toast("تم تنزيل تقرير PDF"); })
+      .catch(function(){ $("exportNote").textContent="تعذر إنشاء ملف PDF — حاول مرة أخرى، أو استخدم تصدير Excel."; })
+      .then(function(){ btn.disabled=false; btn.textContent="تصدير PDF"; });
     });
 
     /* ============ Admin: notifications — من سجل عمليات قاعدة البيانات ============ */
