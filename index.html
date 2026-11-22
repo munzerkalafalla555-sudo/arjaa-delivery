@@ -175,14 +175,25 @@
       .leaflet-popup-content{font-family:"IBM Plex Sans Arabic",sans-serif;direction:rtl;text-align:right;line-height:1.7}
 
       /* ===== التقارير الكاملة: حاوية تقرير PDF تُبنى عند التصدير.
-         ملاحظة مهمة: محرك html2canvas لا يرسم العناصر الموضوعة بعيداً خارج الشاشة
-         (مثل left:-10000px) فيخرج ملف PDF فارغاً تماماً. لذلك تبقى الحاوية مخفية
-         بلا عرض (width:0/overflow:hidden) في موضع داخل الشاشة، وعند التصدير تُفتح
-         بعرضها الكامل مؤقتاً خلف غطاء تحميل (‎.pdf-live) ثم تعود كما كانت. ===== */
-      #pdfReport{position:fixed;top:0;left:0;width:0;height:0;overflow:hidden;background:#fff;color:#12222f;padding:0}
-      #pdfReport.pdf-live{width:760px;height:auto;overflow:visible;padding:26px;z-index:2000}
+         سبب الـPDF الفارغ في المحاولات السابقة: محرك html2canvas لا يرسم
+         العناصر ذات position:fixed ولا الموضوعة خارج الشاشة، فيخرج الملف
+         صفحة بيضاء كاملة. لذلك تُفتح الحاوية عند التصدير بموضع مطلق
+         (absolute) أعلى المستند نفسه وبعرضها الكامل، ويُمرَّر لأعلى الصفحة،
+         ثم يُلتقط العنصر ويُتحقق برمجياً من أن الالتقاط ليس أبيض فارغاً
+         قبل الحفظ. وإن فشل الالتقاط لأي سبب يُعرض التقرير بملء الشاشة
+         (‎.pdf-show) مع زر طباعة/حفظ PDF كطريق بديل يعمل دائماً. ===== */
+      #pdfReport{display:none;background:#fff;color:#12222f}
+      #pdfReport.pdf-live{display:block;position:absolute;top:0;left:0;width:760px;padding:26px;z-index:2000}
+      #pdfReport.pdf-show{display:block;position:fixed;inset:0;z-index:2100;overflow:auto;padding:20px 16px 44px}
+      #pdfReport .pdf-tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+      #pdfReport .pdf-tools button{flex:1;min-width:150px;min-height:56px;font-size:1.05rem}
       #pdfCover{position:fixed;inset:0;background:rgba(255,255,255,.97);z-index:2001;display:none;align-items:center;justify-content:center;text-align:center;padding:24px;font-size:1.2rem;font-weight:800;color:#0a2540}
       #pdfCover.show{display:flex}
+      @media print{
+        body.report-print>*{display:none!important}
+        body.report-print>#pdfReport.pdf-show{display:block!important;position:static!important;width:auto!important;padding:0!important;overflow:visible!important}
+        #pdfReport .no-print{display:none!important}
+      }
       #pdfReport table{width:100%;border-collapse:collapse;margin:6px 0 16px;font-size:12.5px}
       #pdfReport th,#pdfReport td{border:1px solid #c9d4df;padding:5px 7px;text-align:right}
       #pdfReport th{background:#0a2540;color:#fff;font-weight:700}
@@ -2132,26 +2143,86 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
       h+='<div style="font-size:11px;color:#43586a;margin-top:10px">إيرادات التوصيل هي مجموع أسعار التوصيل المتفق عليها مع الشركات عن الطلبات المكتملة ضمن الفترة. مسافات المناديب تُحسب من سجل مسارات GPS عند ربط مرحلة التتبع.</div>';
       return h;
     }
+    /* فحص برمجي لنتيجة الالتقاط: نصغّر اللقطة إلى 48×48 ونبحث عن أي بكسل
+       غير أبيض؛ إن كانت كلها بيضاء فالالتقاط فارغ ولا نحفظ ملفاً أبيض. */
+    function canvasLooksBlank(cv){
+      try{
+        if(!cv || !cv.width || !cv.height) return true;
+        var t=document.createElement("canvas"); t.width=48; t.height=48;
+        var cx=t.getContext("2d");
+        cx.fillStyle="#ffffff"; cx.fillRect(0,0,48,48);
+        cx.drawImage(cv,0,0,48,48);
+        var d=cx.getImageData(0,0,48,48).data;
+        for(var i=0;i<d.length;i+=4){
+          if(d[i]<235 || d[i+1]<235 || d[i+2]<235) return false;
+        }
+        return true;
+      }catch(e){ return false; }
+    }
+    /* الطريق البديل المضمون عند فشل الالتقاط التلقائي: عرض التقرير بملء
+       الشاشة، مع تعليمات الحفظ من قائمة المتصفح نفسه (طباعة ← حفظ بصيغة
+       PDF)؛ وقواعد الطباعة مضبوطة بكلاس report-print على body فلا يظهر
+       في الورقة إلا هذا التقرير، ولا تتأثر طباعة الصفحة العادية. */
+    function showPdfFallback(el, btn){
+      el.classList.remove("pdf-live");
+      el.innerHTML='<div class="pdf-tools no-print">'
+        +'<div style="flex:1;min-width:220px;background:var(--green-soft);border:1.5px solid var(--green);border-radius:12px;padding:12px 14px;font-weight:700">لحفظ هذا التقرير كملف PDF: افتح قائمة المتصفح واختر «طباعة»، ثم اختر «حفظ بصيغة PDF» — سيظهر هذا التقرير فقط في الطباعة.</div>'
+        +'<button type="button" class="btn-ghost" id="pdfCloseBtn">إغلاق</button></div>'
+        + el.innerHTML;
+      el.classList.add("pdf-show");
+      document.body.classList.add("report-print");
+      window.scrollTo(0,0);
+      $("exportNote").textContent="عرضنا التقرير كاملاً هنا بدلاً من تنزيله تلقائياً: لحفظه كـ PDF افتح قائمة المتصفح واختر «طباعة» ثم «حفظ بصيغة PDF».";
+      $("pdfCloseBtn").addEventListener("click", function(){
+        el.classList.remove("pdf-show"); el.innerHTML="";
+        document.body.classList.remove("report-print");
+        btn.disabled=false; btn.textContent="تصدير PDF";
+      });
+      btn.disabled=false; btn.textContent="تصدير PDF";
+    }
     $("exportPdfBtn").addEventListener("click", function(){
       var btn=this;
-      if(typeof html2pdf==="undefined"){ $("exportNote").textContent="تعذر تحميل مكتبة PDF من الإنترنت — تحقق من الاتصال وحاول مجدداً، أو استخدم تصدير Excel."; return; }
+      if(typeof html2pdf==="undefined"){
+        /* حتى بلا مكتبة الالتقاط يبقى طريق الـPDF متاحاً: نعرض التقرير
+           كاملاً مع تعليمات الحفظ من طباعة المتصفح. */
+        var elLib=$("pdfReport");
+        elLib.innerHTML=buildPdfHtml(reportData());
+        showPdfFallback(elLib, btn);
+        return;
+      }
       var r=reportData();
       var el=$("pdfReport");
       el.innerHTML=buildPdfHtml(r);
       btn.disabled=true; btn.textContent="جارٍ إنشاء ملف PDF…";
-      /* إصلاح الـPDF الفارغ: html2canvas لا يلتقط العناصر المخفية خارج الشاشة أو
-         بعرض صفر، فيخرج الملف صفحة بيضاء. نفتح الحاوية مؤقتاً بعرضها الكامل داخل
-         الشاشة خلف غطاء التحميل، نلتقطها، ثم نعيدها مخفية كما كانت. */
+      var prevScroll=window.scrollY||0;
+      /* إصلاح الـPDF الفارغ: الحاوية تُفتح بموضع مطلق أعلى المستند (لا
+         position:fixed التي لا يرسمها html2canvas) ونمرّر لأعلى الصفحة،
+         ثم نلتقط ونتحقق من اللقطة قبل الحفظ — لا يُحفظ ملف أبيض أبداً. */
       el.classList.add("pdf-live");
       $("pdfCover").classList.add("show");
-      function cleanup(){ el.classList.remove("pdf-live"); $("pdfCover").classList.remove("show"); btn.disabled=false; btn.textContent="تصدير PDF"; }
-      /* مهلة قصيرة حتى يرسم المتصفح الحاوية بموضعها وحجمها الجديدين قبل الالتقاط */
-      setTimeout(function(){
-        html2pdf().set({ margin:10, filename:reportFileBase()+".pdf", image:{type:"jpeg",quality:0.96}, html2canvas:{scale:2,useCORS:true,logging:false,backgroundColor:"#ffffff"}, jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}, pagebreak:{mode:["css","legacy"]} }).from(el).save()
-        .then(function(){ $("exportNote").textContent=""; toast("تم تنزيل تقرير PDF"); })
-        .catch(function(){ $("exportNote").textContent="تعذر إنشاء ملف PDF — حاول مرة أخرى، أو استخدم تصدير Excel."; })
-        .then(cleanup);
-      }, 400);
+      window.scrollTo(0,0);
+      function cleanup(){ el.classList.remove("pdf-live"); $("pdfCover").classList.remove("show"); window.scrollTo(0,prevScroll); btn.disabled=false; btn.textContent="تصدير PDF"; }
+      var opt={ margin:10, filename:reportFileBase()+".pdf", image:{type:"jpeg",quality:0.96}, html2canvas:{scale:2,useCORS:true,logging:false,backgroundColor:"#ffffff"}, jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}, pagebreak:{mode:["css","legacy"]} };
+      var fontsReady=(document.fonts && document.fonts.ready) ? document.fonts.ready : Promise.resolve();
+      Promise.race([fontsReady, new Promise(function(res){ setTimeout(res,1200); })])
+      .then(function(){ return new Promise(function(res){ setTimeout(res,350); }); })
+      .then(function(){ return html2pdf().set(opt).from(el).toCanvas(); })
+      .then(function(cv){
+        if(canvasLooksBlank(cv)){
+          cleanup();
+          el.innerHTML=buildPdfHtml(r);
+          showPdfFallback(el, btn);
+          return null;
+        }
+        return html2pdf().set(opt).from(el).save().then(function(){
+          $("exportNote").textContent=""; toast("تم تنزيل تقرير PDF"); cleanup();
+        });
+      })
+      .catch(function(){
+        cleanup();
+        el.innerHTML=buildPdfHtml(r);
+        showPdfFallback(el, btn);
+      });
     });
 
     /* ============ Admin: notifications — من سجل عمليات قاعدة البيانات ============ */
