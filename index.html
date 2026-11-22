@@ -1,0 +1,2323 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>ARJAA DELIVERY — أرجاء اليمامة اللوجستية</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://efxnobjlytzgebebiexx.supabase.co" />
+    <link rel="dns-prefetch" href="https://efxnobjlytzgebebiexx.supabase.co" />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Cairo:wght@700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+      :root{
+        --navy:#0a2540; --navy-2:#103a63; --navy-soft:#e8eef5;
+        --green:#149a5f; --green-dark:#0f7a4a; --green-soft:#e2f4ea;
+        --bg:#f4f6f9; --surface:#ffffff; --surface-2:#eef2f6;
+        --ink:#12222f; --ink-2:#43586a; --line:#d7e0e9;
+        --amber:#b97a0c; --amber-soft:#fdf0d5;
+        --red:#c0392b; --red-soft:#fbe7e3;
+        --blue-soft:#e3edfb; --blue:#1d5fae;
+        --shadow:0 2px 10px rgba(10,37,64,.08);
+        --radius:14px;
+      }
+      @media (prefers-color-scheme: dark){
+        :root{
+          --navy:#0a2540; --navy-2:#14365c; --navy-soft:#16283d;
+          --green:#2fbf7f; --green-dark:#2fbf7f; --green-soft:#123527;
+          --bg:#0c141d; --surface:#14212f; --surface-2:#1a2a3b;
+          --ink:#eef4f9; --ink-2:#a9bccb; --line:#26394c;
+          --amber:#e8b34b; --amber-soft:#3a2f14;
+          --red:#f08374; --red-soft:#3d201b;
+          --blue-soft:#17304f; --blue:#7db1ec;
+          --shadow:0 2px 10px rgba(0,0,0,.35);
+        }
+      }
+      *{box-sizing:border-box}
+      html{font-size:17px}
+      body{margin:0;font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.75}
+      h1,h2,h3{font-family:"Cairo","IBM Plex Sans Arabic",sans-serif;line-height:1.4;margin:0}
+      button,[role="button"],select,input:not([type="checkbox"]),textarea{font-family:inherit;font-size:1rem;min-height:48px}
+      button{cursor:pointer;border:none;border-radius:12px;padding:.55rem 1.1rem;font-weight:600}
+      input,select,textarea{border:1.5px solid var(--line);border-radius:12px;padding:.55rem .8rem;background:var(--surface);color:var(--ink);width:100%}
+      input:focus,select:focus,textarea:focus{outline:2px solid var(--green);outline-offset:1px}
+      label{font-weight:600;display:block;margin-bottom:.3rem}
+      a{color:var(--blue)}
+      .wrap{max-width:1180px;margin:0 auto;padding:0 14px 48px}
+
+      /* ===== Top bar ===== */
+      .topbar{background:var(--navy);color:#fff;padding:14px 0 0;box-shadow:var(--shadow)}
+      .topbar-in{max-width:1180px;margin:0 auto;padding:0 14px}
+      .brand{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+      .brand-mark{width:52px;height:52px;border-radius:14px;background:var(--green);display:flex;align-items:center;justify-content:center;flex:none}
+      .brand-mark svg{width:32px;height:32px}
+      .brand h1{font-size:1.45rem;color:#fff;letter-spacing:.5px}
+      .brand .ar-name{font-size:.95rem;color:#bcd2e8;font-weight:500}
+      .phase-badge{margin-inline-start:auto;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:999px;padding:.3rem .9rem;font-size:.88rem;font-weight:600}
+      .view-switch{display:flex;gap:8px;margin-top:14px}
+      .view-switch button{flex:1;background:rgba(255,255,255,.1);color:#cfe0f2;border-radius:12px 12px 0 0;padding:.8rem;font-size:1.05rem;min-height:54px}
+      .view-switch button.active{background:var(--bg);color:var(--navy);font-weight:700}
+      @media (prefers-color-scheme: dark){.view-switch button.active{color:var(--ink)}}
+
+      .demo-strip{background:var(--amber-soft);color:var(--ink);border-bottom:2px solid var(--amber);padding:.55rem 0;font-size:.95rem}
+      .demo-strip .wrap{padding-bottom:0}
+      .demo-strip strong{color:var(--amber)}
+
+      /* ===== Generic ===== */
+      .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-top:16px}
+      .card h2{font-size:1.25rem;margin-bottom:.4rem}
+      .card h3{font-size:1.08rem}
+      .muted{color:var(--ink-2)}
+      .small{font-size:.9rem}
+      .btn-green{background:var(--green);color:#fff}
+      .btn-green:active{background:var(--green-dark)}
+      .btn-navy{background:var(--navy);color:#fff}
+      .btn-ghost{background:var(--surface-2);color:var(--ink);border:1.5px solid var(--line)}
+      .btn-red{background:var(--red);color:#fff}
+      .btn-amber{background:var(--amber);color:#fff}
+      .btn-big{width:100%;min-height:58px;font-size:1.12rem;border-radius:14px}
+      .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+      .btn-row button{flex:1;min-width:130px}
+      .btn-row a{flex:1;min-width:130px;display:flex;align-items:center;justify-content:center;text-align:center;text-decoration:none;border-radius:12px;padding:.55rem 1.1rem;font-weight:600;min-height:48px;font-size:1rem}
+      .btn-row a.btn-green,.btn-row a.btn-navy{color:#fff}
+      .chip{display:inline-block;border-radius:999px;padding:.12rem .75rem;font-size:.85rem;font-weight:700;white-space:nowrap}
+      .chip-new{background:var(--blue-soft);color:var(--blue)}
+      .chip-progress{background:var(--amber-soft);color:var(--amber)}
+      .chip-done{background:var(--green-soft);color:var(--green-dark)}
+      .chip-bad{background:var(--red-soft);color:var(--red)}
+      .chip-pri{background:var(--red);color:#fff}
+      .grid{display:grid;gap:14px}
+      .stats-grid{grid-template-columns:repeat(2,1fr)}
+      @media(min-width:640px){.stats-grid{grid-template-columns:repeat(3,1fr)}}
+      @media(min-width:960px){.stats-grid{grid-template-columns:repeat(4,1fr)}}
+      .stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow)}
+      .stat .num{font-family:"Cairo",sans-serif;font-size:1.9rem;font-weight:800;line-height:1.2;color:var(--navy)}
+      @media (prefers-color-scheme: dark){.stat .num{color:var(--ink)}}
+      .stat .lbl{color:var(--ink-2);font-weight:600;font-size:.95rem}
+      .stat.green .num{color:var(--green-dark)} .stat.red .num{color:var(--red)} .stat.amber .num{color:var(--amber)}
+      .hidden{display:none!important}
+      .toast{position:fixed;bottom:18px;inset-inline:14px;z-index:900;background:var(--navy);color:#fff;border-radius:14px;padding:14px 18px;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.3);text-align:center}
+      @media(min-width:640px){.toast{inset-inline:auto;left:50%;transform:translateX(-50%);min-width:340px}}
+
+      /* ===== Driver ===== */
+      .profile{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+      .avatar{width:72px;height:72px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-family:"Cairo",sans-serif;font-size:1.5rem;font-weight:800;flex:none}
+      .status-dot{display:inline-block;width:13px;height:13px;border-radius:50%;vertical-align:middle;margin-inline-end:6px}
+      .on{background:var(--green)} .off{background:#9db2c4}
+      .filter-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+      .filter-tabs button{background:var(--surface);border:1.5px solid var(--line);color:var(--ink);min-height:48px}
+      .filter-tabs button.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+      .order-card{border:1.5px solid var(--line);border-radius:var(--radius);padding:16px;margin-top:14px;background:var(--surface)}
+      .order-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}
+      .order-head .ono{font-family:"Cairo",sans-serif;font-weight:800;font-size:1.15rem}
+      .kv{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin-top:10px;font-size:1rem}
+      .kv dt{color:var(--ink-2);font-weight:600}
+      .kv dd{margin:0}
+      .steps{display:flex;gap:4px;margin-top:12px;flex-wrap:wrap}
+      .steps span{flex:1;min-width:64px;text-align:center;font-size:.78rem;font-weight:700;padding:.3rem .1rem;border-radius:8px;background:var(--surface-2);color:var(--ink-2)}
+      .steps span.done{background:var(--green-soft);color:var(--green-dark)}
+      .steps span.now{background:var(--navy);color:#fff}
+      .proof-img{max-width:180px;border-radius:10px;margin-top:8px;border:1px solid var(--line)}
+      .gps-box{background:var(--navy-soft);border-radius:12px;padding:14px;margin-top:10px}
+      .checkline{display:flex;gap:10px;align-items:flex-start;background:var(--surface-2);border-radius:12px;padding:12px;margin-top:10px}
+      .checkline input{width:26px;height:26px;flex:none;margin-top:4px}
+
+      /* ===== Admin ===== */
+      .admin-nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+      .admin-nav button{background:var(--surface);border:1.5px solid var(--line);color:var(--ink);min-height:50px;padding:.5rem 1rem}
+      .admin-nav button.active{background:var(--green);color:#fff;border-color:var(--green)}
+      table{width:100%;border-collapse:collapse;margin-top:10px}
+      th,td{padding:.6rem .5rem;text-align:right;border-bottom:1px solid var(--line);vertical-align:top}
+      th{color:var(--ink-2);font-size:.92rem}
+      .table-scroll{overflow-x:auto}
+      .form-grid{display:grid;gap:12px}
+      @media(min-width:700px){.form-grid{grid-template-columns:1fr 1fr}}
+      .courier-row{display:flex;gap:12px;align-items:center;border:1.5px solid var(--line);border-radius:var(--radius);padding:14px;margin-top:12px;background:var(--surface);flex-wrap:wrap}
+      .courier-row .avatar{width:56px;height:56px;font-size:1.15rem}
+      .stars{color:var(--amber);letter-spacing:2px}
+      #mapAdmin,#mapLive{height:380px;border-radius:var(--radius);border:1px solid var(--line);margin-top:12px;z-index:1}
+      .map-fallback{padding:22px;text-align:center;color:var(--ink-2)}
+      .notif{display:flex;gap:12px;border-bottom:1px solid var(--line);padding:12px 2px;align-items:flex-start}
+      .notif .ic{width:42px;height:42px;border-radius:12px;flex:none;display:flex;align-items:center;justify-content:center}
+      .notif svg{width:22px;height:22px}
+      .log-list{margin:8px 0 0;padding-inline-start:20px}
+      .log-list li{margin-bottom:4px}
+      .modal-wide{max-width:760px}
+      .rowcheck{width:26px;height:26px;accent-color:var(--green);flex:none}
+      .cap-track{height:10px;border-radius:99px;background:var(--surface-2);overflow:hidden;margin-top:6px;max-width:280px}
+      .cap-fill{height:100%;background:var(--green);border-radius:99px}
+      .cap-fill.warn{background:var(--amber)} .cap-fill.over{background:var(--red)}
+      .pick-map{height:280px;border-radius:12px;border:1px solid var(--line);margin-top:10px;z-index:1}
+      .act-cell button{min-height:42px;padding:.35rem .6rem;font-size:.92rem}
+      .act-cell select{min-height:44px}
+      @media(max-width:680px){
+        .dtable thead{display:none}
+        .dtable,.dtable tbody,.dtable tr,.dtable td{display:block;width:100%}
+        .dtable tr{border:1.5px solid var(--line);border-radius:12px;margin-top:12px;padding:4px 12px;background:var(--surface)}
+        .dtable td{border-bottom:1px dashed var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;padding:.55rem 0}
+        .dtable td:last-child{border-bottom:none}
+        .dtable td::before{content:attr(data-label);font-weight:700;color:var(--ink-2);flex:none}
+        .act-cell{flex-wrap:wrap}
+      }
+      .modal-bg{position:fixed;inset:0;background:rgba(5,20,35,.6);z-index:800;display:flex;align-items:flex-end;justify-content:center;padding:0}
+      @media(min-width:640px){.modal-bg{align-items:center;padding:20px}}
+      .modal{background:var(--surface);color:var(--ink);border-radius:18px 18px 0 0;width:100%;max-width:520px;padding:22px;max-height:92vh;overflow:auto}
+      @media(min-width:640px){.modal{border-radius:18px}}
+      .otp-input{font-size:1.8rem;text-align:center;letter-spacing:14px;font-family:"Cairo",sans-serif;font-weight:800}
+      .guide-num{display:inline-flex;width:34px;height:34px;border-radius:50%;background:var(--green);color:#fff;align-items:center;justify-content:center;font-weight:800;flex:none}
+      .guide-step{display:flex;gap:12px;margin-top:14px;align-items:flex-start}
+      .phase-row{display:flex;gap:10px;align-items:flex-start;border:1.5px solid var(--line);border-radius:12px;padding:12px;margin-top:10px}
+      .phase-row .st{margin-inline-start:auto}
+      footer{color:var(--ink-2);text-align:center;padding:26px 14px;font-size:.92rem}
+      .leaflet-popup-content{font-family:"IBM Plex Sans Arabic",sans-serif;direction:rtl;text-align:right;line-height:1.7}
+
+      /* ===== تحديث بصري لواجهة المندوب فقط — طبقة مظهر حديثة مستوحاة من تطبيقات المناديب الحديثة.
+         كل القواعد التالية محصورة داخل #viewDriver حتى لا يتغيّر شكل لوحة المشرف إطلاقاً،
+         ولم يُلمس أي كود تشغيلي أو منطق — المظهر فقط. ===== */
+      #viewDriver .card{border-radius:20px;border-color:var(--line);box-shadow:0 4px 18px rgba(10,37,64,.09);padding:20px}
+      #viewDriver .card h2{font-size:1.32rem;font-weight:800}
+      #viewDriver input:not([type="checkbox"]),#viewDriver select,#viewDriver textarea{border-radius:14px;min-height:54px}
+      #viewDriver .btn-big{min-height:62px;font-size:1.18rem;border-radius:16px;font-weight:700}
+      #viewDriver .btn-row button,#viewDriver .btn-row a{border-radius:16px;min-height:56px;font-size:1.05rem}
+      #viewDriver .gps-box{border-radius:16px;padding:16px}
+      #viewDriver .checkline{border-radius:16px;padding:14px}
+
+      /* بطاقة الدخول: خانات أطول وزر دخول بارز */
+      #driverLogin .gps-box{border:1.5px dashed var(--green);background:var(--green-soft)}
+
+      /* بطاقة ملف المندوب: ترويسة داكنة حديثة بصورة وحالة واضحة */
+      #driverApp>.card:first-child{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 100%);color:#fff;border:none}
+      #driverApp>.card:first-child h2{color:#fff;font-size:1.45rem}
+      #driverApp>.card:first-child .muted{color:#bcd2e8}
+      #driverApp>.card:first-child .avatar{background:var(--green);box-shadow:0 0 0 3px rgba(255,255,255,.35);width:78px;height:78px;font-size:1.7rem}
+      #driverApp>.card:first-child #drvStatusText{font-size:1.05rem}
+      #driverApp>.card:first-child .btn-ghost{background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.45)}
+      #driverApp>.card:first-child .status-dot.off{background:#8fa9c2}
+
+      /* بطاقة استلام طلبات اليوم: إبراز أخضر واضح وخانة عدّ كبيرة */
+      #receiptCard{border:2px solid var(--green)}
+      #receiptCard h2{color:var(--green-dark)}
+      #viewDriver #receiptCount{font-size:1.5rem;font-weight:800;text-align:center;min-height:64px;font-family:"Cairo",sans-serif}
+      #viewDriver #receiptBody .kv{font-size:1.05rem}
+      #viewDriver #receiptBody .kv dd strong{color:var(--navy)}
+      @media (prefers-color-scheme: dark){#viewDriver #receiptBody .kv dd strong{color:var(--ink)}}
+
+      /* بلاطات الإحصاء: أرقام كبيرة وسط البطاقة */
+      #drvStats .stat{border-radius:18px;text-align:center;padding:16px 10px}
+      #drvStats .stat .num{font-size:2.1rem}
+      #drvStats .stat .lbl{font-size:1rem}
+
+      /* بطاقات الطلبات: سطح نظيف، رقم طلب كبير، وصفوف معلومات مفصولة بخطوط خفيفة */
+      #viewDriver .order-card{border-radius:20px;border:1px solid var(--line);box-shadow:0 4px 18px rgba(10,37,64,.09);padding:18px}
+      #viewDriver .order-head{align-items:center;padding-bottom:10px;border-bottom:1px solid var(--line)}
+      #viewDriver .order-head .ono{font-size:1.35rem}
+      #viewDriver .chip{padding:.22rem .85rem;font-size:.9rem}
+      #viewDriver .kv{gap:0 12px;font-size:1.03rem;margin-top:6px}
+      #viewDriver .kv dt,#viewDriver .kv dd{padding:.34rem 0;border-bottom:1px dashed var(--line)}
+      #viewDriver .kv dd{font-weight:500}
+      #viewDriver .steps{gap:6px;margin-top:14px}
+      #viewDriver .steps span{border-radius:999px;padding:.38rem .1rem;font-size:.82rem}
+      #viewDriver .steps span.now{background:var(--green)}
+
+      /* أيقونات أزرار التواصل والملاحة داخل بطاقة الطلب (مظهر فقط — الروابط والوظائف كما هي) */
+      #drvOrders .btn-row a::before{content:"";width:22px;height:22px;flex:none;margin-inline-end:8px;background-repeat:no-repeat;background-position:center;background-size:contain}
+      #drvOrders .btn-row a[href^="tel:"]::before{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'><path d='M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z'/></svg>")}
+      #drvOrders .btn-row a[href*="wa.me"]::before{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'><path d='M12 3C6.5 3 2 6.9 2 11.8c0 1.6.5 3.1 1.4 4.4L2 21l4.9-1.3c1.5.8 3.2 1.2 5.1 1.2 5.5 0 10-3.9 10-8.8S17.5 3 12 3z'/></svg>")}
+      #drvOrders .btn-row a[href*="google.com/maps"]::before,#drvOrders .btn-row a[href*="goo.gl"]::before,#drvOrders .btn-row a[href*="maps.app"]::before{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ffffff'><path d='M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z'/></svg>")}
+
+      /* جوال ضيق: حشوة مريحة وأزرار بعرض كامل عند الالتفاف — بلا أي تمرير أفقي وبلا أشرطة لاصقة تحجب الأزرار */
+      @media(max-width:480px){
+        #viewDriver .card{padding:16px}
+        #viewDriver .order-card{padding:16px}
+        #viewDriver .btn-row button,#viewDriver .btn-row a{min-width:100%}
+        #driverApp>.card:first-child .avatar{width:66px;height:66px;font-size:1.45rem}
+      }
+
+      /* ===== طبقة Premium ثانية لواجهة المندوب فقط — مظهر حديث فاخر بأسلوب تطبيقات
+         المناديب العالمية (جاهز / طلبات / أوبر إيتس): بطاقات أنظف، إحصاءات بأيقونات،
+         أزرار أكبر بظلال ناعمة، ومساحات أرحب. كل القواعد محصورة داخل #viewDriver:
+         لا يتغيّر شكل المشرف، ولا يُلمس أي منطق أو زر أو قسم، ولا تُعاد أزرار
+         التصفية ولا شريط المراحل، ولا تُضاف أي أرقام أرباح — الإحصاءات المعروضة
+         هي نفس أعداد الطلبات الحالية في النظام بمظهر أجمل فقط. ===== */
+
+      /* إيقاع الصفحة: بطاقات أرحب بظلال طبقية ناعمة وحواف أكبر */
+      #viewDriver .card{border-radius:24px;margin-top:20px;padding:22px;box-shadow:0 1px 2px rgba(10,37,64,.05),0 12px 32px rgba(10,37,64,.08)}
+      #viewDriver .card h2{font-size:1.38rem;display:flex;align-items:center;gap:10px}
+      #viewDriver .card h2::before{content:"";width:5px;height:1.1em;border-radius:99px;background:var(--green);flex:none}
+      #viewDriver :focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+      #viewDriver .kv dd{overflow-wrap:anywhere}
+
+      /* أزرار المندوب: ظل ناعم بلون الزر نفسه يعطي إحساساً احترافياً عند الضغط */
+      #viewDriver .btn-green{box-shadow:0 8px 20px rgba(20,154,95,.30)}
+      #viewDriver .btn-navy{box-shadow:0 8px 20px rgba(10,37,64,.28)}
+      #viewDriver .btn-green:active{box-shadow:0 3px 8px rgba(20,154,95,.30)}
+      #viewDriver .btn-navy:active{box-shadow:0 3px 8px rgba(10,37,64,.28)}
+
+      /* بطاقة الدخول: عنوان أكبر وخانات أوضح */
+      #driverLogin{padding:26px}
+      #driverLogin h2{font-size:1.5rem}
+      #driverLogin .gps-box{border-radius:16px;padding:16px 18px;line-height:2}
+
+      /* ترويسة المندوب: حالة الاتصال داخل قرص زجاجي واضح ونقطة نابضة بهدوء */
+      #driverApp>.card:first-child{padding:24px}
+      #driverApp>.card:first-child .profile>div:not(.avatar)>div:last-child{display:inline-flex;align-items:center;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:.3rem .95rem;margin-top:10px}
+      #viewDriver .status-dot.on{box-shadow:0 0 0 4px var(--green-soft)}
+      #driverApp>.card:first-child .status-dot.on{box-shadow:0 0 0 4px rgba(47,191,127,.30)}
+      #driverApp>.card:first-child #endWorkBtn{box-shadow:0 8px 20px rgba(0,0,0,.25)}
+
+      /* بطاقات الإحصاء: أيقونة ملونة أعلى كل بطاقة (نفس الأعداد الحالية — مظهر فقط) */
+      #drvStats{gap:12px}
+      #drvStats .stat{padding:18px 10px 16px;border-radius:20px;box-shadow:0 1px 2px rgba(10,37,64,.05),0 10px 26px rgba(10,37,64,.07)}
+      #drvStats .stat::before{content:"";display:block;width:46px;height:46px;margin:0 auto 8px;border-radius:14px;background-color:var(--navy-soft);background-repeat:no-repeat;background-position:center;background-size:26px}
+      #drvStats .stat:nth-child(1)::before{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230a2540' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='5' y='4' width='14' height='17' rx='2'/><path d='M9 9h6M9 13h6M9 17h3'/></svg>")}
+      #drvStats .stat:nth-child(2)::before{background-color:var(--blue-soft);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231d5fae' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M18 9a6 6 0 1 0-12 0c0 6-2.5 7.5-2.5 7.5h17S18 15 18 9'/><path d='M10 20a2.2 2.2 0 0 0 4 0'/></svg>")}
+      #drvStats .stat:nth-child(3)::before{background-color:var(--amber-soft);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b97a0c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M2.5 7h11v9h-11z'/><path d='M13.5 10h3.8l3 3v3h-6.8z'/><circle cx='6.5' cy='18' r='1.7'/><circle cx='16.8' cy='18' r='1.7'/></svg>")}
+      #drvStats .stat:nth-child(4)::before{background-color:var(--green-soft);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230f7a4a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='8.5'/><path d='M8.6 12.4l2.4 2.4 4.4-5.3'/></svg>")}
+      #drvStats .stat:nth-child(5)::before{background-color:var(--red-soft);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c0392b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='8.5'/><path d='M9.2 9.2l5.6 5.6M14.8 9.2l-5.6 5.6'/></svg>")}
+      @media (prefers-color-scheme: dark){
+        #drvStats .stat:nth-child(1)::before{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237db1ec' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='5' y='4' width='14' height='17' rx='2'/><path d='M9 9h6M9 13h6M9 17h3'/></svg>")}
+        #drvStats .stat:nth-child(2)::before{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237db1ec' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M18 9a6 6 0 1 0-12 0c0 6-2.5 7.5-2.5 7.5h17S18 15 18 9'/><path d='M10 20a2.2 2.2 0 0 0 4 0'/></svg>")}
+        #drvStats .stat:nth-child(3)::before{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e8b34b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M2.5 7h11v9h-11z'/><path d='M13.5 10h3.8l3 3v3h-6.8z'/><circle cx='6.5' cy='18' r='1.7'/><circle cx='16.8' cy='18' r='1.7'/></svg>")}
+        #drvStats .stat:nth-child(4)::before{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232fbf7f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='8.5'/><path d='M8.6 12.4l2.4 2.4 4.4-5.3'/></svg>")}
+        #drvStats .stat:nth-child(5)::before{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f08374' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='8.5'/><path d='M9.2 9.2l5.6 5.6M14.8 9.2l-5.6 5.6'/></svg>")}
+      }
+
+      /* بطاقة استلام الطلبات: فصل بصري أوضح لزر التأكيد الكبير */
+      #receiptCard .btn-big{margin-top:14px}
+
+      /* قسم GPS: صندوق موقع أنظف وإطار واضح لخانة الموافقة */
+      #viewDriver .gps-box{border:1px solid var(--line);background:var(--navy-soft)}
+      #driverLogin .gps-box{background:var(--green-soft)}
+      #viewDriver .checkline{border:1.5px solid var(--line)}
+      #viewDriver .checkline input{accent-color:var(--green)}
+
+      /* بطاقات الطلبات: رقم طلب أبرز، وروابط الموقع والهاتف أهداف لمس واضحة */
+      #viewDriver .order-card{border-radius:22px;margin-top:18px;padding:20px;box-shadow:0 1px 2px rgba(10,37,64,.05),0 12px 30px rgba(10,37,64,.08)}
+      #viewDriver .order-head .ono{font-size:1.5rem}
+      #viewDriver .order-head .muted{font-size:.95rem}
+      #viewDriver .kv dd strong{font-size:1.08rem}
+      #drvOrders .kv dd a[href*="google.com/maps"]{display:inline-flex;align-items:center;min-height:44px;padding:.3rem .95rem;background:var(--blue-soft);color:var(--blue);border-radius:999px;font-weight:700;text-decoration:none}
+      #drvOrders .kv dd a[href^="tel:"]{font-weight:800;text-decoration:none;font-size:1.08rem}
+      #drvOrders .btn-row{gap:12px;margin-top:16px}
+
+      /* جوال ضيق: أيقونات إحصاء أصغر قليلاً وحشوة مريحة — بلا تمرير أفقي وبلا أشرطة لاصقة */
+      @media(max-width:480px){
+        #viewDriver .card{padding:18px}
+        #drvStats .stat::before{width:40px;height:40px;background-size:23px;border-radius:12px}
+        #driverApp>.card:first-child{padding:20px}
+        #driverLogin{padding:20px}
+      }
+
+      /* ===== طبقة ثالثة لواجهة المندوب فقط — الاقتراب من تخطيط الصورة المرجعية
+         (تطبيقات المناديب العالمية): مفتاح حالة يعكس بدء/إنهاء العمل الحالي،
+         بطاقات إحصاء ملوّنة، بلاطات تنقّل وشريط سفلي ينقلان بين الأقسام الحالية
+         فقط. لا وظيفة جديدة ولا أرقام مضافة: المفتاح هو نقطة الحالة الحالية
+         نفسها (#drvDot) بمظهر مفتاح، وحالتها تضبطها الشيفرة الحالية كما هي،
+         والبلاطات والشريط روابط تنقّل داخلية لأقسام موجودة أصلاً. كل القواعد
+         محصورة داخل #viewDriver فلا يتغيّر شكل لوحة المشرف إطلاقاً. ===== */
+
+      /* مفتاح الاتصال: نقطة الحالة الحالية نفسها بشكل مفتاح تشغيل/إيقاف.
+         الحالة (on/off) والنص يضبطهما الكود الحالي دون أي تغيير في المنطق،
+         والمفتاح مظهر فقط — لا يستقبل ضغطات ولا يغيّر أي حالة. */
+      #driverApp #drvDot{width:56px;height:32px;border-radius:999px;position:relative;vertical-align:middle;box-shadow:inset 0 0 0 1px rgba(255,255,255,.35);transition:background-color .25s ease}
+      #driverApp #drvDot::after{content:"";position:absolute;top:3px;inset-inline-start:3px;width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.35);transition:transform .25s ease}
+      #driverApp #drvDot.on{background:var(--green)}
+      #driverApp #drvDot.on::after{transform:translateX(-24px)}
+      #driverApp #drvDot.off{background:#7e97ad}
+      @media (prefers-reduced-motion: reduce){
+        #driverApp #drvDot,#driverApp #drvDot::after{transition:none}
+      }
+
+      /* قرص الحالة: أيقونة دراجة توصيل صغيرة تسبق المفتاح، كما في بطاقة حالة الصورة المرجعية */
+      #driverApp>.card:first-child .profile>div:not(.avatar)>div:last-child::before{content:"";width:30px;height:30px;flex:none;background-repeat:no-repeat;background-position:center;background-size:contain;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><circle cx='5.2' cy='17' r='2.6'/><circle cx='18.8' cy='17' r='2.6'/><path d='M5.2 17 9 9.5h5.2l4.6 7.5'/><path d='M9 9.5 7.6 6.8H5.4'/><path d='M13.2 5.2h3.4l1 4.3h-3.9z'/></svg>")}
+
+      /* زر تسجيل الخروج في الترويسة: أحمر واضح كما في الصورة المرجعية (نفس الزر والوظيفة) */
+      #driverApp #logoutBtn{background:#d64541;border-color:#d64541;color:#fff}
+      #driverApp #logoutBtn:active{background:#b9372f}
+
+      /* بطاقات الإحصاء: خلفيات ملوّنة خفيفة مطابقة لألوان أيقوناتها —
+         نفس الأعداد الخمسة الحالية من بيانات النظام، بمظهر أقرب للصورة المرجعية */
+      #drvStats{grid-template-columns:repeat(2,1fr)}
+      @media(min-width:760px){#drvStats{grid-template-columns:repeat(3,1fr)}}
+      @media(min-width:1080px){#drvStats{grid-template-columns:repeat(5,1fr)}}
+      #drvStats .stat:nth-child(1){background:var(--navy-soft)}
+      #drvStats .stat:nth-child(2){background:var(--blue-soft)}
+      #drvStats .stat:nth-child(2) .num{color:var(--blue)}
+      #drvStats .stat:nth-child(3){background:var(--amber-soft)}
+      #drvStats .stat:nth-child(4){background:var(--green-soft)}
+      #drvStats .stat:nth-child(5){background:var(--red-soft)}
+
+      /* بلاطات التنقّل السريع: بطاقات كبيرة بأيقونة ملوّنة، تنقل لأقسام حالية فقط */
+      #viewDriver .drv-tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
+      #viewDriver .drv-tiles .tile{display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:20px 12px 16px;min-height:118px;text-decoration:none;color:var(--ink);box-shadow:0 1px 2px rgba(10,37,64,.05),0 10px 26px rgba(10,37,64,.07)}
+      #viewDriver .drv-tiles .tile:active{transform:scale(.98)}
+      #viewDriver .drv-tiles .tile-ic{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center}
+      #viewDriver .drv-tiles .tile-ic svg{width:28px;height:28px}
+      #viewDriver .drv-tiles .tile-lbl{font-weight:800;font-size:1.08rem;font-family:"Cairo","IBM Plex Sans Arabic",sans-serif}
+      #viewDriver .drv-tiles .tile-sub{color:var(--ink-2);font-size:.88rem;font-weight:600}
+      #viewDriver .drv-tiles .tile-blue .tile-ic{background:var(--blue-soft);color:var(--blue)}
+      #viewDriver .drv-tiles .tile-navy .tile-ic{background:var(--navy-soft);color:var(--navy)}
+      @media (prefers-color-scheme: dark){#viewDriver .drv-tiles .tile-navy .tile-ic{color:var(--blue)}}
+      #viewDriver .drv-tiles .tile-amber .tile-ic{background:var(--amber-soft);color:var(--amber)}
+      #viewDriver .drv-tiles .tile-green .tile-ic{background:var(--green-soft);color:var(--green-dark)}
+
+      /* شريط التنقل السفلي: ثابت أسفل الشاشة داخل واجهة المندوب فقط،
+         وحشوة سفلية كبيرة للمحتوى حتى لا يغطي أزرار تنفيذ الطلبات أبداً */
+      #driverApp{padding-bottom:calc(104px + env(safe-area-inset-bottom))}
+      #viewDriver .drv-bottomnav{position:fixed;bottom:0;inset-inline:0;z-index:600;display:flex;background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -6px 22px rgba(10,37,64,.10);padding-bottom:env(safe-area-inset-bottom)}
+      #viewDriver .drv-bottomnav a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:62px;padding:7px 4px 9px;color:var(--ink-2);text-decoration:none;font-size:.84rem;font-weight:700}
+      #viewDriver .drv-bottomnav a svg{width:25px;height:25px}
+      #viewDriver .drv-bottomnav a:active{color:var(--green-dark)}
+
+      /* مسافة تمرير مريحة عند الوصول لأي قسم عبر البلاطات أو الشريط السفلي */
+      #drvProfile,#receiptCard,#drvStats,#gpsCard,#drvOrders{scroll-margin-top:12px}
+
+      @media(max-width:480px){
+        #viewDriver .drv-tiles .tile{min-height:110px;padding:16px 8px 14px}
+        #viewDriver .drv-tiles .tile-ic{width:46px;height:46px;border-radius:14px}
+        #viewDriver .drv-tiles .tile-ic svg{width:25px;height:25px}
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar-in">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/></svg>
+          </div>
+          <div>
+            <h1>ARJAA DELIVERY</h1>
+            <div class="ar-name">أرجاء اليمامة اللوجستية — توصيل الوجبات الصحية والطلبات داخل الرياض</div>
+          </div>
+          <span class="phase-badge">المرحلة الثانية: قاعدة بيانات حقيقية</span>
+        </div>
+        <nav class="view-switch" aria-label="التبديل بين الواجهتين">
+          <button id="tabDriver" class="active" type="button">تطبيق المندوب</button>
+          <button id="tabAdmin" type="button">لوحة تحكم المشرف</button>
+        </nav>
+      </div>
+    </header>
+
+    <div class="demo-strip hidden" id="connStrip">
+      <div class="wrap"><strong>تنبيه:</strong> <span id="connMsg">تعذر الاتصال بقاعدة البيانات — تحقق من اتصال الإنترنت ثم أعد المحاولة. لا تُعرض أي بيانات حتى ينجح الاتصال بقاعدة البيانات.</span></div>
+    </div>
+
+    <main class="wrap">
+
+      <!-- ================= DRIVER VIEW ================= -->
+      <section id="viewDriver">
+
+        <!-- Login -->
+        <div class="card" id="driverLogin">
+          <h2>تسجيل دخول المندوب</h2>
+          <p class="muted">ادخل برقم المندوب وكلمة المرور التي زوّدك بها المشرف. الدخول حقيقي عبر قاعدة بيانات النظام، ولا يرى أي مندوب إلا طلباته المسندة إليه فقط.</p>
+          <form id="loginForm" style="margin-top:14px">
+            <div class="form-grid">
+              <div>
+                <label for="loginId">رقم المندوب</label>
+                <input id="loginId" inputmode="numeric" autocomplete="username" placeholder="مثال: 1001" required />
+              </div>
+              <div>
+                <label for="loginPass">كلمة المرور</label>
+                <input id="loginPass" type="password" autocomplete="current-password" placeholder="••••" required />
+              </div>
+            </div>
+            <p id="loginError" class="hidden" style="color:var(--red);font-weight:700"></p>
+            <button class="btn-green btn-big" type="submit" style="margin-top:14px">دخول</button>
+            <button class="btn-ghost btn-big" type="button" id="connTestBtnDrv" style="margin-top:10px">فحص الاتصال بقاعدة البيانات</button>
+            <p id="connTestResultDrv" class="hidden" style="font-weight:700"></p>
+          </form>
+          <p class="small muted" style="margin-top:10px">حسابك مرتبط بقاعدة البيانات: طلباتك وحالة عملك واستلاماتك تُحفظ فوراً وتظهر للمشرف، حتى لو فتحت التطبيق من جهاز آخر.</p>
+        </div>
+
+        <!-- Driver app -->
+        <div id="driverApp" class="hidden">
+          <div class="card" id="drvProfile">
+            <div class="profile">
+              <div class="avatar" id="drvAvatar">أ</div>
+              <div style="flex:1;min-width:200px">
+                <h2 id="drvName">—</h2>
+                <div class="muted" id="drvMeta">—</div>
+                <div style="margin-top:4px"><span class="status-dot off" id="drvDot"></span><strong id="drvStatusText">غير متصل — لم يبدأ العمل</strong></div>
+              </div>
+              <button class="btn-ghost" id="logoutBtn" type="button">تسجيل الخروج</button>
+            </div>
+            <div class="btn-row">
+              <button class="btn-red hidden" id="endWorkBtn" type="button" style="min-height:58px;font-size:1.1rem">إنهاء العمل</button>
+            </div>
+            <p class="small muted" id="shiftInfo">يبدأ عملك من قسم «استلام طلبات اليوم» بالأسفل: عدّ الطلبات التي استلمتها فعلياً من المشرف وأدخل عددها، وعند مطابقة العدد للطلبات المسندة إليك يبدأ العمل وتظهر مهام التوصيل. مشاركة الموقع اختيارية وبموافقتك، وتتوقف تلقائياً عند إنهاء العمل — لا يوجد أي تتبع خارج ساعات العمل.</p>
+          </div>
+
+          <!-- استلام طلبات اليوم -->
+          <div class="card" id="receiptCard">
+            <h2>استلام طلبات اليوم</h2>
+            <div id="receiptBody"></div>
+          </div>
+
+          <div class="grid stats-grid" style="margin-top:16px" id="drvStats"></div>
+
+          <!-- تنقّل سريع: روابط تنقل بين أقسام المندوب الحالية فقط، دون أي وظيفة جديدة -->
+          <nav class="drv-tiles" aria-label="تنقل سريع بين أقسام المندوب">
+            <a class="tile tile-blue" href="#drvOrders">
+              <span class="tile-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 9h6M9 13h6M9 17h3"/></svg></span>
+              <span class="tile-lbl">طلباتي</span>
+              <span class="tile-sub">عرض الطلبات الحالية</span>
+            </a>
+            <a class="tile tile-navy" href="#gpsCard">
+              <span class="tile-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3.5 6v14L9 18l6 2 5.5-2V4L15 6 9 4z"/><path d="M9 4v14M15 6v14"/></svg></span>
+              <span class="tile-lbl">موقعي والملاحة</span>
+              <span class="tile-sub">مشاركة موقعي GPS</span>
+            </a>
+            <a class="tile tile-amber" href="#receiptCard">
+              <span class="tile-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8.2v9.3a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5V8.2"/><path d="M3.3 8.2 5.6 4h12.8l2.3 4.2z"/><path d="M9.5 12.5l1.8 1.8 3.4-3.8"/></svg></span>
+              <span class="tile-lbl">استلام الطلبات</span>
+              <span class="tile-sub">تأكيد استلام طلبات اليوم</span>
+            </a>
+            <a class="tile tile-green" href="#drvStats">
+              <span class="tile-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V4"/><path d="M4 20h16"/><path d="M8.5 16v-5M12.5 16V8M16.5 16v-3"/></svg></span>
+              <span class="tile-lbl">إحصائيات اليوم</span>
+              <span class="tile-sub">ملخص طلباتي اليوم</span>
+            </a>
+          </nav>
+
+          <!-- GPS -->
+          <div class="card" id="gpsCard">
+            <h2>موقعي GPS</h2>
+            <p class="muted">مشاركة الموقع تتم بموافقتك الصريحة، وتعمل فقط أثناء العمل، ويُحدَّث الموقع كل 15–30 ثانية عندما يسمح الجهاز بذلك. حالياً يُعرض موقع جهازك الحقيقي هنا على جهازك؛ إرساله إلى خادم Traccar ليظهر للمشرف مباشرة يأتي في مرحلة ربط التتبع.</p>
+            <label class="checkline">
+              <input type="checkbox" id="gpsConsent" />
+              <span>أوافق على مشاركة موقعي مع المشرف أثناء ساعات العمل فقط، وأعلم أن بإمكاني إيقاف المشاركة في أي وقت.</span>
+            </label>
+            <div class="btn-row">
+              <button class="btn-navy" id="gpsStartBtn" type="button">تفعيل مشاركة الموقع</button>
+              <button class="btn-ghost hidden" id="gpsStopBtn" type="button">إيقاف المشاركة</button>
+            </div>
+            <div class="gps-box" id="gpsBox">
+              <div id="gpsStatus">المشاركة متوقفة حالياً.</div>
+              <div id="gpsCoords" class="hidden" style="margin-top:6px">
+                <div>خط العرض: <strong id="gpsLat">—</strong> &nbsp;|&nbsp; خط الطول: <strong id="gpsLng">—</strong></div>
+                <div>دقة الموقع: <span id="gpsAcc">—</span> متر تقريباً</div>
+                <div>آخر تحديث: <strong id="gpsTime">—</strong></div>
+                <div>بطارية الهاتف: <span id="gpsBatt">غير متاحة في هذا المتصفح</span></div>
+                <div style="margin-top:6px"><a id="gpsMapLink" href="#" target="_blank" rel="noopener">فتح موقعي الحالي في خرائط جوجل</a></div>
+              </div>
+              <div class="small muted" style="margin-top:8px">سجل المسار في هذا الجهاز (جلسة العمل الحالية): <span id="gpsTrailCount">0</span> نقطة محفوظة. يُحفظ سجل المسار الكامل عند ربط خادم التتبع في مرحلته.</div>
+            </div>
+          </div>
+
+          <!-- Orders: كل طلبات اليوم متتالية بتفاصيلها، دون تصفية -->
+          <div id="drvOrders"></div>
+
+          <!-- شريط تنقل سفلي: ينقل بين أقسام المندوب الحالية فقط -->
+          <nav class="drv-bottomnav" aria-label="التنقل السفلي للمندوب">
+            <a href="#driverApp">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.8 12 3.5l8.5 7.3"/><path d="M5.5 9.5V20h13V9.5"/><path d="M9.8 20v-5.5h4.4V20"/></svg>
+              <span>الرئيسية</span>
+            </a>
+            <a href="#drvOrders">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 9h6M9 13h6M9 17h3"/></svg>
+              <span>طلباتي</span>
+            </a>
+            <a href="#gpsCard">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.8-5.6-6.8-10.4A6.8 6.8 0 0 1 12 3.5a6.8 6.8 0 0 1 6.8 6.8C18.8 15.4 12 21 12 21z"/><circle cx="12" cy="10.2" r="2.4"/></svg>
+              <span>موقعي</span>
+            </a>
+            <a href="#drvProfile">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8.2" r="3.8"/><path d="M4.8 20a7.4 7.4 0 0 1 14.4 0"/></svg>
+              <span>حسابي</span>
+            </a>
+          </nav>
+        </div>
+      </section>
+
+      <!-- ================= ADMIN VIEW ================= -->
+      <section id="viewAdmin" class="hidden">
+        <div class="card" id="adminLogin">
+          <h2>تسجيل دخول المشرف</h2>
+          <p class="muted">لوحة المشرف محمية بدخول حقيقي عبر قاعدة البيانات. ادخل بالبريد الإلكتروني وكلمة المرور.</p>
+          <form id="adminLoginForm" style="margin-top:14px">
+            <div class="form-grid">
+              <div>
+                <label for="admEmail">البريد الإلكتروني</label>
+                <input id="admEmail" type="email" dir="ltr" style="text-align:left" autocomplete="username" value="supervisor@arjaa.local" required />
+              </div>
+              <div>
+                <label for="admPass">كلمة المرور</label>
+                <input id="admPass" type="password" autocomplete="current-password" placeholder="••••••••" required />
+              </div>
+            </div>
+            <p id="admLoginError" class="hidden" style="color:var(--red);font-weight:700"></p>
+            <button class="btn-green btn-big" type="submit" style="margin-top:14px">دخول المشرف</button>
+            <button class="btn-ghost btn-big" type="button" id="connTestBtnAdm" style="margin-top:10px">فحص الاتصال بقاعدة البيانات</button>
+            <p id="connTestResultAdm" class="hidden" style="font-weight:700"></p>
+          </form>
+        </div>
+        <div id="adminApp" class="hidden">
+        <div class="card" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:12px 18px">
+          <div style="flex:1;min-width:200px"><strong>المشرف</strong> <span class="muted small" id="admWho"></span> <span class="chip chip-done">متصل بقاعدة البيانات</span></div>
+          <button class="btn-ghost" id="admLogoutBtn" type="button" style="flex:none;min-width:150px">تسجيل خروج المشرف</button>
+        </div>
+        <nav class="admin-nav" id="adminNav" aria-label="أقسام لوحة المشرف">
+          <button type="button" data-p="home" class="active">الرئيسية</button>
+          <button type="button" data-p="couriers">المناديب</button>
+          <button type="button" data-p="livemap">الخريطة المباشرة</button>
+          <button type="button" data-p="orders">الطلبات</button>
+          <button type="button" data-p="dispatch">إدارة وتوزيع الطلبات</button>
+          <button type="button" data-p="companies">الشركات</button>
+          <button type="button" data-p="reports">التقارير</button>
+          <button type="button" data-p="notifs">التنبيهات <span id="notifCount"></span></button>
+          <button type="button" data-p="guide">دليل التشغيل والمراحل</button>
+        </nav>
+
+        <!-- Admin home -->
+        <div class="admin-page" id="page-home">
+          <div class="grid stats-grid" style="margin-top:16px" id="admStats"></div>
+          <div class="card">
+            <h2>استلام طلبات اليوم — متابعة المناديب</h2>
+            <p class="muted small">يظهر هنا لكل مندوب: عدد الطلبات المسندة إليه، والعدد الذي أدخله عند الاستلام، ونتيجة المطابقة، وحالة الاستلام، ووقت بدء العمل. أي اختلاف في العدد يُسجَّل فوراً ويُجهَّز إشعار واتساب عنه إلى رقم المشرف المسجل في إعدادات النظام.</p>
+            <div id="receiptAdminList"></div>
+          </div>
+          <div class="card">
+            <h2>خريطة الرياض — مواقع المناديب</h2>
+            <p class="muted small">خريطة حقيقية من OpenStreetMap عبر مكتبة Leaflet المجانية. لا تُعرض علامة لأي مندوب إلا لموقع حقيقي معروف: موقع جهاز المندوب المسجل دخوله على هذا الجهاز عند تفعيله مشاركة GPS بنفسه — التتبع المباشر لكل المناديب بين الأجهزة يُفعَّل في المرحلة الرابعة بربط Traccar.</p>
+            <div id="mapAdmin"></div>
+          </div>
+          <div class="card">
+            <h2>أحدث التنبيهات</h2>
+            <div id="homeNotifs"></div>
+          </div>
+        </div>
+
+        <!-- Couriers -->
+        <div class="admin-page hidden" id="page-couriers">
+          <div class="card">
+            <h2>إضافة مندوب جديد</h2>
+            <form id="addCourierForm">
+              <div class="form-grid">
+                <div><label for="ncName">اسم المندوب</label><input id="ncName" required placeholder="مثال: محمد العنزي" /></div>
+                <div><label for="ncPhone">رقم الهاتف</label><input id="ncPhone" required inputmode="tel" placeholder="05xxxxxxxx" /></div>
+                <div><label for="ncVehicle">المركبة</label>
+                  <select id="ncVehicle"><option>سيارة</option><option>دراجة نارية</option><option>دراجة هوائية</option></select></div>
+                <div><label for="ncPlate">رقم اللوحة / وصف المركبة</label><input id="ncPlate" placeholder="مثال: أ ب ج 1234" /></div>
+                <div><label for="ncCapacity">القدرة التشغيلية (أقصى طلبات نشطة معاً)</label><input id="ncCapacity" type="number" min="1" max="30" value="5" /></div>
+              </div>
+              <button class="btn-green" type="submit" style="margin-top:12px;min-width:200px">إضافة المندوب</button>
+              <p class="small muted">يُنشأ للمندوب رقم وظيفي داخلي تلقائياً وتُحفظ بياناته في قاعدة البيانات فوراً. حساب الدخول الخاص به (برقمه وكلمة مرور) يُنشأ من إدارة حسابات النظام في Supabase قبل أول دخول له.</p>
+            </form>
+          </div>
+          <div id="courierList"></div>
+        </div>
+
+        <!-- Live map -->
+        <div class="admin-page hidden" id="page-livemap">
+          <div class="card">
+            <h2>الخريطة المباشرة — الرياض</h2>
+            <p class="muted">تظهر هنا قائمة المناديب من قاعدة البيانات وحالة اتصال كل منهم. موقع أي مندوب لا يظهر على الخريطة إلا إذا فعّل مشاركة GPS بنفسه من جهازه (يظهر موقع جهاز المندوب المسجل دخوله على هذا الجهاز بعلامة «موقع الجهاز الفعلي») — التتبع المباشر بين الأجهزة يُفعَّل في المرحلة الرابعة بربط Traccar. اضغط على اسم أي مندوب في القائمة لعرض تفاصيله وسجل حركته.</p>
+            <div id="mapLive"></div>
+          </div>
+          <div class="grid" style="grid-template-columns:1fr;gap:0" id="liveLayout">
+            <div id="liveCourierList"></div>
+            <div class="card hidden" id="courierDetail"></div>
+          </div>
+        </div>
+
+        <!-- Orders admin -->
+        <div class="admin-page hidden" id="page-orders">
+          <div class="card">
+            <h2>إنشاء طلب جديد وإسناده</h2>
+            <form id="addOrderForm">
+              <div class="form-grid">
+                <div><label for="noCustomer">اسم العميل</label><input id="noCustomer" required placeholder="اسم العميل" /></div>
+                <div><label for="noPhone">رقم هاتف العميل</label><input id="noPhone" required inputmode="tel" placeholder="05xxxxxxxx" /></div>
+                <div><label for="noCompany">الشركة (مصدر الطلب)</label><select id="noCompany"></select></div>
+                <div><label for="noCourier">إسناد إلى مندوب</label><select id="noCourier"></select></div>
+                <div><label for="noLocUrl">رابط موقع التسليم — موقع العميل</label><input id="noLocUrl" required dir="ltr" style="text-align:left" inputmode="url" placeholder="الصق رابط موقع العميل من خرائط Google أو واتساب" />
+                  <p class="small muted" style="margin:4px 0 0">بدل كتابة العنوان يدوياً: انسخ رابط الموقع الذي أرسله العميل (من واتساب أو خرائط Google) والصقه هنا — تُستخرج إحداثياته تلقائياً إن وُجدت فيه، ويفتحه زر «الذهاب إلى العميل» عند المندوب. يمكنك أيضاً لصق الإحداثيات نفسها مثل 24.81550, 46.68220</p>
+                  <p class="small" id="delivLocMsg" style="font-weight:700;margin:4px 0 0"></p></div>
+                <div><label for="noPickupUrl">رابط موقع الاستلام — موقع الشركة / المطعم</label><input id="noPickupUrl" dir="ltr" style="text-align:left" inputmode="url" placeholder="الصق رابط موقع الاستلام من خرائط Google" />
+                  <p class="small muted" style="margin:4px 0 0">الصق رابط موقع الاستلام هنا أو ثبّته من الخريطة بالأسفل — الطريقتان تثبّتان الموقع نفسه. إن تركته فارغاً يُستخدم عنوان الشركة المعروف كنص فقط.</p>
+                  <p class="small" id="pickupLinkMsg" style="font-weight:700;margin:4px 0 0"></p></div>
+                <div><label for="noMeals">عدد الوجبات</label><input id="noMeals" type="number" min="1" value="1" required /></div>
+                <div><label for="noPriority">الأولوية</label>
+                  <select id="noPriority"><option value="normal">عادية</option><option value="high">عالية</option></select></div>
+                <div><label for="noNotes">ملاحظات العميل</label><input id="noNotes" placeholder="اختياري" /></div>
+              </div>
+              <div style="margin-top:14px">
+                <label>موقع الاستلام على الخريطة</label>
+                <p class="small muted" style="margin:0">اضغط على الخريطة عند مكان استلام الطلب من الشركة أو المطعم لتثبيت موقعه الجغرافي، أو الصق إحداثياته في الخانتين بالأسفل، أو الصق رابط الموقع في خانة «رابط موقع الاستلام» بالأعلى فتُستخرج إحداثياته هنا تلقائياً. يظهر هذا الموقع للمندوب في بطاقة الطلب مع رابط فتحه في خرائط Google، فيتوجّه إلى الاستلام أولاً ثم إلى عميل التسليم.</p>
+                <div id="pickupMap" class="pick-map" role="application" aria-label="خريطة اختيار موقع استلام الطلب"></div>
+                <div class="form-grid" style="margin-top:10px">
+                  <div><label for="noPickupLat">خط عرض موقع الاستلام</label><input id="noPickupLat" inputmode="decimal" placeholder="مثال: 24.71360" /></div>
+                  <div><label for="noPickupLng">خط طول موقع الاستلام</label><input id="noPickupLng" inputmode="decimal" placeholder="مثال: 46.67530" /></div>
+                </div>
+                <div class="btn-row">
+                  <button class="btn-navy" id="pickupMyLocBtn" type="button">استخدام موقعي الحالي كموقع استلام</button>
+                  <button class="btn-ghost" id="pickupClearBtn" type="button">مسح موقع الاستلام</button>
+                </div>
+                <p class="small" id="pickupMapMsg" style="font-weight:700;margin-top:8px"></p>
+              </div>
+              <button class="btn-green" type="submit" style="margin-top:12px;min-width:220px">إنشاء الطلب وإسناده</button>
+              <p class="small muted">يُحفظ الطلب في قاعدة البيانات ويظهر في تطبيق المندوب المُسند إليه — حتى على جهازه هو — برابط موقع الاستلام ورابط موقع العميل اللذين يفتحهما في خرائط Google، ويُسجَّل في سجل العمليات وقائمة التنبيهات.</p>
+            </form>
+          </div>
+          <div class="card">
+            <h2>كل الطلبات</h2>
+            <label for="orderSearch">بحث برقم الطلب أو اسم العميل</label>
+            <input id="orderSearch" placeholder="مثال: 1024 أو سارة" />
+            <div class="table-scroll"><table>
+              <thead><tr><th>رقم الطلب</th><th>العميل</th><th>الشركة</th><th>المندوب</th><th>الحالة</th><th>الأولوية</th><th>وقت التسليم</th><th>الرسوم</th><th>رمز التسليم OTP</th><th>نقل إلى مندوب آخر</th></tr></thead>
+              <tbody id="admOrdersBody"></tbody>
+            </table></div>
+          </div>
+        </div>
+
+        <!-- Dispatch management -->
+        <div class="admin-page hidden" id="page-dispatch">
+          <div class="card">
+            <h2>إدارة وتوزيع الطلبات</h2>
+            <p class="muted small">إنشاء الطلبات الجديد يتم من قسم «الطلبات» فقط. من هنا يسند المشرف الطلبات وينقلها بين المناديب أو يلغي إسنادها، ويتابع سجل كل عملية بوقتها. كل إسناد أو تحديث حالة يُحفظ في قاعدة البيانات ويظهر عند الطرف الآخر — حتى على جهاز مختلف — خلال ثوانٍ عبر التحديث الدوري التلقائي.</p>
+            <div id="dispatchAlert"></div>
+          </div>
+
+          <div class="card">
+            <h2>المناديب — الحالة والقدرة التشغيلية</h2>
+            <p class="muted small">القدرة التشغيلية هي أقصى عدد طلبات نشطة عند المندوب في الوقت نفسه (تُضبط من قسم «المناديب» عند تعديل بياناته). عند تجاوزها يظهر تنبيه واضح هنا وعند الإسناد.</p>
+            <div id="dispatchCouriers"></div>
+          </div>
+
+          <div class="card" id="bulkCard">
+            <h2>التوزيع الجماعي</h2>
+            <p class="muted">حدّد الطلبات من الجدول بالأسفل بعلامات التحديد، ثم اختر مندوباً واحداً لإسنادها إليه كلها، أو وزّعها تلقائياً على المناديب المتصلين مع مراعاة قدرة كل مندوب.</p>
+            <p>الطلبات المحددة حالياً: <strong id="selCount">0</strong></p>
+            <div class="form-grid">
+              <div><label for="bulkCourier">إسناد الطلبات المحددة إلى مندوب</label><select id="bulkCourier"></select></div>
+            </div>
+            <div class="btn-row">
+              <button class="btn-green" id="bulkAssignBtn" type="button">إسناد الطلبات المحددة</button>
+              <button class="btn-navy" id="autoDistBtn" type="button">توزيع تلقائي على المتصلين</button>
+              <button class="btn-ghost" id="clearSelBtn" type="button">إلغاء التحديد</button>
+            </div>
+            <p class="small" id="bulkMsg" style="font-weight:700"></p>
+          </div>
+
+          <div class="card">
+            <h2>جدول توزيع الطلبات</h2>
+            <table class="dtable">
+              <thead><tr>
+                <th><input type="checkbox" class="rowcheck" id="dispatchSelectAll" aria-label="تحديد كل الطلبات غير المكتملة" /></th>
+                <th>رقم الطلب</th><th>العميل</th><th>الحي</th><th>المندوب</th><th>حالة الطلب</th><th>وقت التسليم</th><th>الإجراءات</th>
+              </tr></thead>
+              <tbody id="dispatchBody"></tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <h2>سجل العمليات</h2>
+            <p class="muted small">كل عملية تُسجل هنا بوقتها: من أنشأ الطلب، ومن أسنده وإلى أي مندوب، ومتى تغيّر المندوب، وتغيّرات الحالة، ووقت التسليم.</p>
+            <div id="opLogList"></div>
+          </div>
+        </div>
+
+        <!-- Companies -->
+        <div class="admin-page hidden" id="page-companies">
+          <div id="companyList"></div>
+          <div class="card">
+            <h2>إضافة شركة متعاقدة</h2>
+            <form id="addCompanyForm">
+              <div class="form-grid">
+                <div><label for="ncoName">اسم الشركة</label><input id="ncoName" required placeholder="مثال: مطبخ صحي" /></div>
+                <div><label for="ncoContact">مسؤول التواصل</label><input id="ncoContact" required placeholder="اسم المسؤول" /></div>
+                <div><label for="ncoPhone">رقم الهاتف</label><input id="ncoPhone" required inputmode="tel" placeholder="05xxxxxxxx" /></div>
+                <div><label for="ncoFee">سعر التوصيل المتفق عليه (ريال)</label><input id="ncoFee" type="number" min="0" step="0.5" required /></div>
+              </div>
+              <button class="btn-green" type="submit" style="margin-top:12px;min-width:200px">إضافة الشركة</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Reports -->
+        <div class="admin-page hidden" id="page-reports">
+          <div class="card">
+            <h2>التقارير</h2>
+            <div class="filter-tabs" id="reportTabs">
+              <button type="button" data-r="day" class="active">تقرير يومي</button>
+              <button type="button" data-r="week">تقرير أسبوعي</button>
+              <button type="button" data-r="month">تقرير شهري</button>
+            </div>
+            <div id="reportSummary" style="margin-top:14px"></div>
+            <h3 style="margin-top:18px">أداء المناديب</h3>
+            <div class="table-scroll"><table>
+              <thead><tr><th>المندوب</th><th>طلبات منجزة</th><th>طلبات متأخرة</th><th>المسافة المقطوعة (كم)</th><th>التقييم</th><th>الأداء</th></tr></thead>
+              <tbody id="reportBody"></tbody>
+            </table></div>
+            <p class="small muted">الأرقام هنا محسوبة من طلبات قاعدة البيانات الفعلية ضمن الفترة المختارة (اليوم / آخر 7 أيام / آخر 30 يوماً). المسافات تُحسب لاحقاً من سجل مسارات GPS الفعلي عند ربط التتبع.</p>
+            <div class="btn-row">
+              <button class="btn-navy" id="exportCsvBtn" type="button">تصدير Excel (ملف CSV يعمل الآن)</button>
+              <button class="btn-ghost" id="exportPdfBtn" type="button">تصدير PDF</button>
+            </div>
+            <p class="small muted" id="pdfNote"></p>
+          </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="admin-page hidden" id="page-notifs">
+          <div class="card">
+            <h2>التنبيهات</h2>
+            <p class="muted small">التنبيهات هنا هي أحدث عمليات النظام المسجلة في قاعدة البيانات: إنشاء الطلبات وإسنادها، تأكيدات استلام الطلبات والاختلافات، وتغيّرات الحالة والتسليم — وتتحدث تلقائياً كل بضع ثوانٍ.</p>
+            <div id="notifList"></div>
+          </div>
+        </div>
+
+        <!-- Guide -->
+        <div class="admin-page hidden" id="page-guide">
+          <div class="card">
+            <h2>كيف تُشغّل هذه النسخة على هاتفك الآن</h2>
+            <div class="guide-step"><span class="guide-num">1</span><div>افتح هذه الصفحة من متصفح هاتفك (Xiaomi أو Samsung) — تعمل كما هي على الجوال والكمبيوتر.</div></div>
+            <div class="guide-step"><span class="guide-num">2</span><div>من قائمة المتصفح اختر «إضافة إلى الشاشة الرئيسية» فتظهر أيقونة ARJAA DELIVERY وتفتح بملء الشاشة مثل التطبيق.</div></div>
+            <div class="guide-step"><span class="guide-num">3</span><div>سجّل الدخول كمندوب برقمك وكلمة المرور التي زوّدك بها المشرف (حساب المندوب 1001 مفعّل في قاعدة البيانات)، ثم من قسم «استلام طلبات اليوم» أدخل عدد الطلبات التي استلمتها فعلياً — عند المطابقة يبدأ العمل وتظهر المهام. فعّل مشاركة الموقع بموافقتك، ونفّذ طلباً كاملاً بالترتيب: «الذهاب إلى العميل» (يفتح موقع العميل في خرائط Google)، ثم «وصلت إلى العميل»، ثم التسليم برمز OTP.</div></div>
+            <div class="guide-step"><span class="guide-num">4</span><div>سجّل دخول المشرف من الأعلى (بالبريد وكلمة المرور) وسترى أثر كل إجراء: الإحصائيات، حالة الطلبات، والتنبيهات — كل إجراء يُحفظ في قاعدة البيانات ويظهر في الواجهة الأخرى حتى على جهاز مختلف.</div></div>
+          </div>
+          <div class="card">
+            <h2>خطة التنفيذ على مراحل — أين نقف الآن؟</h2>
+            <div class="phase-row"><div><strong>المرحلة الأولى — التصميم الكامل للواجهتين</strong><div class="small muted">تطبيق المندوب + لوحة المشرف + الشركات + التقارير + التنبيهات + خريطة Leaflet.</div></div><span class="st chip chip-done">اكتملت</span></div>
+            <div class="phase-row"><div><strong>المرحلة الثانية — قاعدة البيانات وتسجيل الدخول والصلاحيات</strong><div class="small muted">Supabase (الخطة المجانية): المناديب والطلبات والشركات وسجل العمليات والاستلامات محفوظة في قاعدة البيانات، ودخول آمن منفصل للمشرف (بالبريد وكلمة المرور) وللمندوب (برقمه وكلمة المرور)، والمندوب لا يرى إلا طلباته.</div></div><span class="st chip chip-done">تم — أنت هنا الآن</span></div>
+            <div class="phase-row"><div><strong>المرحلة الثالثة — نظام الطلبات والإسناد بين الأجهزة</strong><div class="small muted">قسم «إدارة وتوزيع الطلبات»: إسناد ونقل وإلغاء إسناد، توزيع جماعي مع تنبيه القدرة، وسجل عمليات — يعمل الآن عبر قاعدة البيانات بين الأجهزة المختلفة، وإنشاء الطلبات موحّد من قسم «الطلبات».</div></div><span class="st chip chip-done">مكتمل عبر قاعدة البيانات</span></div>
+            <div class="phase-row"><div><strong>المرحلة الرابعة — ربط GPS والتتبع الفعلي</strong><div class="small muted">Traccar Client على هاتف المندوب + Traccar Server، وعرض الموقع المباشر وسجل المسارات للمشرف. لا تتبع خارج ساعات العمل.</div></div><span class="st chip">لاحقاً</span></div>
+            <div class="phase-row"><div><strong>المرحلة الخامسة — التقارير والإحصائيات الحقيقية</strong><div class="small muted">تقارير من البيانات الفعلية وسجل المسارات، مع تصدير Excel وPDF كامل.</div></div><span class="st chip">لاحقاً</span></div>
+            <div class="phase-row"><div><strong>المرحلة السادسة — الاختبار الميداني</strong><div class="small muted">اختبار على هاتف Android حقيقي ولوحة المشرف، وإصلاح الملاحظات قبل الإطلاق.</div></div><span class="st chip">لاحقاً</span></div>
+          </div>
+          <div class="card">
+            <h2>ما الذي يحتاج استضافة أو تكلفة؟ (بشفافية كاملة)</h2>
+            <ul class="log-list">
+              <li><strong>هذه النسخة (المرحلة الثانية):</strong> تعمل على قاعدة بيانات Supabase بالخطة المجانية — بلا اشتراكات ولا مفاتيح مدفوعة.</li>
+              <li><strong>قاعدة البيانات Supabase:</strong> خطة مجانية تكفي للبداية؛ قد تحتاج ترقية مدفوعة فقط عند نمو كبير في عدد الطلبات والمناديب.</li>
+              <li><strong>الخرائط Leaflet + OpenStreetMap:</strong> مجانية ومفتوحة المصدر.</li>
+              <li><strong>خادم Traccar للتتبع المباشر:</strong> البرنامج مجاني ومفتوح المصدر، لكنه يحتاج جهاز خادم يعمل دائماً (VPS) — هذه تكلفة استضافة شهرية تُعرض عليك بالأرقام قبل أي التزام، ولن تُفعَّل أي خدمة مدفوعة دون موافقتك أولاً.</li>
+              <li><strong>تطبيق Traccar Client على هواتف المناديب:</strong> مجاني من متجر التطبيقات.</li>
+              <li><strong>حماية البيانات:</strong> كل مندوب يرى طلباته فقط، وبيانات العملاء لا تظهر إلا للمندوب المُسند إليه الطلب وللمشرف.</li>
+            </ul>
+          </div>
+        </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>ARJAA DELIVERY — أرجاء اليمامة اللوجستية · الرياض · النسخة الثانية: بيانات حقيقية عبر قاعدة بيانات Supabase</footer>
+
+    <!-- Modal root -->
+    <div id="modalRoot"></div>
+    <div id="toastRoot"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+    "use strict";
+/* ============ Supabase — اتصال قاعدة البيانات الحقيقية (المرحلة الثانية) ============
+كل البيانات (المناديب، الشركات، الطلبات، سجل العمليات، الاستلامات، الإعدادات)
+تأتي من جداول Supabase عبر REST API، والدخول عبر Supabase Auth.
+الجلسة تُحفظ في ذاكرة الصفحة فقط أثناء فتحها. */
+var SB_URL = "https://efxnobjlytzgebebiexx.supabase.co";
+var SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVmeG5vYmpseXR6Z2ViZWJpZXh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUzNTY0NDksImV4cCI6MjExMDkzMjQ0OX0.brYFUSWEQgWmjDzDGrjwmNYuZb4RLEqyZXBReJxWwO4";
+var SUPERVISOR_EMAIL = "supervisor@arjaa.local";
+var sbSession = null; /* {access_token, refresh_token, user} */
+var sbRole = null; /* 'supervisor' | 'driver' */
+var sbDriverRow = null; /* صف المندوب المسجل دخوله من جدول drivers */
+
+function connFail(){ var s=$("connStrip"); if(s) s.classList.remove("hidden");}
+function connOk(){ var s=$("connStrip"); if(s) s.classList.add("hidden");}
+/* تفاصيل آخر خطأ اتصال حقيقي (اسم الخطأ ورسالته كما أبلغها المتصفح) — تظهر
+   داخل رسالة الخطأ حتى تُشخَّص المشكلة من صورة الشاشة نفسها بدل التخمين. */
+var sbLastErrDetail="";
+function sbErrDetail(err){ if(!err) return "خطأ غير معروف"; return (err.name||"Error")+": "+(err.message||""); }
+/* نقل احتياطي عبر XMLHttpRequest: بعض شبكات الجوال وإعدادات المتصفح على
+   هواتف أندرويد توقف طلبات fetch الحديثة بينما تمرّ طلبات XHR الكلاسيكية،
+   فنجرّب الطريقتين في كل محاولة قبل احتسابها فاشلة. */
+function sbXhr(url, init){
+return new Promise(function(resolve, reject){
+var xhr;
+try{ xhr=new XMLHttpRequest(); }catch(e){ reject(e); return; }
+try{ xhr.open(init.method||"GET", url, true); }catch(e){ reject(e); return; }
+var headers=init.headers||{};
+for(var k in headers){ try{ xhr.setRequestHeader(k, headers[k]); }catch(e){} }
+xhr.timeout=20000;
+xhr.onload=function(){
+var body=xhr.responseText||"";
+resolve({ ok:xhr.status>=200&&xhr.status<300, status:xhr.status,
+text:function(){ return Promise.resolve(body); },
+json:function(){ try{ return Promise.resolve(JSON.parse(body)); }catch(e){ return Promise.reject(e); } } });
+};
+xhr.onerror=function(){ reject(new TypeError("Failed to fetch (XHR)")); };
+xhr.ontimeout=function(){ var e=new Error("انتهت مهلة الاتصال (XHR)"); e.name="AbortError"; reject(e); };
+xhr.onabort=function(){ var e=new Error("أُلغي الاتصال (XHR)"); e.name="AbortError"; reject(e); };
+try{ xhr.send(init.body!=null?init.body:null); }catch(e){ reject(e); }
+});
+}
+/* جلب شبكي مرن لقاعدة البيانات: مهلة 20 ثانية لكل محاولة، وإعادة تلقائية عند
+   انقطاع الشبكة اللحظي — شبكات الجوال تنقطع لثوانٍ ثم تعود، فمحاولة واحدة لا تكفي.
+   أي رد HTTP (حتى ردود الخطأ) يعود كما هو دون إعادة؛ الإعادة عند فشل الاتصال نفسه فقط.
+   onRetry(n,total) تُستدعى قبل كل إعادة محاولة لتحديث نص زر الدخول. */
+function sbFetch(url, init, maxRetries, onRetry){
+var delays=[1200,3000,6000];
+var total=(maxRetries||0)+1;
+function attempt(n){
+var opts={}; for(var k in init) opts[k]=init[k];
+var ctrl=null, timer=null;
+if(window.AbortController){ try{ ctrl=new AbortController(); opts.signal=ctrl.signal; timer=setTimeout(function(){ try{ ctrl.abort(); }catch(e){} },20000); }catch(e){} }
+var viaFetch=(typeof fetch==="function")? fetch(url, opts).then(function(r){ if(timer) clearTimeout(timer); return r; }, function(err){ if(timer) clearTimeout(timer); throw err; }) : Promise.reject(new TypeError("fetch unavailable"));
+return viaFetch.catch(function(firstErr){
+return sbXhr(url, init).catch(function(){ throw firstErr; });
+}).catch(function(err){
+if(n<total-1){
+if(onRetry) onRetry(n+2, total);
+return new Promise(function(res){ setTimeout(res, delays[Math.min(n,delays.length-1)]); }).then(function(){ return attempt(n+1); });
+}
+sbLastErrDetail=sbErrDetail(err);
+throw err;
+});
+}
+return attempt(0);
+}
+function sbIsNetErr(err){ return (err instanceof TypeError) || !!(err && err.name==="AbortError"); }
+/* إحماء الاتصال عند فتح الصفحة: طلب خفيف يفتح قناة الاتصال بقاعدة البيانات مبكراً
+   حتى لا يتحمّل تسجيل الدخول كلفة أول اتصال بارد على شبكة جوال بطيئة. صامت تماماً. */
+function sbWarmup(){
+sbFetch(SB_URL+"/auth/v1/health",{method:"GET",headers:{"apikey":SB_KEY}},2).then(function(r){ if(r && r.ok) connOk(); else connFail(); }).catch(function(){ connFail(); });
+}
+function sbHeaders(extra){
+var h={"apikey":SB_KEY,"Content-Type":"application/json"};
+h["Authorization"]="Bearer "+(sbSession?sbSession.access_token:SB_KEY);
+if(extra) for(var k in extra) h[k]=extra[k];
+return h;
+}
+function sbRefresh(){
+if(!sbSession ||!sbSession.refresh_token) return Promise.resolve(false);
+return sbFetch(SB_URL+"/auth/v1/token?grant_type=refresh_token",{method:"POST",headers:{"apikey":SB_KEY,"Content-Type":"application/json"},body:JSON.stringify({refresh_token:sbSession.refresh_token})},1)
+.then(function(r){ return r.json();})
+.then(function(d){ if(d && d.access_token){ sbSession=d; return true;} return false;})
+.catch(function(){ return false;});
+}
+function sbReq(path, opts){
+opts=opts||{};
+var init={method:opts.method||"GET", headers:sbHeaders(opts.headers)};
+if(opts.body!==undefined) init.body=JSON.stringify(opts.body);
+return sbFetch(SB_URL+path, init, 1).then(function(res){
+if(res.status===401 && sbSession &&!opts._retry){
+return sbRefresh().then(function(ok){
+if(ok){ opts._retry=true; return sbReq(path,opts);}
+throw new Error("انتهت جلسة الدخول — سجّل الدخول من جديد");
+});
+}
+return res.text().then(function(txt){
+var data=null; try{ data=txt?JSON.parse(txt):null;}catch(e){}
+if(!res.ok){ var msg=(data&&(data.message||data.error_description||data.error))||("خطأ في قاعدة البيانات ("+res.status+")"); throw new Error(msg);}
+connOk(); return data;
+});
+}).catch(function(err){
+if(sbIsNetErr(err)){ connFail(); throw new Error("تعذر الاتصال بقاعدة البيانات — تحقق من اتصال الإنترنت (تفاصيل: "+(sbLastErrDetail||sbErrDetail(err))+")");}
+throw err;
+});
+}
+function sbGet(table, query){ return sbReq("/rest/v1/"+table+"?"+query);}
+function sbInsert(table, body){ return sbReq("/rest/v1/"+table,{method:"POST",headers:{"Prefer":"return=representation"},body:body});}
+function sbUpdate(table, query, body){ return sbReq("/rest/v1/"+table+"?"+query,{method:"PATCH",headers:{"Prefer":"return=representation"},body:body});}
+function sbSignIn(email, password, onRetry){
+return sbFetch(SB_URL+"/auth/v1/token?grant_type=password",{method:"POST",headers:{"apikey":SB_KEY,"Content-Type":"application/json"},body:JSON.stringify({email:email,password:password})},3,onRetry)
+.then(function(r){
+return r.text().then(function(t){
+var d=null; try{ d=JSON.parse(t);}catch(e){}
+if(!r.ok){
+var m=(d&&(d.error_description||d.msg||d.message))||"";
+if(/invalid login credentials/i.test(m)) m="بيانات الدخول غير صحيحة — تحقق من الرقم أو البريد وكلمة المرور";
+throw new Error(m||"تعذر تسجيل الدخول");
+}
+sbSession=d; connOk(); return d;
+});
+}).catch(function(err){
+if(sbIsNetErr(err)){ connFail(); throw new Error("تعذر الاتصال بقاعدة البيانات رغم إعادة المحاولة عدة مرات. بدّل بين الواي فاي وبيانات الجوال، أو أغلق الصفحة وافتحها من جديد، ثم حاول مرة أخرى (تفاصيل: "+(sbLastErrDetail||sbErrDetail(err))+")");}
+throw err;
+});
+}
+function sbSignOut(){
+if(!sbSession) return Promise.resolve();
+var t=sbSession.access_token; sbSession=null; sbRole=null; sbDriverRow=null;
+return sbFetch(SB_URL+"/auth/v1/logout",{method:"POST",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+t}},0).catch(function(){});
+}
+function actorStr(){ return sbRole==="driver"? "driver:"+(state.driverId||""): "supervisor";}
+function writeLog(orderUuid, action, details){
+return sbInsert("order_logs",{order_id:orderUuid||null, action:action, actor:actorStr(), details:details}).catch(function(){});
+}
+
+/* ============ Helpers ============ */
+function $(id){ return document.getElementById(id);}
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function fmtTime(d){ if(!d) return "—"; var dt=new Date(d); if(isNaN(dt.getTime())) return "—"; try{ return dt.toLocaleTimeString("ar-SA",{hour:"numeric",minute:"2-digit"});}catch(e){ return "—";}}
+function fmtDateTime(d){ if(!d) return "—"; var dt=new Date(d); if(isNaN(dt.getTime())) return "—"; try{ return dt.toLocaleString("ar-SA",{hour:"numeric",minute:"2-digit",day:"numeric",month:"numeric"});}catch(e){ return "—";}}
+function fmtDateOnly(d){ try{ return new Date(d).toLocaleDateString("ar-SA",{weekday:"long",day:"numeric",month:"long",year:"numeric"});}catch(e){ return "";}}
+function todayStr(){ var d=new Date(); function p(n){ return (n<10?"0":"")+n;} return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate());}
+function nowIso(){ return new Date().toISOString();}
+/* رقم واتساب المشرف — يُقرأ من جدول settings (مفتاح supervisor_whatsapp) عند تحميل البيانات */
+var SUPERVISOR_WA = "966591274881";
+function intlPhone(p){ var d=String(p==null?"":p).replace(/\D/g,""); if(!d) return ""; if(d.indexOf("966")===0) return d; if(d.charAt(0)==="0") return "966"+d.slice(1); return d;}
+function mapsLink(lat,lng){ return "https://www.google.com/maps/search/?api=1&query="+lat+","+lng;}
+function toast(msg){ var t=document.createElement("div"); t.className="toast"; t.textContent=msg; $("toastRoot").appendChild(t); setTimeout(function(){ t.remove();},3400);}
+
+/* ============ حالة الواجهة والبيانات المحمّلة من قاعدة البيانات ============ */
+var couriers = [], companies = [], orders = [], notifications = [], opLog = [], receiptLog = [];
+var driverByUuid = {}, driverByNo = {}, compIndexByUuid = {};
+var nextCourierSeq = 1001;
+var locallyDeactivated = {}; /* إيقاف حساب مندوب من اللوحة — يُحفظ داخل جلسة الصفحة (لا عمود له في الجدول بعد) */
+var state = { driverId:null, working:false, received:false, filter:"all", adminPage:"home", reportRange:"day", gpsWatch:null, gpsTrail:[], realPos:null};
+var PRIO_TAG = " ";
+
+function courierById(id){ return driverByNo[id] || null;}
+function statusLabel(s){ return {new:"جديد",accepted:"مقبول",picked:"تم الاستلام",onway:"في الطريق",arrived:"تم الوصول",delivered:"تم التسليم",failed:"تعذر التسليم",rejected:"مرفوض من المندوب",cancelled:"ملغي"}[s]||s;}
+function statusChip(s){ var cls = s==="new"?"chip-new":(s==="delivered"?"chip-done":((s==="cancelled"||s==="rejected"||s==="failed")?"chip-bad":"chip-progress")); return '<span class="chip '+cls+'">'+esc(statusLabel(s))+'</span>';}
+function dbStatusToUi(s){ return {new:"new",received:"picked",on_the_way:"onway",arrived:"arrived",delivered:"delivered",failed:"failed",cancelled:"cancelled"}[s]||"new";}
+function uiStatusToDb(s){ return {new:"new",accepted:"new",picked:"received",onway:"on_the_way",arrived:"arrived",delivered:"delivered",failed:"failed",cancelled:"cancelled",rejected:"failed"}[s]||"new";}
+function isLate(o){ if(!o.time) return false; return o.status!=="delivered"&&o.status!=="cancelled"&&o.status!=="rejected"&&o.status!=="failed" && new Date(o.time).getTime() < Date.now();}
+function pushNotif(type,title,text){ notifications.unshift({type:type,title:title,text:text,time:new Date(),sample:false}); renderNotifs();}
+function notifIcon(type){
+var paths={new:'<path d="M4 7h16M4 12h16M4 17h10"/>',accepted:'<path d="M5 13l4 4L19 7"/>',delivered:'<path d="M5 13l4 4L19 7"/>',late:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>',gps:'<path d="M12 21s-7-6-7-11a7 7 0 1 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>',battery:'<rect x="3" y="8" width="15" height="8" rx="2"/><path d="M21 11v2M6 11v2"/>'};
+var bg = type==="delivered"||type==="accepted"? "var(--green-soft)": (type==="new"? "var(--blue-soft)": "var(--amber-soft)");
+var fg = type==="delivered"||type==="accepted"? "var(--green-dark)": (type==="new"? "var(--blue)": "var(--amber)");
+return '<div class="ic" style="background:'+bg+'"><svg viewBox="0 0 24 24" fill="none" stroke="'+fg+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(paths[type]||paths.new)+'</svg></div>';
+}
+var NOTIF_META = {created:["new","طلب جديد"],assigned:["new","إسناد طلب"],transferred:["new","نقل طلب"],unassigned:["accepted","إلغاء إسناد"],received:["accepted","استلام طلبات وبدء عمل"],receipt_mismatch:["late","اختلاف في استلام الطلبات"],on_the_way:["accepted","مندوب في الطريق"],arrived:["accepted","وصول مندوب"],delivered:["delivered","اكتمال تسليم"],failed:["late","تعذر تسليم"],cancelled:["late","إلغاء طلب"],edited:["accepted","تعديل طلب"],bulk_assigned:["new","إسناد جماعي"],auto_distributed:["new","توزيع تلقائي"],driver_added:["accepted","مندوب جديد"],company_added:["accepted","شركة جديدة"],work_ended:["accepted","إنهاء عمل"],work_started:["accepted","بدء عمل"]};
+
+/* ============ تحميل البيانات من Supabase وتحويلها لشكل الواجهة ============ */
+function loadAllData(){
+return Promise.all([
+sbGet("drivers","select=*&order=driver_no.asc"),
+sbGet("companies","select=*&order=created_at.asc"),
+sbGet("orders","select=*&order=order_no.desc"),
+sbGet("order_logs","select=*&order=created_at.desc&limit=300"),
+sbGet("receipts","select=*&work_date=eq."+todayStr()+"&order=created_at.desc"),
+sbGet("settings","select=*")
+]).then(function(res){ buildState(res[0],res[1],res[2],res[3],res[4],res[5]);});
+}
+function buildState(driverRows, companyRows, orderRows, logRows, receiptRows, settingRows){
+compIndexByUuid = {}; driverByUuid = {}; driverByNo = {};
+(settingRows||[]).forEach(function(s){ if(s.key==="supervisor_whatsapp" && s.value) SUPERVISOR_WA=String(s.value).replace(/\D/g,"");});
+companies = (companyRows||[]).map(function(r,i){
+compIndexByUuid[r.id]=i;
+return { uuid:r.id, name:r.name||"", contact:r.contact_name||"—", phone:r.phone||"—", fee:Number(r.agreed_delivery_price)||0,
+address:r.address||"", pickupText: r.address? (r.name+" — "+r.address): (r.name||"مقر الشركة — الرياض"), log:[]};
+});
+var logsByOrder = {};
+(logRows||[]).forEach(function(l){ if(l.order_id){ (logsByOrder[l.order_id]=logsByOrder[l.order_id]||[]).push(l);}});
+var receiptsByDriver = {};
+(receiptRows||[]).forEach(function(r){ if(!receiptsByDriver[r.driver_id]) receiptsByDriver[r.driver_id]=r;});
+couriers = (driverRows||[]).map(function(r){
+var c = { uuid:r.id, id:String(r.driver_no), authUserId:r.auth_user_id||null, name:r.name||"", phone:r.phone||"", vehicle:r.vehicle||"—", plate:"",
+capacity:r.capacity||5, active:!locallyDeactivated[r.id], online:!!r.is_online, rating:0, doneToday:0, km:0, late:0,
+lat:null, lng:null, district:"الرياض", lastUpdate:null, battery:null, trail:[], receipt:null, shiftStart:null};
+var rc = receiptsByDriver[r.id];
+if(rc){ c.receipt={assigned:rc.assigned_count, entered:rc.received_count, result:rc.matched?"match":"mismatch", time:rc.created_at}; if(rc.matched && rc.started_at) c.shiftStart=rc.started_at;}
+driverByUuid[r.id]=c; driverByNo[c.id]=c;
+var n=parseInt(r.driver_no,10); if(!isNaN(n) && n>=nextCourierSeq) nextCourierSeq=n+1;
+return c;
+});
+orders = (orderRows||[]).map(function(r){ return mapOrder(r, logsByOrder);});
+couriers.forEach(function(c){
+var mine=orders.filter(function(o){ return o.driverUuid===c.uuid;});
+c.doneToday=mine.filter(function(o){ return o.status==="delivered" && o.tDelivered && new Date(o.tDelivered).toDateString()===new Date().toDateString();}).length;
+c.late=mine.filter(isLate).length;
+});
+opLog = (logRows||[]).map(function(l){ return {time:l.created_at, text:l.details||l.action};});
+receiptLog = (receiptRows||[]).map(function(r){
+var d=driverByUuid[r.driver_id];
+return {courierId:d?d.id:"", name:d?d.name:"مندوب", assigned:r.assigned_count, entered:r.received_count, result:r.matched?"match":"mismatch", time:r.created_at};
+});
+notifications = (logRows||[]).slice(0,30).map(function(l){
+var meta=NOTIF_META[l.action]||["new","عملية مسجلة"];
+return {type:meta[0], title:meta[1], text:l.details||"", time:l.created_at, sample:false};
+});
+if(sbRole==="driver" && state.driverId){ var me=courierById(state.driverId); if(me) sbDriverRow=(driverRows||[]).filter(function(r){ return String(r.driver_no)===state.driverId;})[0]||sbDriverRow; syncWorkState();}
+}
+function mapOrder(r, logsByOrder){
+var compIdx = (r.company_id!=null && compIndexByUuid[r.company_id]!==undefined)? compIndexByUuid[r.company_id]: -1;
+var comp = compIdx>=0? companies[compIdx]: null;
+var drv = r.driver_id? driverByUuid[r.driver_id]: null;
+var notes = r.notes||"", priority="normal";
+if(notes.indexOf(PRIO_TAG)===0){ priority="high"; notes=notes.slice(PRIO_TAG.length);}
+var locUrl=null, district;
+var du=r.delivery_loc_url||"";
+if(/^https?:\/\//i.test(du)) locUrl=du;
+if(r.delivery_lat!=null && r.delivery_lng!=null) district="موقع العميل على الخريطة ("+Number(r.delivery_lat).toFixed(5)+", "+Number(r.delivery_lng).toFixed(5)+")";
+else if(locUrl) district="موقع العميل — رابط خرائط Google";
+else district=du||"—";
+var logs=((logsByOrder||{})[r.id]||[]).slice().reverse();
+var tPicked=null;
+logs.forEach(function(l){ if(l.action==="received") tPicked=l.created_at;});
+return { uuid:r.id, no:r.order_no, customer:r.customer_name||"", phone:r.customer_phone||"", company:compIdx, companyId:r.company_id||null,
+courier:drv?drv.id:"", driverUuid:r.driver_id||null,
+district:district, lat:r.delivery_lat, lng:r.delivery_lng, locUrl:locUrl,
+pickup:r.pickup_address || (comp?comp.pickupText:"مقر الشركة — الرياض"), pickupLat:r.pickup_lat, pickupLng:r.pickup_lng, pickupUrl:r.pickup_loc_url||null,
+meals:r.meals_count||1, mealType:r.meal_type||"وجبة صحية متوازنة", notes:notes||"—",
+fee:comp?comp.fee:0, priority:priority, status:dbStatusToUi(r.status), otp:r.otp_code||"",
+proof: r.proof_image_url? "photo": (r.status==="delivered"? "otp": null), proofImg:null, proofPath:r.proof_image_url||null,
+failReason:r.fail_reason||null, rejectReason:null,
+time:new Date(new Date(r.created_at).getTime()+60*60000), createdAt:r.created_at,
+tAccepted:r.assigned_at||null, tPicked:tPicked, tArrived:r.arrived_at||null, tDelivered:r.delivered_at||null,
+history:logs.map(function(l){ return [fmtTime(l.created_at), l.details||l.action];}),
+createdBy:"المشرف"};
+}
+function syncWorkState(){
+var c=courierById(state.driverId); if(!c) return;
+var matched =!!(c.receipt && c.receipt.result==="match");
+state.received = matched &&!!c.online;
+state.working = state.received;
+}
+/* بعد أي كتابة: إعادة تحميل الحقيقة من قاعدة البيانات وإعادة الرسم */
+function syncAfter(promises){
+return Promise.all(promises||[]).then(function(){ return loadAllData();}).then(function(){ renderCurrent();})
+.catch(function(err){
+toast("حدث خطأ أثناء الحفظ في قاعدة البيانات: "+(err && err.message? err.message: err));
+return loadAllData().then(function(){ renderCurrent();}).catch(function(){});
+});
+}
+function renderCurrent(){
+if(sbRole==="driver" && state.driverId) renderDriver();
+if(sbRole==="supervisor") renderAdminAll();
+}
+/* تحديث دوري: أي تغيير عند الطرف الآخر يظهر هنا خلال ثوانٍ — حتى على جهاز مختلف */
+var pollTimer=null;
+function startPolling(){
+stopPolling();
+pollTimer=setInterval(function(){
+if(!sbSession || $("modalRoot").innerHTML) return;
+loadAllData().then(function(){ renderCurrent();}).catch(function(){});
+}, 12000);
+}
+function stopPolling(){ if(pollTimer){ clearInterval(pollTimer); pollTimer=null;}}
+document.addEventListener("visibilitychange", function(){
+if(!document.hidden && sbSession) loadAllData().then(function(){ renderCurrent();}).catch(function(){});
+});
+
+/* ============ View switching ============ */
+function switchView(v){
+$("viewDriver").classList.toggle("hidden", v!=="driver");
+$("viewAdmin").classList.toggle("hidden", v!=="admin");
+$("tabDriver").classList.toggle("active", v==="driver");
+$("tabAdmin").classList.toggle("active", v==="admin");
+if(v==="admin" && sbRole==="supervisor"){ setTimeout(initMaps, 60);}
+window.scrollTo({top:0});
+}
+$("tabDriver").addEventListener("click", function(){ switchView("driver");});
+$("tabAdmin").addEventListener("click", function(){ switchView("admin");});
+
+function resetDriverUI(){
+stopGps();
+state.driverId=null; state.working=false; state.received=false;
+$("driverApp").classList.add("hidden"); $("driverLogin").classList.remove("hidden");
+}
+function resetAdminUI(){
+$("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden");
+}
+
+    /* ============ Driver: login عبر Supabase Auth ============
+       المندوب يكتب رقمه فقط، ويحوّله التطبيق داخلياً إلى driver<رقم>@arjaa.local */
+    $("loginForm").addEventListener("submit", function(e){
+      e.preventDefault();
+      var id=$("loginId").value.trim(), pw=$("loginPass").value;
+      var er=$("loginError");
+      if(!/^\d+$/.test(id)){ er.textContent="اكتب رقم المندوب بالأرقام فقط (مثال: 1001)"; er.classList.remove("hidden"); return; }
+      er.classList.add("hidden");
+      var btn=e.target.querySelector('button[type="submit"]'); btn.disabled=true; btn.textContent="جارٍ تسجيل الدخول…";
+      sbSignIn("driver"+id+"@arjaa.local", pw, function(n,total){ btn.textContent="الاتصال ضعيف — جارٍ إعادة المحاولة ("+n+" من "+total+")…"; }).then(function(sess){
+        return sbGet("drivers","select=*&auth_user_id=eq."+sess.user.id).then(function(rows){
+          if(rows && rows.length) return rows;
+          return sbGet("drivers","select=*&driver_no=eq."+encodeURIComponent(id));
+        }).then(function(rows){
+          if(!rows || !rows.length){ sbSignOut(); throw new Error("لا يوجد سجل مندوب مرتبط بهذا الحساب في قاعدة البيانات — تواصل مع المشرف"); }
+          sbRole="driver"; sbDriverRow=rows[0];
+          state.driverId=String(rows[0].driver_no);
+          resetAdminUI();
+          return loadAllData().then(function(){
+            syncWorkState();
+            $("driverLogin").classList.add("hidden"); $("driverApp").classList.remove("hidden");
+            renderDriver(); startPolling();
+            var c=courierById(state.driverId);
+            toast("مرحباً "+(c?c.name:"")+" — سجلت دخولك بنجاح");
+          });
+        });
+      }).catch(function(err){
+        er.textContent=(err && err.message) || "تعذر تسجيل الدخول"; er.classList.remove("hidden");
+      }).then(function(){ btn.disabled=false; btn.textContent="دخول"; });
+    });
+    $("logoutBtn").addEventListener("click", function(){
+      var c=courierById(state.driverId);
+      var ps=[];
+      if(c && state.working){ ps.push(sbUpdate("drivers","id=eq."+c.uuid,{is_online:false}).catch(function(){})); ps.push(writeLog(null,"work_ended","أنهى المندوب "+c.name+" العمل وسجّل خروجه")); }
+      stopPolling();
+      Promise.all(ps).then(function(){ return sbSignOut(); }).then(function(){ resetDriverUI(); toast("تم تسجيل الخروج"); });
+    });
+
+    /* ============ Supervisor: login عبر Supabase Auth ============ */
+    $("adminLoginForm").addEventListener("submit", function(e){
+      e.preventDefault();
+      var email=$("admEmail").value.trim().toLowerCase(), pw=$("admPass").value;
+      var er=$("admLoginError"); er.classList.add("hidden");
+      if(email!==SUPERVISOR_EMAIL){ er.textContent="هذه اللوحة للمشرف فقط — البريد المسجل للمشرف هو "+SUPERVISOR_EMAIL; er.classList.remove("hidden"); return; }
+      var btn=e.target.querySelector('button[type="submit"]'); btn.disabled=true; btn.textContent="جارٍ تسجيل الدخول…";
+      sbSignIn(email, pw, function(n,total){ btn.textContent="الاتصال ضعيف — جارٍ إعادة المحاولة ("+n+" من "+total+")…"; }).then(function(){
+        sbRole="supervisor"; resetDriverUI();
+        return loadAllData().then(function(){
+          $("adminLogin").classList.add("hidden"); $("adminApp").classList.remove("hidden");
+          $("admWho").textContent="— "+SUPERVISOR_EMAIL;
+          renderAdminAll(); startPolling(); setTimeout(initMaps,60);
+          toast("مرحباً بك — سجلت دخول المشرف بنجاح");
+        });
+      }).catch(function(err){
+        er.textContent=(err && err.message) || "تعذر تسجيل الدخول"; er.classList.remove("hidden");
+      }).then(function(){ btn.disabled=false; btn.textContent="دخول المشرف"; });
+    });
+    $("admLogoutBtn").addEventListener("click", function(){
+      stopPolling();
+      sbSignOut().then(function(){ resetAdminUI(); toast("تم تسجيل خروج المشرف"); });
+    });
+
+    /* ============ فحص الاتصال من شاشتي الدخول: يختبر وصول هذا الجهاز نفسه
+       إلى قاعدة البيانات ويعرض النتيجة بلغة واضحة مع التفاصيل التقنية ============ */
+    function wireConnTest(btnId, outId){
+      var btn=$(btnId), out=$(outId); if(!btn||!out) return;
+      btn.addEventListener("click", function(){
+        btn.disabled=true; btn.textContent="جارٍ فحص الاتصال…";
+        out.classList.remove("hidden"); out.style.color=""; out.textContent="جارٍ الاتصال بقاعدة البيانات من هذا الجهاز…";
+        sbFetch(SB_URL+"/auth/v1/health",{method:"GET",headers:{"apikey":SB_KEY}},2).then(function(r){
+          if(r && r.ok){ connOk(); out.style.color="var(--green-dark)"; out.textContent="الاتصال بقاعدة البيانات يعمل من هذا الجهاز — جرّب تسجيل الدخول الآن."; }
+          else { connFail(); out.style.color="var(--red)"; out.textContent="وصل رد من الخادم لكنه غير متوقع (الرمز "+(r?r.status:"؟")+"). أعد الفحص بعد قليل."; }
+        }).catch(function(){
+          connFail(); out.style.color="var(--red)";
+          out.textContent="هذا الجهاز لا يصل إلى قاعدة البيانات. جرّب: إيقاف أي مانع إعلانات أو VPN، أو التبديل بين الواي فاي وبيانات الجوال، ثم أعد الفحص. (تفاصيل: "+sbLastErrDetail+")";
+        }).then(function(){ btn.disabled=false; btn.textContent="فحص الاتصال بقاعدة البيانات"; });
+      });
+    }
+    wireConnTest("connTestBtnDrv","connTestResultDrv");
+    wireConnTest("connTestBtnAdm","connTestResultAdm");
+
+    /* ============ Driver: work start/end ============ */
+    function renderDriver(){
+      var c=courierById(state.driverId); if(!c) return;
+      $("drvAvatar").textContent=(c.name||"م").trim().charAt(0);
+      $("drvName").textContent=c.name;
+      $("drvMeta").textContent="رقم المندوب: "+c.id+" · الهاتف: "+(c.phone||"—")+" · المركبة: "+esc(c.vehicle);
+      $("drvDot").className="status-dot "+(state.working?"on":"off");
+      $("drvStatusText").textContent= state.working ? "متصل — يعمل الآن" : "غير متصل — لم يبدأ العمل";
+      $("endWorkBtn").classList.toggle("hidden", !state.working);
+      var mine=orders.filter(function(o){return o.courier===c.id;});
+      var nNew=mine.filter(function(o){return o.status==="new";}).length;
+      var nProg=mine.filter(function(o){return ["accepted","picked","onway","arrived"].indexOf(o.status)>=0;}).length;
+      var nDone=mine.filter(function(o){return o.status==="delivered";}).length;
+      var nCanc=mine.filter(function(o){return ["cancelled","rejected","failed"].indexOf(o.status)>=0;}).length;
+      $("drvStats").innerHTML=
+        statHtml(mine.length,"طلباتي اليوم","")+
+        statHtml(nNew,"طلبات جديدة","")+
+        statHtml(nProg,"جارٍ توصيلها","amber")+
+        statHtml(nDone,"مكتملة","green")+
+        statHtml(nCanc,"ملغاة / مرفوضة","red");
+      renderReceipt(); renderDriverOrders();
+    }
+    function statHtml(num,lbl,cls){ return '<div class="stat '+cls+'"><div class="num">'+num+'</div><div class="lbl">'+lbl+'</div></div>'; }
+
+    function endWork(silent){
+      var c=courierById(state.driverId);
+      state.working=false; state.received=false;
+      stopGps();
+      var gc=$("gpsConsent"); if(gc) gc.checked=false;
+      $("shiftInfo").textContent="أنهيت العمل. توقفت مشاركة الموقع بالكامل — لا يتم تتبعك خارج ساعات العمل. لبدء يوم عمل جديد أكّد استلام الطلبات من قسم «استلام طلبات اليوم».";
+      if(c){
+        var ps=[sbUpdate("drivers","id=eq."+c.uuid,{is_online:false}), writeLog(null,"work_ended","أنهى المندوب "+c.name+" العمل في "+fmtTime(new Date()))];
+        c.online=false;
+        syncAfter(ps);
+      }
+      if(!silent){ renderDriver(); toast("انتهى العمل — توقفت مشاركة الموقع"); }
+    }
+    $("endWorkBtn").addEventListener("click", function(){ endWork(false); });
+
+    /* ============ Driver: استلام طلبات اليوم — مطابقة العدد قبل بدء العمل ============ */
+    var RECEIPT_ACTIVE = ["new","accepted","picked","onway","arrived"];
+    function assignedTodayCount(cid){ return orders.filter(function(o){ return o.courier===cid && RECEIPT_ACTIVE.indexOf(o.status)>=0; }).length; }
+    function diffText(diff){ if(diff===0) return "لا يوجد فرق"; var a=Math.abs(diff); var word=(a===1?" طلب":(a===2?" طلبان":" طلبات")); return (diff<0?"ناقص ":"زائد ")+a+word; }
+    function supervisorWaLink(c, assigned, entered){
+      var diff=entered-assigned;
+      var msg="تقرير اختلاف في استلام الطلبات — أرجاء اليمامة اللوجستية (ARJAA DELIVERY)\n"+
+        "اسم المندوب: "+c.name+"\n"+
+        "رقم المندوب: "+c.id+" — رقم هاتفه: "+(c.phone||"—")+"\n"+
+        "عدد الطلبات المسندة من المشرف: "+assigned+"\n"+
+        "العدد الفعلي الذي استلمه المندوب: "+entered+"\n"+
+        "الفرق: "+diffText(diff)+"\n"+
+        "تاريخ ووقت تسجيل الاختلاف: "+fmtDateTime(new Date());
+      return "https://wa.me/"+SUPERVISOR_WA+"?text="+encodeURIComponent(msg);
+    }
+    function renderReceipt(){
+      var box=$("receiptBody"); if(!box || !state.driverId) return;
+      var prevInput=$("receiptCount"); var prevVal=prevInput?prevInput.value:null;
+      var c=courierById(state.driverId); if(!c) return;
+      var assigned=assignedTodayCount(c.id);
+      var h='<dl class="kv">';
+      h+='<dt>اسم المندوب</dt><dd><strong>'+esc(c.name)+'</strong> (رقم '+c.id+')</dd>';
+      h+='<dt>تاريخ العمل</dt><dd>'+fmtDateOnly(new Date())+'</dd>';
+      h+='<dt>الطلبات المسندة إليك من المشرف</dt><dd><strong style="font-size:1.25rem">'+assigned+'</strong> طلب</dd>';
+      h+='</dl>';
+      if(state.received && c.receipt && c.receipt.result==="match"){
+        h+='<div class="checkline" style="background:var(--green-soft)"><span><strong>تم اعتماد استلام الطلبات — مطابقة ناجحة.</strong><br/>استلمت '+c.receipt.entered+' طلباً من أصل '+c.receipt.assigned+' مسنداً إليك.<br/>وقت الاستلام وبدء العمل: <strong>'+fmtDateTime(c.receipt.time)+'</strong><br/>مهام التوصيل مفعّلة الآن في قائمة «مهام اليوم» بالأسفل.</span></div>';
+      } else {
+        if(c.receipt && c.receipt.result==="mismatch"){
+          h+='<div class="checkline" style="background:var(--red-soft)"><span><strong>يوجد اختلاف في عدد الطلبات — لم يتم اعتماد الاستلام ولم يبدأ التوصيل.</strong><br/>'+
+            'أدخلت '+c.receipt.entered+' طلباً بينما المسند إليك '+c.receipt.assigned+' — الفرق: '+diffText(c.receipt.entered-c.receipt.assigned)+'.<br/>'+
+            'سُجّل تقرير الاختلاف عند المشرف. <strong>عليك مراجعة المشرف</strong> قبل بدء العمل، ويمكنك إرسال التقرير إليه عبر واتساب من الزر التالي، أو إعادة العدّ وإدخال العدد الصحيح.</span></div>'+
+            '<div class="btn-row"><a class="btn-green" href="'+supervisorWaLink(c, c.receipt.assigned, c.receipt.entered)+'" target="_blank" rel="noopener">إرسال تقرير الاختلاف للمشرف عبر واتساب</a></div>';
+        }
+        h+='<div style="margin-top:12px"><label for="receiptCount">عدد الطلبات التي استلمتها فعلياً من المشرف</label>'+
+           '<input id="receiptCount" type="number" min="0" inputmode="numeric" placeholder="اكتب العدد بعد عدّ الطلبات بيدك" /></div>'+
+           '<button class="btn-green btn-big" id="receiptConfirmBtn" type="button" style="margin-top:12px">تأكيد استلام الطلبات وبدء العمل</button>'+
+           '<p class="small muted" style="margin-top:8px">المشرف وحده هو من يضيف الطلبات ويسندها. لا تظهر مهام التوصيل ولا يبدأ العمل إلا إذا طابق العدد الذي تدخله عدد الطلبات المسندة إليك تماماً.</p>';
+      }
+      box.innerHTML=h;
+      if(prevVal!==null && $("receiptCount")) $("receiptCount").value=prevVal;
+    }
+    $("receiptCard").addEventListener("click", function(e){
+      if(e.target.id!=="receiptConfirmBtn") return;
+      var c=courierById(state.driverId); if(!c) return;
+      var raw=$("receiptCount").value;
+      if(raw==="" || isNaN(parseInt(raw,10))){ toast("اكتب عدد الطلبات التي استلمتها فعلياً أولاً"); return; }
+      var entered=parseInt(raw,10);
+      var assigned=assignedTodayCount(c.id);
+      var when=new Date();
+      var btn=e.target; btn.disabled=true; btn.textContent="جارٍ الحفظ في قاعدة البيانات…";
+      if(entered===assigned){
+        var myNew=orders.filter(function(o){ return o.courier===c.id && o.status==="new"; });
+        c.receipt={assigned:assigned, entered:entered, result:"match", time:when};
+        receiptLog.unshift({courierId:c.id, name:c.name, assigned:assigned, entered:entered, result:"match", time:when});
+        state.received=true; state.working=true; c.online=true; c.lastUpdate=when; c.shiftStart=when;
+        myNew.forEach(function(o){ o.status="picked"; o.tPicked=when; o.history.push([fmtTime(when),"استلم المندوب الطلب من المشرف — تأكيد مطابقة عدد الطلبات"]); });
+        var ps=[ sbInsert("receipts",{driver_id:c.uuid, work_date:todayStr(), assigned_count:assigned, received_count:entered, matched:true, started_at:nowIso()}),
+                 sbUpdate("drivers","id=eq."+c.uuid,{is_online:true}),
+                 writeLog(null,"received","أكّد المندوب "+c.name+" استلام طلبات اليوم: "+entered+" طلباً — مطابقة ناجحة، وبدأ العمل في "+fmtTime(when)) ];
+        if(myNew.length) ps.push(sbUpdate("orders","driver_id=eq."+c.uuid+"&status=eq.new",{status:"received"}));
+        myNew.forEach(function(o){ ps.push(writeLog(o.uuid,"received","استلم المندوب الطلب من المشرف — تأكيد مطابقة عدد الطلبات")); });
+        pushNotif("accepted","استلام طلبات وبدء عمل","أكّد "+c.name+" استلام "+entered+" طلباً (مطابقة كاملة مع المسند إليه) وبدأ العمل في "+fmtTime(when));
+        $("shiftInfo").textContent="بدأ العمل في "+fmtTime(when)+" بعد مطابقة عدد الطلبات. أنت الآن متصل ومهام التوصيل مفعّلة. فعّل مشاركة الموقع من قسم «موقعي GPS» إذا أردت أن يراك المشرف على الخريطة.";
+        renderDriver();
+        if($("gpsConsent").checked){ $("gpsStartBtn").click(); }
+        toast("مطابقة ناجحة — تم اعتماد استلام "+entered+" طلباً وبدأ العمل");
+        syncAfter(ps);
+      } else {
+        c.receipt={assigned:assigned, entered:entered, result:"mismatch", time:when};
+        receiptLog.unshift({courierId:c.id, name:c.name, assigned:assigned, entered:entered, result:"mismatch", time:when});
+        var ps2=[ sbInsert("receipts",{driver_id:c.uuid, work_date:todayStr(), assigned_count:assigned, received_count:entered, matched:false, started_at:null}),
+                  writeLog(null,"receipt_mismatch","اختلاف عدد طلبات عند المندوب "+c.name+": المسند "+assigned+" والمستلم فعلياً "+entered+" — الفرق "+diffText(entered-assigned)+" — لم يبدأ التوصيل") ];
+        pushNotif("late","اختلاف في استلام الطلبات","المندوب "+c.name+": المسند إليه "+assigned+" طلباً وأدخل استلام "+entered+" — الفرق: "+diffText(entered-assigned)+". لم يتم اعتماد الاستلام ولم يبدأ التوصيل — جُهّز إشعار واتساب للمشرف.");
+        renderDriver(); renderReceiptAdmin();
+        toast("العدد غير مطابق — لم يبدأ التوصيل. راجع المشرف");
+        syncAfter(ps2);
+      }
+    });
+
+    /* ============ Admin: متابعة استلام الطلبات ============ */
+    function renderReceiptAdmin(){
+      var el=$("receiptAdminList"); if(!el) return;
+      el.innerHTML = couriers.filter(function(c){return c.active;}).map(function(c){
+        var assigned=assignedTodayCount(c.id);
+        var r=c.receipt;
+        var statusHtml, enteredHtml, resultHtml;
+        if(!r){ statusHtml='<span class="chip chip-progress">بانتظار تأكيد الاستلام من المندوب</span>'; enteredHtml="—"; resultHtml="—"; }
+        else if(r.result==="match"){ statusHtml='<span class="chip chip-done">تم الاستلام وبدأ العمل</span>'; enteredHtml=r.entered; resultHtml='<span class="chip chip-done">مطابقة ناجحة</span>'; }
+        else { statusHtml='<span class="chip chip-bad">اختلاف — لم يبدأ التوصيل</span>'; enteredHtml=r.entered; resultHtml='<span class="chip chip-bad">اختلاف: '+diffText(r.entered-r.assigned)+'</span>'; }
+        return '<div class="courier-row" style="box-shadow:none"><div class="avatar">'+esc((c.name||"م").trim().charAt(0))+'</div>'+
+          '<div style="flex:1;min-width:220px"><strong>'+esc(c.name)+'</strong> <span class="small muted">(رقم '+c.id+')</span> '+statusHtml+
+          '<div class="small">الطلبات المسندة: <strong>'+assigned+'</strong> · العدد الذي أدخله المندوب: <strong>'+enteredHtml+'</strong> · نتيجة المطابقة: '+resultHtml+'</div>'+
+          '<div class="small muted">حالة الاستلام: '+(r?(r.result==="match"?"معتمد — استلم الطلبات وبدأ العمل":"غير معتمد — بانتظار مراجعة المندوب للمشرف"):"لم يؤكد المندوب الاستلام بعد")+
+          (c.shiftStart?' · وقت بدء العمل: '+fmtDateTime(c.shiftStart):"")+
+          (r&&r.result==="mismatch"?' · سُجّل الاختلاف في '+fmtDateTime(r.time)+' وجُهّز إشعار واتساب للمشرف':"")+'</div></div></div>';
+      }).join("");
+      if(receiptLog.length){
+        el.innerHTML += '<h3 style="margin-top:14px">سجل محاولات الاستلام والاختلافات</h3>'+receiptLog.slice(0,20).map(function(en){
+          return '<div class="notif"><div style="flex:1"><div>'+(en.result==="match"
+            ? 'مطابقة ناجحة — '+esc(en.name)+' استلم '+en.entered+' من '+en.assigned+' طلباً وبدأ العمل'
+            : 'اختلاف — '+esc(en.name)+': المسند '+en.assigned+' والمستلم فعلياً '+en.entered+' — الفرق: '+diffText(en.entered-en.assigned)+' — أُرسل إشعار واتساب للمشرف')+
+            '</div><div class="small muted">'+fmtDateTime(en.time)+'</div></div></div>';
+        }).join("");
+      }
+    }
+
+    /* ============ Driver: GPS (real device geolocation, consent-based) ============ */
+    function stopGps(){
+      if(state.gpsWatch!==null && navigator.geolocation){ navigator.geolocation.clearWatch(state.gpsWatch); }
+      state.gpsWatch=null; state.realPos=null;
+      var sb=$("gpsStopBtn"), st=$("gpsStartBtn");
+      if(sb) sb.classList.add("hidden"); if(st) st.classList.remove("hidden");
+      var gs=$("gpsStatus"); if(gs) gs.textContent="المشاركة متوقفة حالياً.";
+      var gc2=$("gpsCoords"); if(gc2) gc2.classList.add("hidden");
+    }
+    $("gpsStartBtn").addEventListener("click", function(){
+      if(!state.working){ toast("ابدأ العمل أولاً، ثم فعّل مشاركة الموقع"); return; }
+      if(!$("gpsConsent").checked){ toast("يلزم وضع علامة الموافقة على مشاركة الموقع أولاً"); return; }
+      if(!("geolocation" in navigator)){ $("gpsStatus").textContent="هذا المتصفح لا يدعم تحديد الموقع."; return; }
+      $("gpsStatus").textContent="جارٍ طلب إذن الموقع من الجهاز…";
+      state.gpsWatch = navigator.geolocation.watchPosition(function(pos){
+        var lat=pos.coords.latitude, lng=pos.coords.longitude;
+        state.realPos={lat:lat,lng:lng};
+        state.gpsTrail.push({lat:lat,lng:lng,t:new Date()});
+        var c=courierById(state.driverId); if(c){ c.lat=lat; c.lng=lng; c.lastUpdate=new Date(); }
+        $("gpsStatus").innerHTML='<strong style="color:var(--green-dark)">المشاركة مفعّلة — موقعك الحقيقي من جهازك.</strong> إرسال هذا الموقع إلى المشرف مباشرة يتم عبر خادم Traccar في مرحلة ربط التتبع.';
+        $("gpsCoords").classList.remove("hidden");
+        $("gpsLat").textContent=lat.toFixed(5); $("gpsLng").textContent=lng.toFixed(5);
+        $("gpsAcc").textContent=Math.round(pos.coords.accuracy);
+        $("gpsTime").textContent=fmtDateTime(new Date());
+        $("gpsTrailCount").textContent=state.gpsTrail.length;
+        $("gpsMapLink").href=mapsLink(lat,lng);
+        $("gpsStartBtn").classList.add("hidden"); $("gpsStopBtn").classList.remove("hidden");
+        if(window.__mapsReady) refreshMarkers();
+      }, function(err){
+        $("gpsStatus").textContent="تعذر الحصول على الموقع: "+(err.message||"تم رفض الإذن أو GPS غير مفعّل في الجهاز.");
+        state.gpsWatch=null;
+      }, {enableHighAccuracy:true, maximumAge:15000, timeout:20000});
+      if(navigator.getBattery){ navigator.getBattery().then(function(b){ $("gpsBatt").textContent=Math.round(b.level*100)+"%"+(b.charging?" (يُشحن)":""); }).catch(function(){}); }
+    });
+    $("gpsStopBtn").addEventListener("click", function(){ stopGps(); toast("توقفت مشاركة الموقع"); });
+
+    /* ============ Driver: orders ============ */
+    function gmapsDirectionsUrl(o){ return "https://www.google.com/maps/dir/?api=1&destination="+o.lat+","+o.lng; }
+    function orderActions(o){
+      if(!state.received) return '<p class="small" style="color:var(--amber);font-weight:700;margin-top:10px">مهام التوصيل تُفعَّل بعد تأكيد استلام طلبات اليوم من القسم الأعلى ومطابقة العدد.</p>';
+      var h='<div class="btn-row">';
+      if(o.status==="new"||o.status==="accepted"||o.status==="picked"){
+        /* زر واحد فقط قبل الذهاب: «الذهاب إلى العميل» — يفتح خرائط Google Directions
+           لموقع العميل المسجل، وينقل الطلب في الوقت نفسه إلى مرحلة «في الطريق». */
+        if(o.lat!=null && o.lng!=null && !isNaN(o.lat) && !isNaN(o.lng)){
+          h+='<a class="btn-green" data-act="go" data-no="'+o.no+'" href="'+gmapsDirectionsUrl(o)+'" target="_blank" rel="noopener" style="min-height:62px;font-size:1.18rem">الذهاب إلى العميل</a>';
+        } else if(o.locUrl){
+          h+='<a class="btn-green" data-act="go" data-no="'+o.no+'" href="'+esc(o.locUrl)+'" target="_blank" rel="noopener" style="min-height:62px;font-size:1.18rem">الذهاب إلى العميل</a>';
+        } else {
+          h+='<button class="btn-green" data-act="go" data-no="'+o.no+'" style="min-height:62px;font-size:1.18rem">الذهاب إلى العميل</button>';
+        }
+      } else if(o.status==="onway"){
+        h+='<button class="btn-green" data-act="arrived" data-no="'+o.no+'" style="min-height:56px;font-size:1.08rem">وصلت إلى العميل</button>';
+      } else if(o.status==="arrived"){
+        h+='<a class="btn-navy" href="tel:+'+intlPhone(o.phone)+'" target="_blank" rel="noopener">اتصال بالعميل</a>';
+        h+='<a class="btn-green" href="https://wa.me/'+intlPhone(o.phone)+'?text='+encodeURIComponent("السلام عليكم، معك مندوب أرجاء اليمامة اللوجستية، وصلت لتسليم طلبك.")+'" target="_blank" rel="noopener">التواصل عبر واتساب</a>';
+        h+='<button class="btn-green" data-act="deliver" data-no="'+o.no+'">تم التسليم — إثبات التسليم</button>';
+        h+='<button class="btn-amber" data-act="failed" data-no="'+o.no+'">تعذر التسليم</button>';
+      }
+      return h+"</div>";
+    }
+
+    function renderDriverOrders(){
+      var c=courierById(state.driverId); if(!c) return;
+      if(!state.received){ $("drvOrders").innerHTML='<div class="card"><h3>مهام اليوم تظهر بعد تأكيد الاستلام</h3><p class="muted">عدّ الطلبات التي استلمتها فعلياً من المشرف وأدخل عددها في قسم «استلام طلبات اليوم» بالأعلى. عند مطابقة العدد للطلبات المسندة إليك تظهر هنا جميع مهامك وتُفعَّل أزرار التوصيل بالترتيب.</p></div>'; return; }
+      var mine=orders.filter(function(o){return o.courier===c.id;});
+      var list=mine;
+      if(!list.length){ $("drvOrders").innerHTML='<div class="card"><p class="muted">لا توجد طلبات مسندة إليك اليوم.</p></div>'; return; }
+      $("drvOrders").innerHTML=list.map(function(o){
+        var comp=companies[o.company];
+        var late=isLate(o);
+        var h='<article class="order-card">';
+        h+='<div class="order-head"><div><span class="ono">طلب #'+o.no+'</span> '+(o.priority==="high"?'<span class="chip chip-pri">أولوية عالية</span>':"")+(late?' <span class="chip chip-bad">متأخر</span>':"")+'<div class="muted small">من شركة: '+esc(comp?comp.name:"")+'</div></div>'+statusChip(o.status)+'</div>';
+        h+='<dl class="kv">';
+        h+='<dt>العميل</dt><dd><strong>'+esc(o.customer)+'</strong></dd>';
+        if(o.tArrived || o.status==="arrived" || o.status==="delivered"){
+          h+='<dt>الهاتف</dt><dd><a href="tel:+'+intlPhone(o.phone)+'" target="_blank" rel="noopener">'+esc(o.phone)+'</a></dd>';
+        } else {
+          h+='<dt>الهاتف</dt><dd></dd>';
+        }
+        h+='<dt>الاستلام من</dt><dd>'+esc(o.pickup||"مقر الشركة")+'</dd>';
+        if(o.pickupLat!=null && o.pickupLng!=null && !isNaN(o.pickupLat) && !isNaN(o.pickupLng)){
+          h+='<dt>موقع الاستلام</dt><dd><a href="'+mapsLink(o.pickupLat,o.pickupLng)+'" target="_blank" rel="noopener">فتح موقع الاستلام في خرائط Google</a></dd>';
+        } else if(o.pickupUrl){
+          h+='<dt>موقع الاستلام</dt><dd><a href="'+esc(o.pickupUrl)+'" target="_blank" rel="noopener">فتح موقع الاستلام في خرائط Google</a></dd>';
+        } else {
+          h+='<dt>موقع الاستلام</dt><dd class="muted">العنوان مكتوب بالأعلى، ورابط موقع الاستلام غير مسجل بعد — يضيفه المشرف من خانة «رابط موقع الاستلام» أو خريطة موقع الاستلام في نموذج إنشاء الطلب</dd>';
+        }
+        h+='<dt>نوع الوجبة</dt><dd>'+esc(o.mealType||"—")+'</dd>';
+        h+='<dt>عدد الوجبات</dt><dd>'+o.meals+'</dd>';
+        h+='<dt>وقت التسليم</dt><dd>'+fmtTime(o.time)+(late?' — <strong style="color:var(--red)">تجاوز الوقت</strong>':"")+'</dd>';
+        h+='<dt>ملاحظات</dt><dd>'+esc(o.notes||"—")+'</dd>';
+        if(o.tArrived) h+='<dt>وقت الوصول إلى العميل</dt><dd>'+fmtDateTime(o.tArrived)+'</dd>';
+        if(o.tDelivered) h+='<dt>وقت التسليم الفعلي</dt><dd>'+fmtDateTime(o.tDelivered)+'</dd>';
+        if(o.status==="delivered") h+='<dt>إثبات التسليم</dt><dd>'+(o.proof==="photo"?"صورة بموافقة العميل":"رمز OTP من العميل")+'</dd>';
+        if(o.failReason) h+='<dt>سبب التعذر</dt><dd>'+esc(o.failReason)+'</dd>';
+        if(o.rejectReason) h+='<dt>سبب الرفض</dt><dd>'+esc(o.rejectReason)+'</dd>';
+        h+='</dl>';
+        /* صورة إثبات التسليم لا تُعرض للمندوب بعد التسليم — تبقى محفوظة في بيانات الطلب وتظهر للمشرف فقط في سجل الطلب */
+        h+=orderActions(o);
+        h+='</article>';
+        return h;
+      }).join("");
+    }
+
+    $("drvOrders").addEventListener("click", function(e){
+      var b=e.target.closest("[data-act]"); if(!b) return;
+      var no=parseInt(b.getAttribute("data-no"),10);
+      var o=null; orders.forEach(function(x){ if(x.no===no) o=x; }); if(!o) return;
+      var act=b.getAttribute("data-act");
+      var c=courierById(state.driverId);
+      /* حماية تسلسل المهام: لا يمكن تجاوز أي مرحلة */
+      if(!state.received){ toast("أكّد استلام طلبات اليوم أولاً من قسم «استلام طلبات اليوم»"); return; }
+      if(act==="go"){
+        if(["new","accepted","picked"].indexOf(o.status)<0) return;
+        if(!o.tPicked) o.tPicked=new Date();
+        o.status="onway"; o.history.push([fmtTime(new Date()),"بدأ الذهاب إلى العميل"]);
+        pushNotif("accepted","مندوب في الطريق",(c?c.name:"المندوب")+" بدأ الذهاب إلى عميل الطلب #"+o.no+" ("+o.customer+")");
+        var hasCoords=(o.lat!=null && o.lng!=null && !isNaN(o.lat) && !isNaN(o.lng));
+        renderDriver();
+        syncAfter([ sbUpdate("orders","id=eq."+o.uuid,{status:"on_the_way"}),
+                    writeLog(o.uuid,"on_the_way","بدأ المندوب "+(c?c.name:"")+" الذهاب إلى عميل الطلب #"+o.no) ]);
+        toast(hasCoords ? "فتحنا لك موقع العميل في خرائط Google — عند وصولك اضغط «وصلت إلى العميل» ليظهر رقم العميل وأزرار التواصل"
+          : (o.locUrl ? "فتحنا لك رابط موقع العميل — اضغط «الاتجاهات» داخل خرائط Google للملاحة، وعند وصولك اضغط «وصلت إلى العميل» ليظهر رقم العميل وأزرار التواصل"
+          : "بدأت الذهاب إلى العميل، لكن لا يوجد رابط موقع مسجل لهذا الطلب — اطلب من المشرف إضافة رابط موقع العميل من نموذج إنشاء الطلب أو تعديل الطلب، ورقم العميل يظهر عند وصولك"));
+      }
+      else if(act==="arrived"){
+        if(o.status!=="onway"){ toast("اضغط «الذهاب إلى العميل» أولاً — لا يمكن تجاوز المراحل"); return; }
+        o.status="arrived"; o.tArrived=new Date();
+        o.history.push([fmtTime(o.tArrived),"وصل المندوب إلى العميل"]);
+        pushNotif("accepted","وصول مندوب","وصل "+(c?c.name:"المندوب")+" إلى عميل الطلب #"+o.no+" ("+o.customer+") في "+fmtTime(o.tArrived)+" — ظهر له رقم العميل وأزرار التواصل");
+        renderDriver(); toast("سُجّل وقت وصولك — ظهر رقم العميل وأزرار الاتصال وواتساب");
+        syncAfter([ sbUpdate("orders","id=eq."+o.uuid,{status:"arrived", arrived_at:nowIso()}),
+                    writeLog(o.uuid,"arrived","وصل المندوب "+(c?c.name:"")+" إلى عميل الطلب #"+o.no+" في "+fmtTime(o.tArrived)) ]);
+      }
+      else if(act==="failed"){ if(o.status!=="arrived"){ toast("سجّل وصولك إلى العميل أولاً"); return; } openReasonModal(o,"failed"); }
+      else if(act==="deliver"){ if(o.status!=="arrived"){ toast("سجّل وصولك إلى العميل أولاً قبل تأكيد التسليم"); return; } openOtpModal(o); }
+    });
+
+    /* ============ Modals ============ */
+    function closeModal(){ $("modalRoot").innerHTML=""; }
+    function openModal(html,wide){ $("modalRoot").innerHTML='<div class="modal-bg"><div class="modal'+(wide?" modal-wide":"")+'" role="dialog" aria-modal="true">'+html+'</div></div>'; }
+
+    function openReasonModal(o,kind){
+      var isReject = kind==="reject";
+      var reasons = isReject
+        ? ["عدد الطلبات الحالي كبير","العنوان بعيد عن منطقتي","عطل في المركبة","ظرف طارئ شخصي","أخرى"]
+        : ["العميل لا يرد على الهاتف","العميل غير موجود في العنوان","العنوان غير صحيح","رفض العميل الاستلام","أخرى"];
+      var opts=reasons.map(function(r){ return '<option>'+esc(r)+'</option>'; }).join("");
+      openModal('<h3>'+(isReject?"رفض الطلب #":"تعذر تسليم الطلب #")+o.no+'</h3>'+
+        '<p class="muted">اختر السبب — سيصل السبب إلى المشرف في التنبيهات وسجل الطلب.</p>'+
+        '<label for="reasonSel">السبب</label><select id="reasonSel">'+opts+'</select>'+
+        '<div class="btn-row"><button class="btn-red" id="mConfirm" type="button">تأكيد</button><button class="btn-ghost" id="mCancel" type="button">تراجع</button></div>');
+      $("mCancel").addEventListener("click", closeModal);
+      $("mConfirm").addEventListener("click", function(){
+        var r=$("reasonSel").value; var c=courierById(state.driverId);
+        if(isReject){ o.status="rejected"; o.rejectReason=r; o.history.push([fmtTime(new Date()),"رفضه المندوب — السبب: "+r]);
+          pushNotif("late","رفض طلب","رفض "+(c?c.name:"")+" الطلب #"+o.no+" — السبب: "+r); toast("تم رفض الطلب وإبلاغ المشرف بالسبب");
+          closeModal(); renderDriver();
+          syncAfter([ sbUpdate("orders","id=eq."+o.uuid,{status:"failed", fail_reason:r}),
+                      writeLog(o.uuid,"failed","رفض المندوب "+(c?c.name:"")+" الطلب #"+o.no+" — السبب: "+r) ]);
+        }
+        else { o.status="failed"; o.failReason=r; o.history.push([fmtTime(new Date()),"تعذر التسليم — السبب: "+r]);
+          pushNotif("late","تعذر تسليم","تعذر تسليم الطلب #"+o.no+" — السبب: "+r); toast("سُجل تعذر التسليم وأُبلغ المشرف");
+          closeModal(); renderDriver();
+          syncAfter([ sbUpdate("orders","id=eq."+o.uuid,{status:"failed", fail_reason:r}),
+                      writeLog(o.uuid,"failed","تعذر تسليم الطلب #"+o.no+" — المندوب "+(c?c.name:"")+" — السبب: "+r) ]);
+        }
+      });
+    }
+
+    function openOtpModal(o){
+      openModal('<h3>إثبات تسليم الطلب #'+o.no+'</h3>'+
+        '<p class="muted">اطلب من العميل رمز التسليم (OTP) المكوّن من 4 أرقام وأدخله هنا، أو التقط صورة إثبات بعد موافقة العميل. <span class="small">(رمز هذا الطلب ظاهر للمشرف في جدول الطلبات بلوحة المشرف.)</span></p>'+
+        '<label for="otpIn">رمز التسليم OTP</label><input id="otpIn" class="otp-input" inputmode="numeric" maxlength="4" placeholder="____" />'+
+        '<p id="otpErr" class="hidden" style="color:var(--red);font-weight:700"></p>'+
+        '<div class="btn-row"><button class="btn-green" id="otpOk" type="button">تأكيد التسليم بالرمز</button></div>'+
+        '<hr style="border:none;border-top:1px solid var(--line);margin:16px 0" />'+
+        '<label for="proofFile">أو: صورة إثبات التسليم (بموافقة العميل)</label>'+
+        '<input id="proofFile" type="file" accept="image/*" capture="environment" />'+
+        '<div class="btn-row"><button class="btn-navy" id="photoOk" type="button">تأكيد التسليم بالصورة</button><button class="btn-ghost" id="mCancel2" type="button">إلغاء</button></div>');
+      $("mCancel2").addEventListener("click", closeModal);
+      $("otpOk").addEventListener("click", function(){
+        var v=$("otpIn").value.trim();
+        if(v!==o.otp){ var er=$("otpErr"); er.textContent="الرمز غير صحيح — تأكد من الرمز الذي يعطيه العميل."; er.classList.remove("hidden"); return; }
+        completeDelivery(o,"otp",null);
+      });
+      $("photoOk").addEventListener("click", function(){
+        var f=$("proofFile").files && $("proofFile").files[0];
+        if(!f){ var er=$("otpErr"); er.textContent="اختر صورة الإثبات أولاً أو استخدم رمز OTP."; er.classList.remove("hidden"); return; }
+        finishDeliveryPhoto(o,f);
+      });
+    }
+    /* تصغير صورة الإثبات قبل الرفع لتخفيف حجمها */
+    function downscaleToBlob(file){
+      return new Promise(function(resolve){
+        var url=URL.createObjectURL(file); var img=new Image();
+        img.onload=function(){
+          try{
+            var max=1000, w=img.naturalWidth||1, h=img.naturalHeight||1;
+            var sc=Math.min(1, max/Math.max(w,h));
+            var cv=document.createElement("canvas");
+            cv.width=Math.max(1,Math.round(w*sc)); cv.height=Math.max(1,Math.round(h*sc));
+            cv.getContext("2d").drawImage(img,0,0,cv.width,cv.height);
+            URL.revokeObjectURL(url);
+            if(cv.toBlob) cv.toBlob(function(b){ resolve(b||file); },"image/jpeg",0.82); else resolve(file);
+          }catch(e){ resolve(file); }
+        };
+        img.onerror=function(){ resolve(file); };
+        img.src=url;
+      });
+    }
+    function blobToDataUrl(blob){
+      return new Promise(function(resolve,reject){ var rd=new FileReader(); rd.onload=function(){ resolve(rd.result); }; rd.onerror=reject; rd.readAsDataURL(blob); });
+    }
+    /* رفع صورة الإثبات إلى مخزن proofs في Supabase وحفظ مسارها في proof_image_url.
+       إن رفض المخزن الرفع (سياسات التخزين غير مفعّلة بعد) تُحفظ الصورة المصغّرة نفسها
+       داخل حقل proof_image_url حتى لا يضيع الإثبات، وتظهر للمشرف بالطريقتين. */
+    function finishDeliveryPhoto(o, file){
+      closeModal(); toast("جارٍ تجهيز صورة الإثبات وحفظ التسليم…");
+      downscaleToBlob(file).then(function(blob){
+        var path="proof-"+o.no+"-"+Date.now()+".jpg";
+        return sbFetch(SB_URL+"/storage/v1/object/proofs/"+path,{method:"POST",
+            headers:{"apikey":SB_KEY,"Authorization":"Bearer "+(sbSession?sbSession.access_token:SB_KEY),"Content-Type":"image/jpeg","x-upsert":"true"},body:blob},1)
+          .then(function(r){ if(r.ok) return {stored:path, blob:blob}; throw new Error("storage rejected"); })
+          .catch(function(){ return blobToDataUrl(blob).then(function(durl){ return {stored:durl, blob:blob}; }); });
+      }).then(function(res){
+        if(res.stored.indexOf("data:")===0) o.proofImg=res.stored;
+        o.proofPath=res.stored;
+        completeDelivery(o,"photo",res.stored);
+      }).catch(function(){ toast("تعذر تجهيز الصورة — حاول مجدداً أو استخدم رمز OTP"); });
+    }
+    function completeDelivery(o, proof, proofStored){
+      var c=courierById(state.driverId);
+      o.status="delivered"; o.proof=proof;
+      o.history.push([fmtTime(new Date()),"تم التسليم — إثبات "+(proof==="photo"?"بصورة بموافقة العميل":"برمز OTP")]);
+      o.tDelivered=new Date();
+      if(c) c.doneToday++;
+      pushNotif("delivered","اكتمال تسليم","سلّم "+(c?c.name:"المندوب")+" الطلب #"+o.no+" إلى "+o.customer+" — الإثبات: "+(proof==="photo"?"صورة":"رمز OTP"));
+      closeModal(); renderDriver(); toast("تم تسليم الطلب #"+o.no+" بنجاح — أحسنت");
+      var body={status:"delivered", delivered_at:nowIso()};
+      if(proof==="photo" && proofStored) body.proof_image_url=proofStored;
+      syncAfter([ sbUpdate("orders","id=eq."+o.uuid,body),
+                  writeLog(o.uuid,"delivered","تم تسليم الطلب #"+o.no+" إلى "+o.customer+" — المندوب "+(c?c.name:"")+" — الإثبات: "+(proof==="photo"?"صورة":"رمز OTP")) ]);
+    }
+    /* رابط صورة الإثبات للمشرف: مسار داخل مخزن proofs يُوقَّع مؤقتاً، أو رابط/بيانات محفوظة مباشرة */
+    function resolveProofImg(o, imgEl){
+      if(!o.proofPath || !imgEl) return;
+      if(o.proofPath.indexOf("data:")===0 || /^https?:\/\//i.test(o.proofPath)){ imgEl.src=o.proofPath; return; }
+      sbFetch(SB_URL+"/storage/v1/object/sign/proofs/"+o.proofPath,{method:"POST",headers:sbHeaders(),body:JSON.stringify({expiresIn:3600})},1)
+        .then(function(r){ return r.json(); })
+        .then(function(d){ if(d && d.signedURL) imgEl.src=SB_URL+"/storage/v1"+d.signedURL; })
+        .catch(function(){});
+    }
+
+    /* ============ Admin: shared render ============ */
+    function renderAdminAll(){ renderAdmStats(); renderAdmOrders(); renderCouriers(); renderCompanies(); renderReports(); renderNotifs(); renderDispatch(); renderReceiptAdmin(); fillCompanySelect(); refreshMarkers(); }
+
+    function renderAdmStats(){
+      var total=orders.length;
+      var nNew=orders.filter(function(o){return o.status==="new";}).length;
+      var nProg=orders.filter(function(o){return ["accepted","picked","onway","arrived"].indexOf(o.status)>=0;}).length;
+      var nDone=orders.filter(function(o){return o.status==="delivered";}).length;
+      var nLate=orders.filter(isLate).length;
+      var on=couriers.filter(function(c){return c.online;}).length;
+      var off=couriers.length-on;
+      var rev=orders.filter(function(o){return o.status==="delivered";}).reduce(function(s,o){return s+o.fee;},0);
+      $("admStats").innerHTML=
+        statHtml(total,"إجمالي طلبات اليوم","")+
+        statHtml(nNew,"طلبات جديدة","")+
+        statHtml(nProg,"قيد التوصيل","amber")+
+        statHtml(nDone,"طلبات مكتملة","green")+
+        statHtml(nLate,"طلبات متأخرة","red")+
+        statHtml(on,"مناديب متصلون","green")+
+        statHtml(off,"مناديب غير متصلين","")+
+        statHtml(rev+" ر.س","إيرادات اليوم (طلبات مسلّمة)","green");
+    }
+
+    /* ============ Admin: nav ============ */
+    $("adminNav").addEventListener("click", function(e){
+      var b=e.target.closest("button"); if(!b) return;
+      state.adminPage=b.getAttribute("data-p");
+      var btns=$("adminNav").querySelectorAll("button");
+      for(var i=0;i<btns.length;i++) btns[i].classList.toggle("active", btns[i]===b);
+      var pages=document.querySelectorAll(".admin-page");
+      for(var j=0;j<pages.length;j++) pages[j].classList.toggle("hidden", pages[j].id!=="page-"+state.adminPage);
+      if(state.adminPage==="home"||state.adminPage==="livemap") setTimeout(initMaps,60);
+      if(state.adminPage==="orders") setTimeout(initPickupMap,60);
+      window.scrollTo({top:0});
+    });
+
+    /* ============ Admin: couriers ============ */
+    function ratingHtml(c){
+      if(!c.rating) return 'تقييم الأداء: لا تقييم بعد';
+      var stars="★★★★★".slice(0,Math.round(c.rating))+"☆☆☆☆☆".slice(0,5-Math.round(c.rating));
+      return 'تقييم الأداء: <span class="stars">'+stars+'</span> '+c.rating+' من 5';
+    }
+    function renderCouriers(){
+      if($("courierList").querySelector("form[data-edit-form]")) return; /* لا تقاطع تعديلاً جارياً عند التحديث الدوري */
+      $("courierList").innerHTML = couriers.map(function(c){
+        var mine=orders.filter(function(o){return o.courier===c.id;});
+        return '<div class="courier-row">'+
+          '<div class="avatar">'+esc((c.name||"م").trim().charAt(0))+'</div>'+
+          '<div style="flex:1;min-width:220px"><strong style="font-size:1.08rem">'+esc(c.name)+'</strong> '+(c.active?"":'<span class="chip chip-bad">الحساب موقوف</span>')+
+          '<div class="muted small">رقم وظيفي: '+c.id+' · الهاتف: '+esc(c.phone||"—")+' · المركبة: '+esc(c.vehicle)+'</div>'+
+          '<div class="small"><span class="status-dot '+(c.online?"on":"off")+'"></span>'+(c.online?"متصل الآن":"غير متصل")+' · طلبات منجزة اليوم: '+c.doneToday+' · طلبات مسندة حالياً: '+mine.filter(function(o){return ["new","accepted","picked","onway","arrived"].indexOf(o.status)>=0;}).length+'</div>'+
+          '<div class="small">'+ratingHtml(c)+' · آخر تحديث موقع: '+fmtDateTime(c.lastUpdate)+' · البطارية: '+(c.battery==null?"غير متاحة":c.battery+"%")+'</div></div>'+
+          '<div class="btn-row" style="margin-top:0;flex:none">'+
+          '<button class="'+(c.active?"btn-amber":"btn-green")+'" data-toggle-courier="'+c.id+'" type="button" style="min-width:110px;flex:none">'+(c.active?"إيقاف الحساب":"تفعيل الحساب")+'</button>'+
+          '<button class="btn-ghost" data-edit-courier="'+c.id+'" type="button" style="min-width:110px;flex:none">تعديل البيانات</button>'+
+          '</div><div class="hidden" id="edit-'+c.id+'" style="width:100%"></div></div>';
+      }).join("");
+      var sel=$("noCourier");
+      if(sel){ sel.innerHTML=couriers.filter(function(c){return c.active;}).map(function(c){ return '<option value="'+c.id+'">'+esc(c.name)+' ('+c.id+')</option>'; }).join(""); }
+    }
+    $("courierList").addEventListener("click", function(e){
+      var t=e.target.closest("[data-toggle-courier]");
+      if(t){ var c=courierById(t.getAttribute("data-toggle-courier")); c.active=!c.active;
+        if(c.active) delete locallyDeactivated[c.uuid]; else locallyDeactivated[c.uuid]=true;
+        var ps=[];
+        if(!c.active){ c.online=false; ps.push(sbUpdate("drivers","id=eq."+c.uuid,{is_online:false})); }
+        ps.push(writeLog(null, c.active?"driver_added":"work_ended", (c.active?"فُعّل":"أُوقف")+" حساب المندوب "+c.name+" من لوحة المشرف"));
+        pushNotif("accepted", c.active?"تفعيل حساب مندوب":"إيقاف حساب مندوب", (c.active?"فُعّل":"أُوقف")+" حساب المندوب "+c.name);
+        renderCouriers(); renderAdmStats(); refreshMarkers(); toast(c.active?"تم تفعيل حساب "+c.name:"تم إيقاف حساب "+c.name);
+        syncAfter(ps); return; }
+      var ed=e.target.closest("[data-edit-courier]");
+      if(ed){ var id=ed.getAttribute("data-edit-courier"); var c2=courierById(id); var box=$("edit-"+id);
+        if(!box.classList.contains("hidden")){ box.classList.add("hidden"); box.innerHTML=""; renderCouriers(); return; }
+        box.innerHTML='<form data-edit-form="'+id+'"><div class="form-grid">'+
+          '<div><label>الاسم</label><input name="name" value="'+esc(c2.name)+'" required /></div>'+
+          '<div><label>الهاتف</label><input name="phone" value="'+esc(c2.phone||"")+'" /></div>'+
+          '<div><label>المركبة ووصفها / اللوحة</label><input name="vehicle" value="'+esc(c2.vehicle)+'" required /></div>'+
+          '<div><label>القدرة التشغيلية (أقصى طلبات نشطة معاً)</label><input name="capacity" type="number" min="1" max="30" value="'+(c2.capacity||5)+'" /></div></div>'+
+          '<button class="btn-green" type="submit" style="margin-top:10px">حفظ التعديلات</button></form>';
+        box.classList.remove("hidden");
+      }
+    });
+    $("courierList").addEventListener("submit", function(e){
+      var f=e.target.closest("[data-edit-form]"); if(!f) return; e.preventDefault();
+      var c=courierById(f.getAttribute("data-edit-form")); if(!c) return;
+      var body={ name:f.elements["name"].value.trim()||c.name, phone:f.elements["phone"].value.trim()||null,
+                 vehicle:f.elements["vehicle"].value.trim()||c.vehicle };
+      var capN=parseInt(f.elements["capacity"].value,10); if(capN>0) body.capacity=capN;
+      toast("جارٍ حفظ التعديلات في قاعدة البيانات…");
+      syncAfter([ sbUpdate("drivers","id=eq."+c.uuid,body),
+                  writeLog(null,"edited","عدّل المشرف بيانات المندوب "+body.name) ])
+        .then(function(){ toast("تم حفظ تعديلات "+body.name); });
+    });
+    $("addCourierForm").addEventListener("submit", function(e){
+      e.preventDefault();
+      var vehicle=$("ncVehicle").value + ($("ncPlate").value.trim() ? " — "+$("ncPlate").value.trim() : "");
+      var no=String(nextCourierSeq);
+      var body={driver_no:no, name:$("ncName").value.trim(), phone:$("ncPhone").value.trim()||null, vehicle:vehicle, capacity:parseInt($("ncCapacity").value,10)||5, is_online:false};
+      e.target.reset();
+      toast("جارٍ إضافة المندوب إلى قاعدة البيانات…");
+      syncAfter([ sbInsert("drivers",body),
+                  writeLog(null,"driver_added","أُضيف المندوب "+body.name+" برقم وظيفي "+no+" من لوحة المشرف") ])
+        .then(function(){ toast("أُضيف المندوب "+body.name+" — رقمه الوظيفي "+no+" (يُنشأ حساب دخوله من إدارة Supabase قبل أول استخدام)"); });
+    });
+
+    /* ============ Admin: orders ============ */
+    function fillCompanySelect(){ $("noCompany").innerHTML=companies.map(function(co,i){ return '<option value="'+i+'">'+esc(co.name)+'</option>'; }).join(""); }
+    function parseCoord(v){ var n=parseFloat(String(v==null?"":v).trim()); return isNaN(n)?null:n; }
+    /* تحليل «رابط الموقع»: يقبل رابط خرائط Google بأشكاله (فيه إحداثيات أو رابط مختصر
+       أو رابط مكان) أو إحداثيات خاماً مثل 24.81550, 46.68220 أو نص عنوان عادياً.
+       تُستخرج الإحداثيات تلقائياً متى وُجدت داخل الرابط، وإلا يُحفظ الرابط نفسه
+       ليفتحه المندوب مباشرة في خرائط Google. */
+    function parseLocInput(raw){
+      var s=String(raw==null?"":raw).trim();
+      var out={lat:null, lng:null, url:null, text:s};
+      if(!s) return out;
+      if(/^https?:\/\//i.test(s)) out.url=s;
+      var m=null;
+      m=s.match(/!3d(-?\d{1,3}\.\d+)!4d(-?\d{1,3}\.\d+)/);
+      if(!m) m=s.match(/@(-?\d{1,3}\.\d+),(-?\d{1,3}\.\d+)/);
+      if(!m) m=s.match(/[?&](?:q|query|destination|ll|sll)=(-?\d{1,3}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)/);
+      if(!m) m=s.match(/(-?\d{1,3}\.\d{3,})\s*,\s*(-?\d{1,3}\.\d{3,})/);
+      if(m){
+        var la=parseFloat(m[1]), ln=parseFloat(m[2]);
+        if(la>=-90 && la<=90 && ln>=-180 && ln<=180){ out.lat=la; out.lng=ln; }
+      }
+      return out;
+    }
+    function locFeedback(p){
+      if(!p.text) return "";
+      if(p.lat!==null) return "تم التعرف على الموقع بدقة من الرابط: "+p.lat.toFixed(5)+"، "+p.lng.toFixed(5)+" — سيفتحه زر «الذهاب إلى العميل» عند المندوب في خرائط Google.";
+      if(p.url) return "رابط موقع محفوظ — سيفتحه المندوب من زر «الذهاب إلى العميل» في خرائط Google. (الروابط المختصرة مثل maps.app.goo.gl لا تُظهر إحداثياتها هنا، لكنها تفتح الموقع الصحيح عند المندوب.)";
+      return "هذا نص عنوان وليس رابط موقع — للدقة الصق رابط الموقع من خرائط Google أو من محادثة العميل في واتساب.";
+    }
+    $("noLocUrl").addEventListener("input", function(){ $("delivLocMsg").textContent=locFeedback(parseLocInput($("noLocUrl").value)); });
+    $("noLocUrl").addEventListener("change", function(){ $("delivLocMsg").textContent=locFeedback(parseLocInput($("noLocUrl").value)); });
+    $("noPickupUrl").addEventListener("input", function(){
+      var p=parseLocInput($("noPickupUrl").value);
+      $("pickupLinkMsg").textContent=locFeedback(p);
+      if(p.lat!==null && typeof setPickupCoords==="function"){ try{ setPickupCoords(p.lat, p.lng, false); $("pickupLinkMsg").textContent="تم التعرف على موقع الاستلام من الرابط وثُبّت على الخريطة بالأسفل: "+p.lat.toFixed(5)+"، "+p.lng.toFixed(5); }catch(e){} }
+    });
+
+    /* ============ موقع الاستلام على الخريطة — خريطة اختيار داخل نموذج إنشاء الطلب ============ */
+    var pickupMap=null, pickupMarker=null;
+    function setPickupCoords(lat,lng,announce){
+      $("noPickupLat").value=Number(lat).toFixed(5);
+      $("noPickupLng").value=Number(lng).toFixed(5);
+      if(pickupMap && typeof L!=="undefined"){
+        if(pickupMarker) pickupMarker.setLatLng([lat,lng]);
+        else pickupMarker=L.marker([lat,lng]).addTo(pickupMap);
+        pickupMap.setView([lat,lng], Math.max(pickupMap.getZoom(),13));
+      }
+      if(announce!==false) $("pickupMapMsg").textContent="تم تثبيت موقع الاستلام: "+Number(lat).toFixed(5)+"، "+Number(lng).toFixed(5)+" — سيظهر للمندوب في بطاقة الطلب.";
+    }
+    function clearPickupPick(announce){
+      if($("noPickupLat")) $("noPickupLat").value="";
+      if($("noPickupLng")) $("noPickupLng").value="";
+      if(pickupMarker && pickupMap){ try{ pickupMap.removeLayer(pickupMarker); }catch(e){} pickupMarker=null; }
+      if($("pickupMapMsg")) $("pickupMapMsg").textContent= announce ? "تم مسح موقع الاستلام الجغرافي — سيُحفظ الطلب بعنوان الاستلام المكتوب فقط." : "";
+    }
+    function initPickupMap(){
+      var el=$("pickupMap"); if(!el) return;
+      if(typeof L==="undefined"){
+        if(!el.dataset.fb){ el.innerHTML='<div class="map-fallback">تعذر تحميل خريطة اختيار موقع الاستلام (تحقق من الإنترنت) — ما زال بإمكانك كتابة خط العرض وخط الطول يدوياً في الخانتين بالأسفل بعد نسخ الإحداثيات من خرائط Google.</div>'; el.dataset.fb="1"; }
+        return;
+      }
+      try{
+        if(!pickupMap){
+          pickupMap=L.map("pickupMap").setView([24.7136,46.6753],11);
+          L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"© OpenStreetMap"}).addTo(pickupMap);
+          pickupMap.on("click", function(ev){ setPickupCoords(ev.latlng.lat, ev.latlng.lng); });
+          var la=parseCoord($("noPickupLat").value), ln=parseCoord($("noPickupLng").value);
+          if(la!==null && ln!==null) setPickupCoords(la,ln,false);
+        }
+        setTimeout(function(){ if(pickupMap) pickupMap.invalidateSize(); },150);
+      }catch(e){ /* تبقى خانات الإحداثيات اليدوية متاحة */ }
+    }
+    $("pickupClearBtn").addEventListener("click", function(){ clearPickupPick(true); });
+    $("pickupMyLocBtn").addEventListener("click", function(){
+      if(!("geolocation" in navigator)){ $("pickupMapMsg").textContent="هذا المتصفح لا يدعم تحديد الموقع — اضغط على الخريطة أو اكتب الإحداثيات يدوياً."; return; }
+      $("pickupMapMsg").textContent="جارٍ جلب موقع جهازك الحالي…";
+      navigator.geolocation.getCurrentPosition(function(pos){
+        initPickupMap(); setPickupCoords(pos.coords.latitude, pos.coords.longitude);
+      }, function(err){
+        $("pickupMapMsg").textContent="تعذر جلب موقع الجهاز: "+(err.message||"تم رفض الإذن")+" — اضغط على الخريطة بدلاً من ذلك.";
+      }, {enableHighAccuracy:true, timeout:15000});
+    });
+    ["noPickupLat","noPickupLng"].forEach(function(id){
+      $(id).addEventListener("change", function(){
+        var la=parseCoord($("noPickupLat").value), ln=parseCoord($("noPickupLng").value);
+        if(la!==null && ln!==null){ initPickupMap(); setPickupCoords(la,ln); }
+      });
+    });
+    function renderAdmOrders(){
+      var q=($("orderSearch").value||"").trim();
+      var rows=orders.filter(function(o){ return !q || String(o.no).indexOf(q)>=0 || o.customer.indexOf(q)>=0; });
+      $("admOrdersBody").innerHTML=rows.map(function(o){
+        var c=courierById(o.courier); var comp=companies[o.company];
+        var others=couriers.filter(function(x){return x.active && x.id!==o.courier;}).map(function(x){ return '<option value="'+x.id+'">'+esc(x.name)+'</option>'; }).join("");
+        return '<tr><td><strong>#'+o.no+'</strong></td><td>'+esc(o.customer)+'<div class="small muted">'+esc(o.phone)+'</div></td>'+
+          '<td>'+esc(comp?comp.name:"")+'</td><td>'+esc(c?c.name:"غير مُسند")+'</td><td>'+statusChip(o.status)+(isLate(o)?' <span class="chip chip-bad">متأخر</span>':"")+'</td>'+
+          '<td>'+(o.priority==="high"?'<span class="chip chip-pri">عالية</span>':"عادية")+'</td><td>'+fmtTime(o.time)+'</td><td>'+o.fee+' ر.س</td><td><strong>'+o.otp+'</strong></td>'+
+          '<td><select data-transfer="'+o.no+'" style="min-width:150px"><option value="">نقل إلى…</option>'+others+'</select></td></tr>';
+      }).join("") || '<tr><td colspan="10" class="muted">لا توجد طلبات مطابقة للبحث.</td></tr>';
+    }
+    $("orderSearch").addEventListener("input", renderAdmOrders);
+    $("admOrdersBody").addEventListener("change", function(e){
+      var s=e.target.closest("[data-transfer]"); if(!s||!s.value) return;
+      var no=parseInt(s.getAttribute("data-transfer"),10); var o=null; orders.forEach(function(x){ if(x.no===no) o=x; }); if(!o) return;
+      var from=courierById(o.courier), to=courierById(s.value); if(!to) return;
+      var wasFailed=(o.status==="failed"||o.status==="rejected");
+      o.courier=s.value; if(wasFailed){ o.status="new"; o.failReason=null; o.rejectReason=null; }
+      o.history.push([fmtTime(new Date()),"نُقل الطلب من "+(from?from.name:"")+" إلى "+to.name+" بواسطة المشرف"]);
+      pushNotif("new","نقل طلب","نُقل الطلب #"+o.no+" إلى "+to.name+" — سيظهر عنده كطلب جديد");
+      renderAdmOrders(); if(state.driverId) renderDriver(); toast("نُقل الطلب #"+o.no+" إلى "+to.name);
+      var body={driver_id:to.uuid, assigned_at:nowIso()}; if(wasFailed) body.status="new";
+      syncAfter([ sbUpdate("orders","id=eq."+o.uuid,body),
+                  writeLog(o.uuid,"transferred","غيّر المشرف مندوب الطلب #"+o.no+" من "+(from?from.name:"غير مُسند")+" إلى "+to.name) ]);
+    });
+    $("addOrderForm").addEventListener("submit", function(e){
+      e.preventDefault();
+      var ci=parseInt($("noCompany").value,10);
+      var comp=companies[ci];
+      var dParsed=parseLocInput($("noLocUrl").value);
+      var pParsed=parseLocInput($("noPickupUrl").value);
+      var pLat = pParsed.lat!==null ? pParsed.lat : parseCoord($("noPickupLat").value);
+      var pLng = pParsed.lng!==null ? pParsed.lng : parseCoord($("noPickupLng").value);
+      var drv=courierById($("noCourier").value);
+      var notesText=$("noNotes").value.trim();
+      var body={
+        company_id: comp?comp.uuid:null,
+        customer_name:$("noCustomer").value.trim(), customer_phone:$("noPhone").value.trim(),
+        pickup_address: ((pParsed.text && !pParsed.url && pParsed.lat===null) ? pParsed.text : (comp?comp.pickupText:"مقر الشركة — الرياض")),
+        pickup_lat:pLat, pickup_lng:pLng,
+        pickup_loc_url:(pParsed.url || (pLat!==null && pLng!==null ? mapsLink(pLat,pLng) : null)),
+        delivery_loc_url:(dParsed.url || (dParsed.lat!==null ? mapsLink(dParsed.lat,dParsed.lng) : (dParsed.text||null))),
+        delivery_lat:dParsed.lat, delivery_lng:dParsed.lng,
+        meals_count:parseInt($("noMeals").value,10)||1, meal_type:"وجبة صحية متوازنة",
+        notes:(($("noPriority").value==="high"?PRIO_TAG:"")+(notesText||""))||null,
+        status:"new", driver_id:drv?drv.uuid:null,
+        otp_code:String(Math.floor(1000+Math.random()*9000)),
+        assigned_at:drv?nowIso():null
+      };
+      e.target.reset(); $("noMeals").value=1; clearPickupPick(false); $("delivLocMsg").textContent=""; $("pickupLinkMsg").textContent="";
+      toast("جارٍ حفظ الطلب في قاعدة البيانات…");
+      sbInsert("orders",body).then(function(rows){
+        var r=rows && rows[0];
+        var noTxt=r?("#"+r.order_no):"";
+        pushNotif("new","طلب جديد","أُنشئ الطلب "+noTxt+" وأُسند إلى "+(drv?drv.name:"")+" — العميل: "+body.customer_name);
+        return syncAfter([ writeLog(r?r.id:null,"created","أنشأ المشرف الطلب "+noTxt+" للعميل "+body.customer_name+" وأسنده إلى "+(drv?drv.name:"—")) ])
+          .then(function(){ toast("تم إنشاء الطلب "+noTxt+" وحفظه في قاعدة البيانات"+(drv?" وإسناده إلى "+drv.name:"")); });
+      }).catch(function(err){ toast("تعذر إنشاء الطلب: "+(err.message||err)); loadAllData().then(function(){ renderCurrent(); }).catch(function(){}); });
+    });
+
+    /* ============ Admin: companies ============ */
+    function renderCompanies(){
+      $("companyList").innerHTML=companies.map(function(co,i){
+        var coOrders=orders.filter(function(o){return o.company===i;});
+        var delivered=coOrders.filter(function(o){return o.status==="delivered";});
+        var invoiced=delivered.length*co.fee;
+        var outstanding=coOrders.filter(function(o){return o.status!=="delivered"&&o.status!=="cancelled";}).length*co.fee;
+        var logs=co.log.map(function(l){ return '<li><strong>'+esc(l[0])+'</strong> — '+esc(l[1])+'</li>'; }).join("");
+        return '<div class="card"><div class="order-head"><h3>'+esc(co.name)+'</h3><span class="chip chip-done">شركة وجبات صحية متعاقدة</span></div>'+
+          '<dl class="kv"><dt>مسؤول التواصل</dt><dd>'+esc(co.contact)+'</dd>'+
+          '<dt>رقم الهاتف</dt><dd>'+(co.phone && co.phone!=="—" ? '<a href="tel:+'+intlPhone(co.phone)+'" target="_blank" rel="noopener">'+esc(co.phone)+'</a>' : "—")+'</dd>'+
+          '<dt>سعر التوصيل المتفق</dt><dd>'+co.fee+' ريال للطلب</dd>'+
+          '<dt>عدد الطلبات</dt><dd>'+coOrders.length+' طلباً ('+delivered.length+' مسلّمة)</dd>'+
+          '<dt>قيمة الفواتير (المسلّمة)</dt><dd>'+invoiced+' ريال</dd>'+
+          '<dt>المبالغ المستحقة (قيد التنفيذ)</dt><dd>'+outstanding+' ريال</dd></dl>'+
+          (logs?'<h3 style="margin-top:12px">سجل العمليات</h3><ul class="log-list">'+logs+'</ul>':"")+'</div>';
+      }).join("") || '<div class="card"><p class="muted">لا توجد شركات مسجلة بعد — أضف أول شركة من النموذج بالأسفل.</p></div>';
+    }
+    $("addCompanyForm").addEventListener("submit", function(e){
+      e.preventDefault();
+      var body={name:$("ncoName").value.trim(), contact_name:$("ncoContact").value.trim(), phone:$("ncoPhone").value.trim(), agreed_delivery_price:parseFloat($("ncoFee").value)||0};
+      e.target.reset();
+      toast("جارٍ حفظ الشركة في قاعدة البيانات…");
+      syncAfter([ sbInsert("companies",body),
+                  writeLog(null,"company_added","أُضيفت شركة «"+body.name+"» من لوحة المشرف — سعر التوصيل المتفق "+body.agreed_delivery_price+" ريال") ])
+        .then(function(){ fillCompanySelect(); toast("أُضيفت الشركة «"+body.name+"» إلى قاعدة البيانات"); });
+    });
+
+    /* ============ Admin: reports — محسوبة من طلبات قاعدة البيانات ضمن الفترة ============ */
+    $("reportTabs").addEventListener("click", function(e){
+      var b=e.target.closest("button"); if(!b) return;
+      state.reportRange=b.getAttribute("data-r");
+      var btns=$("reportTabs").querySelectorAll("button");
+      for(var i=0;i<btns.length;i++) btns[i].classList.toggle("active", btns[i]===b);
+      renderReports();
+    });
+    function rangeStart(){
+      if(state.reportRange==="day"){ var d=new Date(); d.setHours(0,0,0,0); return d; }
+      if(state.reportRange==="week") return new Date(Date.now()-7*864e5);
+      return new Date(Date.now()-30*864e5);
+    }
+    function deliveredInRange(o){ return o.status==="delivered" && o.tDelivered && new Date(o.tDelivered) >= rangeStart(); }
+    function lateInRange(o){
+      if(state.reportRange==="day") return isLate(o);
+      return o.status==="delivered" && o.tDelivered && new Date(o.tDelivered) >= rangeStart() && o.time && new Date(o.tDelivered) > new Date(o.time);
+    }
+    function reportData(){
+      var done=orders.filter(deliveredInRange);
+      var late=orders.filter(lateInRange).length;
+      var revenue=done.reduce(function(s,o){return s+o.fee;},0);
+      var costs=Math.round(revenue*0.35);
+      return {done:done.length, late:late, revenue:revenue, costs:costs, profit:revenue-costs};
+    }
+    function renderReports(){
+      var r=reportData();
+      var lbl= state.reportRange==="day"?"اليوم":(state.reportRange==="week"?"آخر 7 أيام":"آخر 30 يوماً");
+      $("reportSummary").innerHTML='<div class="grid stats-grid">'+
+        statHtml(r.done,"طلبات مكتملة — "+lbl,"green")+
+        statHtml(r.late,"طلبات متأخرة","red")+
+        statHtml(r.revenue+" ر.س","إجمالي الإيرادات","green")+
+        statHtml(r.costs+" ر.س","تكاليف التشغيل التقديرية","amber")+
+        statHtml(r.profit+" ر.س","صافي الربح التقديري","")+'</div>';
+      $("reportBody").innerHTML=couriers.map(function(c){
+        var done=orders.filter(function(o){ return o.courier===c.id && deliveredInRange(o); }).length;
+        var late=orders.filter(function(o){ return o.courier===c.id && lateInRange(o); }).length;
+        var perf= !c.rating ? "لا تقييم بعد" : (c.rating>=4.7?"ممتاز":(c.rating>=4.4?"جيد جداً":"يحتاج متابعة"));
+        return '<tr><td><strong>'+esc(c.name)+'</strong></td><td>'+done+'</td><td>'+late+'</td><td>0</td><td>'+(c.rating?c.rating+" من 5":"—")+'</td><td>'+perf+'</td></tr>';
+      }).join("");
+    }
+    $("exportCsvBtn").addEventListener("click", function(){
+      var r=reportData();
+      var lines=["المندوب,طلبات منجزة,طلبات متأخرة,المسافة (كم),التقييم,الأداء"];
+      couriers.forEach(function(c){
+        var done=orders.filter(function(o){ return o.courier===c.id && deliveredInRange(o); }).length;
+        var late=orders.filter(function(o){ return o.courier===c.id && lateInRange(o); }).length;
+        lines.push([c.name,done,late,0,(c.rating||"—"), !c.rating?"لا تقييم بعد":(c.rating>=4.7?"ممتاز":(c.rating>=4.4?"جيد جداً":"يحتاج متابعة"))].join(","));
+      });
+      lines.push(""); lines.push("الإيرادات,"+r.revenue); lines.push("تكاليف التشغيل,"+r.costs); lines.push("صافي الربح,"+r.profit);
+      var blob=new Blob(["\ufeff"+lines.join("\n")],{type:"text/csv;charset=utf-8"});
+      var a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+      a.download="arjaa-report-"+state.reportRange+".csv"; document.body.appendChild(a); a.click(); a.remove();
+      toast("تم تنزيل ملف التقرير — يفتح في Excel مباشرة");
+    });
+    $("exportPdfBtn").addEventListener("click", function(){
+      $("pdfNote").textContent="تصدير PDF الكامل (بترويسة الشركة وتنسيق رسمي) يُفعَّل في مرحلة لاحقة مع التقارير المتقدمة. حالياً يمكنك تصدير Excel من الزر المجاور، أو طباعة هذه الصفحة من متصفحك.";
+    });
+
+    /* ============ Admin: notifications — من سجل عمليات قاعدة البيانات ============ */
+    function renderNotifs(){
+      var html=notifications.map(function(n){
+        return '<div class="notif">'+notifIcon(n.type)+'<div style="flex:1"><strong>'+esc(n.title)+'</strong><div>'+esc(n.text)+'</div><div class="small muted">'+fmtDateTime(n.time)+'</div></div></div>';
+      }).join("");
+      $("notifList").innerHTML=html || '<p class="muted">لا توجد عمليات مسجلة بعد.</p>';
+      $("homeNotifs").innerHTML=notifications.slice(0,4).map(function(n){
+        return '<div class="notif">'+notifIcon(n.type)+'<div style="flex:1"><strong>'+esc(n.title)+'</strong><div>'+esc(n.text)+'</div><div class="small muted">'+fmtDateTime(n.time)+'</div></div></div>';
+      }).join("") || '<p class="muted">لا توجد عمليات مسجلة بعد.</p>';
+      $("notifCount").textContent= notifications.length? "("+notifications.length+")" : "";
+      renderLiveList();
+    }
+
+    /* ============ Maps (Leaflet + OpenStreetMap) ============
+       لا تُرسم علامة إلا لموقع حقيقي معروف: موقع جهاز المندوب المسجل دخوله
+       على هذا الجهاز عند تفعيله مشاركة GPS بنفسه. لا مواقع وهمية. */
+    var mapA=null, mapL=null, markersA=[], markersL=[];
+    function makeMarkers(map, arr){
+      couriers.forEach(function(c){
+        if(!c.active) return;
+        var isReal = state.realPos && state.driverId===c.id;
+        var lat=isReal?state.realPos.lat:c.lat, lng=isReal?state.realPos.lng:c.lng;
+        if(lat==null || lng==null || isNaN(lat) || isNaN(lng)) return;
+        var m=L.marker([lat,lng]).addTo(map);
+        m.bindPopup('<strong>'+esc(c.name)+'</strong><br/>الحالة: '+(c.online?"متصل":"غير متصل")+' — <b>موقع الجهاز الفعلي</b><br/>آخر تحديث: '+fmtDateTime(c.lastUpdate)+'<br/>طلبات مسندة: '+orders.filter(function(o){return o.courier===c.id&&["new","accepted","picked","onway","arrived"].indexOf(o.status)>=0;}).length);
+        arr.push(m);
+      });
+    }
+    function initMaps(){
+      if(typeof L==="undefined"){
+        ["mapAdmin","mapLive"].forEach(function(id){ var el=$(id); if(el && !el.dataset.fb){ el.innerHTML='<div class="map-fallback">تعذر تحميل مكتبة الخرائط (Leaflet) — تحقق من اتصال الإنترنت ثم أعد فتح الصفحة. قائمة المناديب متاحة في قسم «الخريطة المباشرة».</div>'; el.dataset.fb="1"; } });
+        return;
+      }
+      try{
+        if(!mapA && $("mapAdmin")){
+          mapA=L.map("mapAdmin").setView([24.7136,46.6753],11);
+          L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"© OpenStreetMap"}).addTo(mapA);
+          makeMarkers(mapA, markersA);
+        }
+        if(!mapL && $("mapLive")){
+          mapL=L.map("mapLive").setView([24.7136,46.6753],11);
+          L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"© OpenStreetMap"}).addTo(mapL);
+          makeMarkers(mapL, markersL);
+        }
+        window.__mapsReady=true;
+        setTimeout(function(){ if(mapA) mapA.invalidateSize(); if(mapL) mapL.invalidateSize(); },150);
+      }catch(e){ /* map stays empty; list view still works */ }
+    }
+    function refreshMarkers(){
+      if(!window.__mapsReady || typeof L==="undefined") return;
+      try{
+        markersA.forEach(function(m){ mapA.removeLayer(m); }); markersA=[];
+        markersL.forEach(function(m){ if(mapL) mapL.removeLayer(m); }); markersL=[];
+        if(mapA) makeMarkers(mapA, markersA);
+        if(mapL) makeMarkers(mapL, markersL);
+      }catch(e){}
+    }
+
+    function renderLiveList(){
+      var el=$("liveCourierList"); if(!el) return;
+      el.innerHTML='<div class="card"><h2>المناديب المتصلون الآن</h2>'+(couriers.filter(function(c){return c.active;}).map(function(c){
+        var assigned=orders.filter(function(o){return o.courier===c.id&&["new","accepted","picked","onway","arrived"].indexOf(o.status)>=0;});
+        return '<div class="courier-row" style="box-shadow:none"><div class="avatar">'+esc((c.name||"م").trim().charAt(0))+'</div>'+
+          '<div style="flex:1;min-width:200px"><strong>'+esc(c.name)+'</strong><div class="small muted"><span class="status-dot '+(c.online?"on":"off")+'"></span>'+(c.online?"متصل":"غير متصل")+' · '+esc(c.district)+' · آخر تحديث: '+fmtDateTime(c.lastUpdate)+' · البطارية: '+(c.battery==null?"غير متاحة":c.battery+"%")+'</div>'+
+          '<div class="small">طلبات جارية: '+(assigned.length? assigned.map(function(o){return "#"+o.no;}).join("، ") : "لا يوجد")+'</div></div>'+
+          '<button class="btn-navy" data-detail="'+c.id+'" type="button" style="flex:none;min-width:130px">عرض التفاصيل</button></div>';
+      }).join("") || '<p class="muted">لا يوجد مناديب مسجلون بعد.</p>')+'</div>';
+    }
+    $("liveCourierList").addEventListener("click", function(e){
+      var b=e.target.closest("[data-detail]"); if(!b) return;
+      var c=courierById(b.getAttribute("data-detail")); if(!c) return;
+      var assigned=orders.filter(function(o){return o.courier===c.id;});
+      var box=$("courierDetail");
+      var locRow = (c.lat!=null && c.lng!=null && !isNaN(c.lat) && !isNaN(c.lng))
+        ? esc(c.district)+' — <a href="'+mapsLink(c.lat,c.lng)+'" target="_blank" rel="noopener">فتح في خرائط جوجل</a> <span class="small muted">(موقع جهاز هذا المندوب على هذا الجهاز — مشاركة GPS مفعّلة)</span>'
+        : 'لا يوجد موقع معروف حالياً — يظهر الموقع عندما يفعّل المندوب مشاركة GPS من جهازه أثناء العمل (وربط التتبع المباشر بين الأجهزة في مرحلة Traccar)';
+      box.innerHTML='<h2>تفاصيل المندوب: '+esc(c.name)+'</h2>'+
+        '<dl class="kv"><dt>الرقم الوظيفي</dt><dd>'+c.id+'</dd><dt>الهاتف</dt><dd>'+esc(c.phone||"—")+'</dd>'+
+        '<dt>المركبة</dt><dd>'+esc(c.vehicle)+'</dd><dt>الحالة</dt><dd>'+(c.online?"متصل":"غير متصل")+' — '+(c.active?"الحساب مفعّل":"الحساب موقوف")+'</dd>'+
+        '<dt>الموقع الحالي</dt><dd>'+locRow+'</dd>'+
+        '<dt>آخر تحديث للموقع</dt><dd>'+fmtDateTime(c.lastUpdate)+'</dd><dt>بطارية الهاتف</dt><dd>'+(c.battery==null?"غير متاحة":c.battery+"%")+'</dd>'+
+        '<dt>طلبات منجزة اليوم</dt><dd>'+c.doneToday+'</dd><dt>المسافة اليوم</dt><dd>'+c.km+' كم</dd><dt>التقييم</dt><dd>'+(c.rating?c.rating+" من 5":"لا تقييم بعد")+'</dd></dl>'+
+        '<h3 style="margin-top:14px">طلباته</h3>'+(assigned.length? assigned.map(function(o){ return '<div style="padding:6px 0;border-bottom:1px solid var(--line)">طلب #'+o.no+' — '+esc(o.customer)+' — '+esc((o.district||"").split("،")[0])+' '+statusChip(o.status)+'</div>'; }).join("") : '<p class="muted">لا توجد طلبات مسندة حالياً.</p>')+
+        '<h3 style="margin-top:14px">سجل الحركة</h3>'+(c.trail.length? '<ul class="log-list">'+c.trail.map(function(t){ return '<li><strong>'+esc(t[0])+'</strong> — '+esc(t[1])+'</li>'; }).join("")+'</ul>' : '<p class="muted">لا يوجد سجل حركة بعد — يُبنى السجل من نقاط GPS الفعلية عند ربط التتبع (Traccar) في مرحلته.</p>');
+      box.classList.remove("hidden");
+      box.scrollIntoView({behavior:"smooth",block:"start"});
+    });
+
+    /* ============ Admin: Dispatch — إدارة وتوزيع الطلبات ============ */
+    var dispatchSel = {};
+    var ACTIVE_ST = ["new","accepted","picked","onway","arrived"];
+    function findOrder(no){ var r=null; orders.forEach(function(x){ if(x.no===no) r=x; }); return r; }
+    function activeCount(cid){ return orders.filter(function(o){ return o.courier===cid && ACTIVE_ST.indexOf(o.status)>=0; }).length; }
+    function isClosedOrder(o){ return o.status==="delivered"||o.status==="cancelled"; }
+    function courierName(id){ var c=courierById(id); return c?c.name:"غير مُسند"; }
+    function capacityCheck(c){
+      if(c && activeCount(c.id) > (c.capacity||5)){
+        toast("تنبيه: المندوب "+c.name+" تجاوز قدرته التشغيلية — عنده "+activeCount(c.id)+" طلبات نشطة وقدرته "+(c.capacity||5));
+        return true;
+      }
+      return false;
+    }
+    function setCourier(o,newId){
+      o.courier = newId || "";
+      o.driverUuid = newId ? (courierById(newId)||{}).uuid || null : null;
+      if(o.status==="rejected"||o.status==="failed"){ o.status="new"; delete o.failReason; delete o.rejectReason; }
+    }
+    function assignOrder(o,newId){
+      var from = o.courier ? courierById(o.courier) : null;
+      var to = newId ? courierById(newId) : null;
+      if(from && to && from.id===to.id) return;
+      var wasFailed=(o.status==="rejected"||o.status==="failed");
+      setCourier(o,newId);
+      var body={driver_id: to?to.uuid:null, assigned_at: to?nowIso():null};
+      if(wasFailed) body.status="new";
+      var action, details;
+      if(!to){
+        action="unassigned"; details="ألغى المشرف إسناد الطلب #"+o.no+(from?" (كان عند "+from.name+")":"");
+        o.history.push([fmtTime(new Date()),"ألغى المشرف إسناد الطلب"]);
+        pushNotif("accepted","إلغاء إسناد","أُلغي إسناد الطلب #"+o.no+" — أصبح بدون مندوب وبانتظار توزيع جديد");
+      } else if(from){
+        action="transferred"; details="غيّر المشرف مندوب الطلب #"+o.no+" من "+from.name+" إلى "+to.name;
+        o.history.push([fmtTime(new Date()),"نُقل الطلب من "+from.name+" إلى "+to.name+" بواسطة المشرف"]);
+        pushNotif("new","نقل طلب","نُقل الطلب #"+o.no+" من "+from.name+" إلى "+to.name);
+        if(state.driverId===to.id) toast("وصل إليك طلب جديد #"+o.no+" من المشرف");
+      } else {
+        action="assigned"; details="أسند المشرف الطلب #"+o.no+" إلى "+to.name;
+        o.history.push([fmtTime(new Date()),"أُسند الطلب إلى "+to.name+" بواسطة المشرف"]);
+        pushNotif("new","إسناد طلب جديد","أُسند الطلب #"+o.no+" إلى "+to.name+" — العميل: "+o.customer);
+        if(state.driverId===to.id) toast("وصل إليك طلب جديد #"+o.no+" من المشرف");
+      }
+      syncAfter([ sbUpdate("orders","id=eq."+o.uuid,body), writeLog(o.uuid,action,details) ]);
+      if(to) capacityCheck(to);
+    }
+
+    function renderDispatchCouriers(){
+      var el=$("dispatchCouriers"); if(!el) return;
+      el.innerHTML = couriers.filter(function(c){return c.active;}).map(function(c){
+        var act=activeCount(c.id), cap=c.capacity||5, pct=Math.min(100,Math.round(act/cap*100));
+        var cls= act>cap ? "over" : (act>=cap ? "warn" : "");
+        var real = state.realPos && state.driverId===c.id;
+        return '<div class="courier-row" style="box-shadow:none">'+
+          '<div class="avatar">'+esc((c.name||"م").trim().charAt(0))+'</div>'+
+          '<div style="flex:1;min-width:220px"><strong style="font-size:1.05rem">'+esc(c.name)+'</strong>'+
+          '<div class="small"><span class="status-dot '+(c.online?"on":"off")+'"></span>'+(c.online?"متصل":"غير متصل")+' · '+esc(c.district)+' · آخر تحديث موقع: '+fmtDateTime(c.lastUpdate)+' · البطارية: '+(c.battery==null?"غير متاحة":c.battery+"%")+'</div>'+
+          '<div class="small">الطلبات النشطة الآن: <strong>'+act+'</strong> من القدرة التشغيلية <strong>'+cap+'</strong>'+(act>cap?' <span class="chip chip-bad">تجاوز القدرة التشغيلية</span>':(act===cap?' <span class="chip chip-progress">ممتلئ</span>':""))+'</div>'+
+          '<div class="cap-track"><div class="cap-fill '+cls+'" style="width:'+pct+'%"></div></div>'+
+          '<div class="small muted">'+(real?"موقع GPS فعلي من جهاز هذا المندوب الآن — مشاركته مفعّلة":"لا موقع معروفاً لهذا المندوب حتى يفعّل مشاركة GPS من جهازه")+'</div></div>'+
+          '<button class="btn-navy" data-gotomap="'+c.id+'" type="button" style="flex:none;min-width:150px">عرض على الخريطة</button></div>';
+      }).join("") || '<p class="muted">لا يوجد مناديب مفعّلون.</p>';
+      var bc=$("bulkCourier");
+      if(bc){ bc.innerHTML = couriers.filter(function(c){return c.active;}).map(function(c){ return '<option value="'+c.id+'">'+esc(c.name)+' — طلبات نشطة '+activeCount(c.id)+'/'+(c.capacity||5)+(c.online?" · متصل":" · غير متصل")+'</option>'; }).join(""); }
+    }
+
+    function renderDispatchTable(){
+      var body=$("dispatchBody"); if(!body) return;
+      var over = couriers.filter(function(c){ return c.active && activeCount(c.id) > (c.capacity||5); });
+      var alertEl=$("dispatchAlert");
+      if(alertEl) alertEl.innerHTML = over.length ? '<div class="checkline" style="background:var(--amber-soft)"><span><strong>تنبيه قدرة تشغيلية:</strong> '+over.map(function(c){ return esc(c.name)+" عنده "+activeCount(c.id)+" طلبات نشطة وقدرته التشغيلية "+(c.capacity||5); }).join(" · ")+'</span></div>' : "";
+      body.innerHTML = orders.map(function(o){
+        var c=courierById(o.courier);
+        var districtShort=(o.district||"").split("،")[0];
+        var actions="";
+        if(!isClosedOrder(o)){
+          var opts='<option value="">بدون إسناد</option>'+couriers.filter(function(x){return x.active;}).map(function(x){ return '<option value="'+x.id+'"'+(o.courier===x.id?" selected":"")+'>'+esc(x.name)+'</option>'; }).join("");
+          actions='<label class="small" style="margin:0 0 4px">المندوب المسؤول</label><select data-assign="'+o.no+'" style="min-width:150px">'+opts+'</select>'+
+            '<div class="btn-row">'+
+            (o.courier? '<button class="btn-amber" data-unassign="'+o.no+'" type="button">إلغاء الإسناد</button>' : "")+
+            '<button class="btn-ghost" data-edit-order="'+o.no+'" type="button">تعديل الطلب</button>'+
+            '<button class="btn-navy" data-order-log="'+o.no+'" type="button">سجل الطلب</button></div>';
+        } else {
+          actions='<button class="btn-navy" data-order-log="'+o.no+'" type="button">سجل الطلب</button>';
+        }
+        return '<tr>'+
+          '<td data-label="تحديد"><input type="checkbox" class="rowcheck" data-sel-order="'+o.no+'"'+(dispatchSel[o.no]?" checked":"")+(isClosedOrder(o)?" disabled":"")+' aria-label="تحديد الطلب '+o.no+'" /></td>'+
+          '<td data-label="رقم الطلب"><strong>#'+o.no+'</strong></td>'+
+          '<td data-label="العميل">'+esc(o.customer)+'<div class="small muted">'+esc(o.phone)+'</div></td>'+
+          '<td data-label="الحي">'+esc(districtShort)+'</td>'+
+          '<td data-label="المندوب">'+(c? '<span class="status-dot '+(c.online?"on":"off")+'"></span>'+esc(c.name) : '<span class="chip chip-bad">غير مُسند</span>')+'</td>'+
+          '<td data-label="حالة الطلب">'+statusChip(o.status)+(isLate(o)?' <span class="chip chip-bad">متأخر</span>':"")+'</td>'+
+          '<td data-label="وقت التسليم">'+fmtDateTime(o.time)+'</td>'+
+          '<td data-label="الإجراءات" class="act-cell">'+actions+'</td></tr>';
+      }).join("") || '<tr><td colspan="8" class="muted">لا توجد طلبات بعد.</td></tr>';
+      var n=orders.filter(function(o){ return dispatchSel[o.no] && !isClosedOrder(o); }).length;
+      var sc=$("selCount"); if(sc) sc.textContent=n;
+    }
+    function renderDispatch(){ renderDispatchCouriers(); renderDispatchTable(); renderOpLog(); }
+    function renderOpLog(){
+      var el=$("opLogList"); if(!el) return;
+      el.innerHTML = opLog.length ? opLog.slice(0,50).map(function(en){
+        return '<div class="notif"><div style="flex:1"><div>'+esc(en.text)+'</div><div class="small muted">'+fmtDateTime(en.time)+'</div></div></div>';
+      }).join("") : '<p class="muted">لا توجد عمليات مسجلة بعد.</p>';
+    }
+
+    $("dispatchBody").addEventListener("change", function(e){
+      var sel=e.target.closest("[data-sel-order]");
+      if(sel){ dispatchSel[sel.getAttribute("data-sel-order")]=sel.checked; renderDispatchTable(); return; }
+      var as=e.target.closest("[data-assign]");
+      if(as){
+        var o=findOrder(parseInt(as.getAttribute("data-assign"),10)); if(!o) return;
+        if(as.value===(o.courier||"")) return;
+        assignOrder(o, as.value);
+        renderAdminAll(); if(state.driverId) renderDriver();
+        toast(as.value ? "أُسند الطلب #"+o.no+" إلى "+courierName(as.value) : "أُلغي إسناد الطلب #"+o.no);
+      }
+    });
+    $("dispatchBody").addEventListener("click", function(e){
+      var un=e.target.closest("[data-unassign]");
+      if(un){ var o=findOrder(parseInt(un.getAttribute("data-unassign"),10)); if(o){ assignOrder(o,""); renderAdminAll(); if(state.driverId) renderDriver(); toast("أُلغي إسناد الطلب #"+o.no+" — بانتظار توزيع جديد"); } return; }
+      var ed=e.target.closest("[data-edit-order]");
+      if(ed){ var o2=findOrder(parseInt(ed.getAttribute("data-edit-order"),10)); if(o2) openEditOrderModal(o2); return; }
+      var lg=e.target.closest("[data-order-log]");
+      if(lg){ var o3=findOrder(parseInt(lg.getAttribute("data-order-log"),10)); if(o3) openOrderDetailModal(o3); return; }
+    });
+    $("dispatchSelectAll").addEventListener("change", function(e){
+      orders.forEach(function(o){ if(!isClosedOrder(o)) dispatchSel[o.no]=e.target.checked; });
+      renderDispatchTable();
+    });
+    $("dispatchCouriers").addEventListener("click", function(e){
+      var b=e.target.closest("[data-gotomap]"); if(!b) return;
+      var id=b.getAttribute("data-gotomap");
+      var navBtn=document.querySelector('#adminNav button[data-p="livemap"]'); if(navBtn) navBtn.click();
+      setTimeout(function(){ var d=document.querySelector('[data-detail="'+id+'"]'); if(d) d.click(); },200);
+    });
+    $("clearSelBtn").addEventListener("click", function(){ dispatchSel={}; $("bulkMsg").textContent=""; renderDispatchTable(); });
+    $("bulkAssignBtn").addEventListener("click", function(){
+      var cid=$("bulkCourier").value; var c=courierById(cid);
+      var chosen=orders.filter(function(o){ return dispatchSel[o.no] && !isClosedOrder(o); });
+      if(!chosen.length){ $("bulkMsg").textContent="حدّد طلباً واحداً على الأقل من الجدول أولاً."; return; }
+      if(!c){ $("bulkMsg").textContent="اختر مندوباً أولاً."; return; }
+      var ps=[];
+      chosen.forEach(function(o){
+        var fromName = o.courier ? courierName(o.courier) : null;
+        var wasFailed=(o.status==="failed"||o.status==="rejected");
+        setCourier(o, cid);
+        var b={driver_id:c.uuid, assigned_at:nowIso()}; if(wasFailed) b.status="new";
+        ps.push(sbUpdate("orders","id=eq."+o.uuid,b));
+        ps.push(writeLog(o.uuid,"assigned","أُسند جماعياً إلى "+c.name+" بواسطة المشرف"+(fromName&&fromName!==c.name?" (نُقل من "+fromName+")":"")));
+        o.history.push([fmtTime(new Date()),"أُسند جماعياً إلى "+c.name+" بواسطة المشرف"+(fromName&&fromName!==c.name?" (نُقل من "+fromName+")":"")]);
+      });
+      ps.push(writeLog(null,"bulk_assigned","إسناد جماعي بواسطة المشرف: "+chosen.length+" طلبات إلى "+c.name+" ("+chosen.map(function(o){return "#"+o.no;}).join("، ")+")"));
+      pushNotif("new","إسناد جماعي","أُسندت "+chosen.length+" طلبات دفعة واحدة إلى "+c.name);
+      if(state.driverId===cid) toast("وصلتك "+chosen.length+" طلبات جديدة من المشرف");
+      dispatchSel={};
+      renderAdminAll(); if(state.driverId) renderDriver();
+      $("bulkMsg").textContent="تم إسناد "+chosen.length+" طلبات إلى "+c.name+" — حُفظت في قاعدة البيانات وتظهر عنده في تطبيق المندوب.";
+      capacityCheck(c);
+      syncAfter(ps);
+    });
+    $("autoDistBtn").addEventListener("click", function(){
+      var chosen=orders.filter(function(o){ return dispatchSel[o.no] && !isClosedOrder(o); });
+      if(!chosen.length){ $("bulkMsg").textContent="حدّد الطلبات المراد توزيعها من الجدول أولاً."; return; }
+      var pool=couriers.filter(function(c){ return c.active && c.online; });
+      if(!pool.length){ $("bulkMsg").textContent="لا يوجد مناديب متصلون الآن — التوزيع التلقائي يحتاج مندوباً متصلاً واحداً على الأقل."; return; }
+      var counts={}; pool.forEach(function(c){ counts[c.id]=activeCount(c.id); });
+      var assigned=0, left=[], ps=[];
+      chosen.forEach(function(o){
+        var best=null;
+        pool.forEach(function(c){ if(counts[c.id] < (c.capacity||5) && (best===null || counts[c.id]<counts[best.id])) best=c; });
+        if(!best){ left.push(o); return; }
+        var wasFailed=(o.status==="failed"||o.status==="rejected");
+        setCourier(o, best.id); counts[best.id]++;
+        var b={driver_id:best.uuid, assigned_at:nowIso()}; if(wasFailed) b.status="new";
+        ps.push(sbUpdate("orders","id=eq."+o.uuid,b));
+        ps.push(writeLog(o.uuid,"assigned","وُزّع تلقائياً على "+best.name+" بواسطة المشرف"));
+        o.history.push([fmtTime(new Date()),"وُزّع تلقائياً على "+best.name+" بواسطة المشرف"]);
+        assigned++;
+      });
+      ps.push(writeLog(null,"auto_distributed","توزيع تلقائي بواسطة المشرف: وُزّع "+assigned+" طلب على المناديب المتصلين"+(left.length?" — وبقي "+left.length+" طلبات بدون إسناد لامتلاء القدرات التشغيلية":"")));
+      pushNotif("new","توزيع تلقائي","وُزّع "+assigned+" طلباً على المناديب المتصلين"+(left.length?" — بقي "+left.length+" لامتلاء القدرات":""));
+      dispatchSel={};
+      renderAdminAll(); if(state.driverId) renderDriver();
+      $("bulkMsg").textContent="تم توزيع "+assigned+" طلباً على المناديب المتصلين وحُفظ في قاعدة البيانات."+(left.length?" بقي "+left.length+" طلبات بدون إسناد لأن المتصلين وصلوا لقدرتهم التشغيلية — أسندها يدوياً أو ارفع القدرة من قسم المناديب.":"");
+      syncAfter(ps);
+    });
+
+    /* ===== تنسيق التاريخ لحقول نماذج تعديل الطلبات ===== */
+    function dtLocal(d){ function p(n){ return (n<10?"0":"")+n; } return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+"T"+p(d.getHours())+":"+p(d.getMinutes()); }
+
+    /* ===== تعديل طلب قبل اكتماله ===== */
+    function openEditOrderModal(o){
+      var courOpts='<option value="">بدون إسناد</option>'+couriers.filter(function(c){return c.active;}).map(function(c){ return '<option value="'+c.id+'"'+(o.courier===c.id?" selected":"")+'>'+esc(c.name)+'</option>'; }).join("");
+      var mealOpts=["وجبة صحية متوازنة","سلطة طازجة","وجبة بروتين","وجبة منخفضة السعرات","وجبة نباتية","أخرى"].map(function(m){ return '<option'+(o.mealType===m?" selected":"")+'>'+m+'</option>'; }).join("");
+      openModal('<h3>تعديل الطلب #'+o.no+'</h3><p class="muted small">يمكن تعديل الطلب قبل اكتماله فقط. الحالة الحالية: '+esc(statusLabel(o.status))+'</p>'+
+      '<form id="editOrderForm"><div class="form-grid">'+
+      '<div><label>اسم العميل</label><input id="efCustomer" required value="'+esc(o.customer)+'" /></div>'+
+      '<div><label>رقم هاتف العميل</label><input id="efPhone" required value="'+esc(o.phone)+'" /></div>'+
+      '<div><label>عنوان الاستلام</label><input id="efPickup" required value="'+esc(o.pickup||"")+'" /></div>'+
+      '<div><label>خط عرض موقع الاستلام</label><input id="efPickupLat" inputmode="decimal" value="'+(o.pickupLat!=null?o.pickupLat:"")+'" placeholder="اختياري — مثال: 24.71360" /></div>'+
+      '<div><label>خط طول موقع الاستلام</label><input id="efPickupLng" inputmode="decimal" value="'+(o.pickupLng!=null?o.pickupLng:"")+'" placeholder="اختياري — مثال: 46.67530" /></div>'+
+      '<div><label>وصف عنوان التسليم (الحي والشارع)</label><input id="efAddress" required value="'+esc(o.district)+'" /></div>'+
+      '<div><label>رابط موقع التسليم — موقع العميل</label><input id="efLocUrl" dir="ltr" style="text-align:left" value="'+esc(o.locUrl||"")+'" placeholder="الصق رابط موقع العميل من خرائط Google أو واتساب" /></div>'+
+      '<div><label>رابط موقع الاستلام</label><input id="efPickupUrl" dir="ltr" style="text-align:left" value="'+esc(o.pickupUrl||"")+'" placeholder="الصق رابط موقع الاستلام من خرائط Google" /></div>'+
+      '<div><label>عدد الوجبات</label><input id="efMeals" type="number" min="1" required value="'+o.meals+'" /></div>'+
+      '<div><label>نوع الوجبة</label><select id="efMealType">'+mealOpts+'</select></div>'+
+      '<div><label>تاريخ ووقت التوصيل</label><input id="efWhen" type="datetime-local" required value="'+dtLocal(new Date(o.time))+'" /></div>'+
+      '<div><label>سعر التوصيل (ريال)</label><input id="efFee" type="number" min="0" step="0.5" required value="'+o.fee+'" /></div>'+
+      '<div><label>الأولوية</label><select id="efPriority"><option value="normal"'+(o.priority==="normal"?" selected":"")+'>عادية</option><option value="high"'+(o.priority==="high"?" selected":"")+'>عالية</option></select></div>'+
+      '<div><label>المندوب المسؤول</label><select id="efCourier">'+courOpts+'</select></div>'+
+      '<div><label>ملاحظات خاصة</label><input id="efNotes" value="'+esc(o.notes==="—"?"":(o.notes||""))+'" /></div>'+
+      '</div><div class="btn-row"><button class="btn-green" type="submit">حفظ التعديلات</button><button class="btn-ghost" type="button" id="efCancel">إلغاء</button></div></form>', true);
+      $("efCancel").addEventListener("click", closeModal);
+      $("editOrderForm").addEventListener("submit", function(e){
+        e.preventDefault();
+        var oldCourier=o.courier;
+        o.customer=$("efCustomer").value.trim()||o.customer;
+        o.phone=$("efPhone").value.trim()||o.phone;
+        o.pickup=$("efPickup").value.trim();
+        o.pickupLat=parseCoord($("efPickupLat").value);
+        o.pickupLng=parseCoord($("efPickupLng").value);
+        o.district=$("efAddress").value.trim()||o.district;
+        var dP=parseLocInput($("efLocUrl").value);
+        if(dP.lat!==null){ o.lat=dP.lat; o.lng=dP.lng; }
+        o.locUrl = dP.url || (o.lat!=null && o.lng!=null && !isNaN(o.lat) && !isNaN(o.lng) ? mapsLink(o.lat,o.lng) : null);
+        var pP=parseLocInput($("efPickupUrl").value);
+        if(pP.lat!==null){ o.pickupLat=pP.lat; o.pickupLng=pP.lng; }
+        o.pickupUrl = pP.url || (o.pickupLat!=null && o.pickupLng!=null && !isNaN(o.pickupLat) && !isNaN(o.pickupLng) ? mapsLink(o.pickupLat,o.pickupLng) : null);
+        o.meals=parseInt($("efMeals").value,10)||o.meals;
+        o.mealType=$("efMealType").value;
+        o.priority=$("efPriority").value;
+        o.notes=$("efNotes").value.trim()||"—";
+        o.history.push([fmtTime(new Date()),"عدّل المشرف بيانات الطلب"]);
+        var body={ customer_name:o.customer, customer_phone:o.phone, pickup_address:o.pickup,
+          pickup_lat:o.pickupLat, pickup_lng:o.pickupLng, pickup_loc_url:o.pickupUrl,
+          delivery_loc_url:(o.locUrl || o.district), delivery_lat:(o.lat!=null&&!isNaN(o.lat)?o.lat:null), delivery_lng:(o.lng!=null&&!isNaN(o.lng)?o.lng:null),
+          meals_count:o.meals, meal_type:o.mealType,
+          notes:((o.priority==="high"?PRIO_TAG:"")+(o.notes==="—"?"":o.notes))||null };
+        var newCourier=$("efCourier").value;
+        closeModal();
+        var ps=[ sbUpdate("orders","id=eq."+o.uuid,body), writeLog(o.uuid,"edited","عدّل المشرف بيانات الطلب #"+o.no) ];
+        syncAfter(ps).then(function(){
+          if(newCourier!==oldCourier) assignOrder(o,newCourier);
+          renderAdminAll(); if(state.driverId) renderDriver();
+          toast("تم حفظ تعديلات الطلب #"+o.no+" في قاعدة البيانات");
+        });
+      });
+    }
+
+    /* ===== سجل وتفاصيل طلب واحد ===== */
+    function openOrderDetailModal(o){
+      var c=courierById(o.courier); var comp=companies[o.company];
+      function row(k,v){ return '<dt>'+k+'</dt><dd>'+v+'</dd>'; }
+      var h='<h3>سجل الطلب #'+o.no+'</h3><dl class="kv">';
+      h+=row("الحالة", statusChip(o.status)+(isLate(o)?' <span class="chip chip-bad">متأخر</span>':""));
+      h+=row("العميل", esc(o.customer)+" — "+esc(o.phone));
+      h+=row("الشركة المتعاقدة", esc(comp?comp.name:""));
+      h+=row("المندوب المسؤول", c? esc(c.name)+" (رقم "+c.id+")" : "غير مُسند بعد");
+      h+=row("عنوان الاستلام", esc(o.pickup||"—"));
+      h+=row("موقع الاستلام على الخريطة", (o.pickupLat!=null&&o.pickupLng!=null&&!isNaN(o.pickupLat)&&!isNaN(o.pickupLng)) ? '<a href="'+mapsLink(o.pickupLat,o.pickupLng)+'" target="_blank" rel="noopener">فتح موقع الاستلام في خرائط Google</a>' : (o.pickupUrl ? '<a href="'+esc(o.pickupUrl)+'" target="_blank" rel="noopener">فتح رابط موقع الاستلام في خرائط Google</a>' : "غير مسجل — يمكن إضافته من «تعديل الطلب»"));
+      h+=row("عنوان التسليم", esc(o.district));
+      h+=row("رابط موقع التسليم (العميل)", (o.lat!=null&&o.lng!=null&&!isNaN(o.lat)&&!isNaN(o.lng)) ? '<a href="'+gmapsDirectionsUrl(o)+'" target="_blank" rel="noopener">فتح موقع العميل في خرائط Google</a>' : (o.locUrl ? '<a href="'+esc(o.locUrl)+'" target="_blank" rel="noopener">فتح رابط موقع العميل في خرائط Google</a>' : "غير مسجل — أضفه من «تعديل الطلب» في خانة رابط موقع التسليم، وبدونه لا يعمل زر الذهاب إلى العميل عند المندوب"));
+      h+=row("نوع الوجبة وعددها", esc(o.mealType||"—")+" × "+o.meals);
+      h+=row("وقت التوصيل المطلوب", fmtDateTime(o.time));
+      h+=row("سعر التوصيل", o.fee+" ريال");
+      h+=row("أنشأ الطلب", esc(o.createdBy||"المشرف"));
+      if(o.tAccepted) h+=row("وقت الإسناد", fmtDateTime(o.tAccepted));
+      if(o.tPicked) h+=row("وقت استلام المندوب", fmtDateTime(o.tPicked));
+      if(o.tArrived) h+=row("وقت وصول المندوب إلى العميل", fmtDateTime(o.tArrived));
+      if(o.tDelivered) h+=row("وقت التسليم الفعلي", fmtDateTime(o.tDelivered));
+      if(o.failReason) h+=row("سبب تعذر التسليم", esc(o.failReason));
+      if(o.rejectReason) h+=row("سبب رفض المندوب", esc(o.rejectReason));
+      if(o.status==="delivered") h+=row("إثبات التسليم", o.proof==="photo"?"صورة بموافقة العميل":"رمز OTP من العميل");
+      h+='</dl>';
+      if(o.proofPath) h+='<div style="margin-top:10px"><strong>صورة إثبات التسليم</strong><br/><img class="proof-img" id="proofImgEl" alt="صورة إثبات التسليم" /></div>';
+      h+='<h3 style="margin-top:14px">الخط الزمني للطلب</h3>'+(o.history.length? '<ul class="log-list">'+o.history.map(function(x){ return '<li><strong>'+esc(x[0])+'</strong> — '+esc(x[1])+'</li>'; }).join("")+'</ul>' : '<p class="muted">لا توجد أحداث مسجلة بعد.</p>')+
+        '<div class="btn-row"><button class="btn-ghost" id="odClose" type="button">إغلاق</button></div>';
+      openModal(h);
+      if(o.proofPath) resolveProofImg(o, $("proofImgEl"));
+      $("odClose").addEventListener("click", closeModal);
+    }
+
+    /* ============ Init ============
+       لا تُحمَّل أي بيانات قبل تسجيل الدخول: واجهة المندوب تطلب دخول المندوب،
+       ولوحة المشرف تطلب دخول المشرف — والبيانات تأتي من Supabase بعد الدخول فقط.
+       عند تعذر الاتصال تظهر رسالة واضحة في الشريط العلوي ولا تُعرض بيانات وهمية. */
+    sbWarmup();
+
+    </script>
+  </body>
+</html>
