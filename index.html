@@ -1173,6 +1173,26 @@ if(sbIsNetErr(err)) throw new Error("تعذر الاتصال بقاعدة الب
 throw err;
 });
 }
+/* تحقق فعلي من أن حساب دخول مندوب يعمل: يُجرَّب تسجيل الدخول بنفس البريد
+   وكلمة المرور عبر طلب خام لا يحفظ أي توكن ولا يمسّ جلسة المشرف، فيُكتشف
+   أي فشل في الدخول لحظة إنشاء الحساب بدل أن يفاجأ به المندوب لاحقاً.
+   يعود {ok:true,userId} عند نجاح الدخول، أو {ok:false,reason} بسبب واضح. */
+function sbVerifyDriverLogin(email, password){
+return sbFetch(SB_URL+"/auth/v1/token?grant_type=password",{method:"POST",headers:{"apikey":SB_KEY,"Content-Type":"application/json"},body:JSON.stringify({email:email,password:password})},1)
+.then(function(r){
+return r.text().then(function(t){
+var d=null; try{ d=JSON.parse(t);}catch(e){}
+if(r.ok && d && d.user && d.user.id) return {ok:true, userId:d.user.id};
+var m=(d&&(d.msg||d.error_description||d.message))||("HTTP "+r.status);
+if(/invalid/i.test(m)) return {ok:false, reason:"كلمة المرور غير مقبولة"};
+if(/not confirmed/i.test(m)) return {ok:false, reason:"الحساب غير مفعّل بعد"};
+return {ok:false, reason:m};
+});
+}).catch(function(err){
+if(sbIsNetErr(err)) return {ok:false, reason:"تعذر الاتصال بقاعدة البيانات للتحقق"};
+return {ok:false, reason:String((err&&err.message)||err)};
+});
+}
 function sbSignOut(){
 if(!sbSession) return Promise.resolve();
 var t=sbSession.access_token; sbSession=null; sbRole=null; sbDriverRow=null;
@@ -1969,6 +1989,7 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
           '<div class="avatar">'+esc((c.name||"م").trim().charAt(0))+'</div>'+
           '<div style="flex:1;min-width:220px"><strong style="font-size:1.08rem">'+esc(c.name)+'</strong> '+(c.active?"":'<span class="chip chip-bad">الحساب موقوف</span>')+
           '<div class="muted small">رقم وظيفي: '+c.id+' · الهاتف: '+esc(c.phone||"—")+' · المركبة: '+esc(c.vehicle)+'</div>'+
+          '<div class="small">'+(c.authUserId? '<span style="color:var(--green-dark);font-weight:700">حساب الدخول: جاهز ومرتبط</span>' : '<span style="color:var(--red);font-weight:700">حساب الدخول: غير مرتبط — هذا المندوب لا يستطيع تسجيل الدخول</span>')+'</div>'+
           '<div class="small"><span class="status-dot '+(c.online?"on":"off")+'"></span>'+(c.online?"متصل الآن":"غير متصل")+' · طلبات منجزة اليوم: '+c.doneToday+' · طلبات مسندة حالياً: '+mine.filter(function(o){return ["new","accepted","picked","onway","arrived"].indexOf(o.status)>=0;}).length+'</div>'+
           '<div class="small">'+ratingHtml(c)+' · آخر تحديث موقع: '+fmtDateTime(c.lastUpdate)+' · البطارية: '+(c.battery==null?"غير متاحة":c.battery+"%")+'</div>'+
           '</div>'+
@@ -2032,21 +2053,37 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
       /* الخطوة 1: إنشاء حساب الدخول في Supabase Auth (جلسة المشرف لا تتأثر).
          الخطوة 2: حفظ صف المندوب مرتبطاً بالحساب الجديد عبر auth_user_id. */
       sbCreateDriverAccount(email, pw).then(function(acc){
-        var body={driver_no:no, name:name, phone:phone, vehicle:vehicle, capacity:cap, is_online:false};
-        if(acc.userId) body.auth_user_id=acc.userId;
-        return sbInsert("drivers",body).then(function(){
-          return writeLog(null,"driver_added","أُضيف المندوب "+name+" برقم وظيفي "+no+(acc.exists?" (حساب الدخول كان موجوداً مسبقاً)":" وأُنشئ حساب دخوله تلقائياً")+" من لوحة المشرف");
-        }).then(function(){ return acc; });
-      }).then(function(acc){
+        /* تحقق فعلي قبل إعلان النجاح: جرّب الدخول بنفس البيانات الآن.
+           - حساب جديد: إن فشل الدخول به نوقف ونوضح، فلا تُعطى للمندوب كلمة لا تعمل.
+           - حساب موجود مسبقاً: إن قبلت كلمة المرور المدخلة فهي كلمته الصحيحة
+             ونربط الحساب بالسجل؛ وإن رفضها نوضّح أن كلمته مختلفة وغير معروفة. */
+        return sbVerifyDriverLogin(email, pw).then(function(v){
+          var body={driver_no:no, name:name, phone:phone, vehicle:vehicle, capacity:cap, is_online:false};
+          var mode;
+          if(acc.userId){
+            if(!v.ok) throw new Error("أُنشئ حساب الدخول لكن تسجيل الدخول به فشل الآن ("+v.reason+") — لا تعطِ المندوب كلمة المرور هذه، وجرّب الإضافة مرة أخرى بنفس البيانات");
+            body.auth_user_id=v.userId||acc.userId; mode="new";
+          }else if(v.ok && v.userId){
+            body.auth_user_id=v.userId; mode="exists-ok";
+          }else{
+            mode="exists-bad";
+          }
+          return sbInsert("drivers",body).then(function(){
+            return writeLog(null,"driver_added","أُضيف المندوب "+name+" برقم وظيفي "+no+(mode==="new"?" وأُنشئ حساب دخوله تلقائياً وتُحقق من الدخول به بنجاح":(mode==="exists-ok"?" (حساب الدخول كان موجوداً مسبقاً وتُحقق أن كلمة المرور المدخلة تعمل)":" (تنبيه: حساب الدخول قديم بكلمة مرور مختلفة غير معروفة)"))+" من لوحة المشرف");
+          }).then(function(){ return {mode:mode}; });
+        });
+      }).then(function(out){
         form.reset(); $("ncPassword").value=genDriverPassword();
         return loadAllData().then(function(){ renderCurrent(); }).catch(function(){}).then(function(){
-          if(acc.exists){
-            resBox.innerHTML="<strong>أُضيف المندوب "+esc(name)+"</strong> — رقمه الوظيفي <strong>"+no+"</strong>.<br />تنبيه: حساب الدخول لهذا الرقم كان موجوداً من قبل، فلم يُنشأ حساب جديد وكلمة المرور هي التي عُيّنت له عند إنشاء حسابه أول مرة (ليست التي في خانة كلمة المرور الآن).";
+          if(out.mode==="exists-ok"){
+            resBox.innerHTML="<strong>أُضيف المندوب "+esc(name)+"</strong> — رقمه الوظيفي <strong>"+no+"</strong>.<br />حساب دخوله كان موجوداً من قبل، وقد تحقق النظام الآن بتجربة الدخول فعلياً أن كلمة المرور التي أدخلتها <strong>تعمل</strong> — أعطها للمندوب كما هي:<br />رقم المندوب: <strong>"+no+"</strong><br />كلمة المرور: <strong dir='ltr'>"+esc(pw)+"</strong><div class='btn-row'><button type='button' class='btn-navy' data-copy-cred data-copy-name='"+esc(name)+"' data-copy-no='"+no+"' data-copy-pw='"+esc(pw)+"'>نسخ بيانات الدخول</button></div>";
+          }else if(out.mode==="exists-bad"){
+            resBox.innerHTML="<strong>أُضيف سجل المندوب "+esc(name)+"</strong> — رقمه الوظيفي <strong>"+no+"</strong>.<br /><strong style='color:var(--red)'>تنبيه مهم: لهذا الرقم حساب دخول قديم بكلمة مرور مختلفة لا يعرفها النظام، لذلك لن يستطيع المندوب تسجيل الدخول بالرقم "+no+".</strong><br />لإصلاحه: اطلب من Muse إعادة تعيين كلمة مرور هذا الرقم، أو أضف المندوب من جديد ليأخذ رقماً آخر بحساب دخول يعمل.";
           }else{
-            resBox.innerHTML="<strong>تمت إضافة المندوب "+esc(name)+" وأُنشئ حساب دخوله بنجاح.</strong><br />أعطِ المندوب بيانات دخوله:<br />رقم المندوب: <strong>"+no+"</strong><br />كلمة المرور: <strong dir='ltr'>"+esc(pw)+"</strong><br />يدخل بها من رابط لوحة تحكم المندوب مباشرة.<br /><strong>انسخ بيانات الدخول الآن — كلمة المرور لا تظهر مرة أخرى بعد هذه النتيجة.</strong><div class='btn-row'><button type='button' class='btn-navy' data-copy-cred data-copy-name='"+esc(name)+"' data-copy-no='"+no+"' data-copy-pw='"+esc(pw)+"'>نسخ بيانات الدخول</button></div>";
+            resBox.innerHTML="<strong>تمت إضافة المندوب "+esc(name)+" وأُنشئ حساب دخوله بنجاح، وتُحقق من الدخول به فعلياً.</strong><br />أعطِ المندوب بيانات دخوله:<br />رقم المندوب: <strong>"+no+"</strong><br />كلمة المرور: <strong dir='ltr'>"+esc(pw)+"</strong><br />يدخل بها من رابط لوحة تحكم المندوب مباشرة.<br /><strong>انسخ بيانات الدخول الآن — كلمة المرور لا تظهر مرة أخرى بعد هذه النتيجة.</strong><div class='btn-row'><button type='button' class='btn-navy' data-copy-cred data-copy-name='"+esc(name)+"' data-copy-no='"+no+"' data-copy-pw='"+esc(pw)+"'>نسخ بيانات الدخول</button></div>";
           }
           resBox.classList.remove("hidden");
-          toast(acc.exists? "أُضيف المندوب "+name+" — حساب دخوله كان موجوداً مسبقاً" : "أُضيف المندوب "+name+" وأُنشئ حساب دخوله — رقمه "+no);
+          toast(out.mode==="new"? "أُضيف المندوب "+name+" وتُحقق من دخوله — رقمه "+no : (out.mode==="exists-ok"? "أُضيف المندوب "+name+" وكلمة المرور تعمل — رقمه "+no : "أُضيف "+name+" لكن حساب دخوله القديم بكلمة مختلفة — راجع التنبيه الأحمر"));
         });
       }).catch(function(err){
         toast("تعذر إكمال الإضافة: "+((err && err.message)||err)+" — لم يُحفظ المندوب، حاول مرة أخرى");
@@ -2107,12 +2144,21 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
         var it=items[i], no=String(seq), pw=genDriverPassword();
         prog.textContent="جارٍ إضافة "+(i+1)+" من "+items.length+": "+it.name+" (الرقم "+no+")…";
         sbCreateDriverAccount("driver"+no+"@arjaa.local", pw).then(function(acc){
-          var body={driver_no:no, name:it.name, phone:it.phone, vehicle:"سيارة", capacity:5, is_online:false};
-          if(acc.userId) body.auth_user_id=acc.userId;
-          return sbInsert("drivers",body).then(function(){
-            if(acc.exists) existed.push({name:it.name, no:no});
-            else done.push({name:it.name, no:no, pw:pw});
-            seq++; step(i+1);
+          if(acc.exists){
+            var bodyE={driver_no:no, name:it.name, phone:it.phone, vehicle:"سيارة", capacity:5, is_online:false};
+            return sbInsert("drivers",bodyE).then(function(){
+              existed.push({name:it.name, no:no});
+              seq++; step(i+1);
+            });
+          }
+          /* تحقق فعلي بالدخول قبل اعتبار المندوب مضافاً بنجاح */
+          return sbVerifyDriverLogin("driver"+no+"@arjaa.local", pw).then(function(v){
+            if(!v.ok){ failed.push({name:it.name, err:"أُنشئ حساب الدخول لكن تسجيل الدخول به فشل ("+v.reason+") — أعد إضافة هذا المندوب لاحقاً"}); step(i+1); return; }
+            var body={driver_no:no, name:it.name, phone:it.phone, vehicle:"سيارة", capacity:5, is_online:false, auth_user_id:(v.userId||acc.userId)};
+            return sbInsert("drivers",body).then(function(){
+              done.push({name:it.name, no:no, pw:pw});
+              seq++; step(i+1);
+            });
           });
         }).catch(function(err){
           failed.push({name:it.name, err:String((err && err.message)||err||"خطأ غير معروف")});
