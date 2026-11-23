@@ -490,8 +490,6 @@
             
             <p id="loginError" class="hidden" style="color:var(--red);font-weight:700"></p>
             <button class="btn-green btn-big" type="submit" style="margin-top:14px">دخول</button>
-            <button class="btn-ghost btn-big" type="button" id="connTestBtnDrv" style="margin-top:10px">فحص الاتصال بقاعدة البيانات</button>
-            <p id="connTestResultDrv" class="hidden" style="font-weight:700"></p>
           </form>
           
         </div>
@@ -621,8 +619,6 @@
             </div>
             <p id="admLoginError" class="hidden" style="color:var(--red);font-weight:700"></p>
             <button class="btn-green btn-big" type="submit" style="margin-top:14px">دخول المشرف</button>
-            <button class="btn-ghost btn-big" type="button" id="connTestBtnAdm" style="margin-top:10px">فحص الاتصال بقاعدة البيانات</button>
-            <p id="connTestResultAdm" class="hidden" style="font-weight:700"></p>
           </form>
         </div>
         <div id="adminApp" class="hidden">
@@ -1410,25 +1406,6 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
       stopPolling();
       sbSignOut().then(function(){ resetAdminUI(); toast("تم تسجيل خروج المشرف"); });
     });
-
-    /* ============ فحص الاتصال من شاشتي الدخول: يختبر وصول هذا الجهاز نفسه
-       إلى قاعدة البيانات ويعرض النتيجة بلغة واضحة مع التفاصيل التقنية ============ */
-    function wireConnTest(btnId, outId){
-      var btn=$(btnId), out=$(outId); if(!btn||!out) return;
-      btn.addEventListener("click", function(){
-        btn.disabled=true; btn.textContent="جارٍ فحص الاتصال…";
-        out.classList.remove("hidden"); out.style.color=""; out.textContent="جارٍ الاتصال بقاعدة البيانات من هذا الجهاز…";
-        sbFetch(SB_URL+"/auth/v1/health",{method:"GET",headers:{"apikey":SB_KEY}},2).then(function(r){
-          if(r && r.ok){ connOk(); out.style.color="var(--green-dark)"; out.textContent="الاتصال بقاعدة البيانات يعمل من هذا الجهاز — جرّب تسجيل الدخول الآن."; }
-          else { connFail(); out.style.color="var(--red)"; out.textContent="وصل رد من الخادم لكنه غير متوقع (الرمز "+(r?r.status:"؟")+"). أعد الفحص بعد قليل."; }
-        }).catch(function(){
-          connFail(); out.style.color="var(--red)";
-          out.textContent="هذا الجهاز لا يصل إلى قاعدة البيانات. جرّب: إيقاف أي مانع إعلانات أو VPN، أو التبديل بين الواي فاي وبيانات الجوال، ثم أعد الفحص. (تفاصيل: "+sbLastErrDetail+")";
-        }).then(function(){ btn.disabled=false; btn.textContent="فحص الاتصال بقاعدة البيانات"; });
-      });
-    }
-    wireConnTest("connTestBtnDrv","connTestResultDrv");
-    wireConnTest("connTestBtnAdm","connTestResultAdm");
 
     /* ============ Driver: work start/end ============ */
     function renderDriver(){
