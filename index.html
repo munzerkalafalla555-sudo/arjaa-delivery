@@ -426,6 +426,117 @@
         #viewDriver .drv-tiles .tile-ic{width:46px;height:46px;border-radius:14px}
         #viewDriver .drv-tiles .tile-ic svg{width:25px;height:25px}
       }
+
+      /* ===== إعادة تصميم لوحة المشرفين: واجهة تطبيق جوال إداري (Mobile Admin App) =====
+         كل القواعد التالية محصورة داخل #viewAdmin: لا يتغيّر شكل المندوب إطلاقاً،
+         ولا يُلمس أي منطق أو زر أو قسم — المظهر والتنقّل فقط. الشريط السفلي
+         اختصارات تنقّل تضغط أزرار التنقّل الحالية نفسها (#adminNav) فتبقى
+         كل الأقسام والصلاحيات والعمليات كما هي. ===== */
+      #viewAdmin{background:transparent}
+      #viewAdmin .card{border-radius:22px;padding:20px;margin-top:18px;box-shadow:0 1px 2px rgba(10,37,64,.05),0 12px 30px rgba(10,37,64,.07);border-color:var(--line)}
+      #viewAdmin .card h2{font-size:1.32rem;font-weight:800;display:flex;align-items:center;gap:10px}
+      #viewAdmin .card h2::before{content:"";width:5px;height:1.1em;border-radius:99px;background:var(--green);flex:none}
+      #viewAdmin input:not([type="checkbox"]),#viewAdmin select,#viewAdmin textarea{border-radius:14px;min-height:54px}
+      #viewAdmin button{min-height:52px;border-radius:14px}
+      #viewAdmin .btn-big{min-height:60px;border-radius:16px;font-size:1.12rem}
+      #viewAdmin :focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+      #adminLogin{border-radius:24px;padding:26px}
+      #adminLogin h2{font-size:1.5rem}
+      #adminApp{padding-bottom:calc(108px + env(safe-area-inset-bottom))}
+
+      /* شريط المشرف العلوي داخل التطبيق: بطاقة مضغوطة ثابتة الإحساس */
+      #adminApp>.card:first-child{border-radius:18px;margin-top:16px;background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 100%);color:#fff;border:none}
+      #adminApp>.card:first-child .muted{color:#bcd2e8}
+      #adminApp>.card:first-child .btn-ghost{background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.45)}
+
+      /* تنقّل الأقسام العلوي: شريط أقراص قابل للتمرير أفقياً على الجوال (يبقى كل الأقسام) */
+      #viewAdmin .admin-nav{position:sticky;top:0;z-index:50;background:var(--bg);padding:10px 2px;margin-top:6px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+      #viewAdmin .admin-nav::-webkit-scrollbar{display:none}
+      #viewAdmin .admin-nav button{flex:none;border-radius:999px;min-height:50px;padding:.5rem 1.15rem;font-weight:700;box-shadow:0 1px 4px rgba(10,37,64,.06)}
+      #viewAdmin .admin-nav button.active{background:var(--navy);border-color:var(--navy)}
+      @media (prefers-color-scheme: dark){#viewAdmin .admin-nav button.active{background:var(--green);border-color:var(--green)}}
+
+      /* بطاقات إحصائيات الرئيسية: شبكة جوال ببطاقات ملوّنة وأرقام كبيرة — نفس بيانات النظام */
+      #admStats{grid-template-columns:repeat(2,1fr);gap:12px}
+      @media(min-width:760px){#admStats{grid-template-columns:repeat(3,1fr)}}
+      @media(min-width:1080px){#admStats{grid-template-columns:repeat(5,1fr)}}
+      #admStats .stat{border-radius:20px;text-align:center;padding:18px 10px 16px;box-shadow:0 1px 2px rgba(10,37,64,.05),0 10px 26px rgba(10,37,64,.07)}
+      #admStats .stat .num{font-size:2rem}
+      #admStats .stat .lbl{font-size:.98rem}
+      #admStats .stat::before{content:"";display:block;width:44px;height:44px;margin:0 auto 8px;border-radius:14px;background-color:var(--navy-soft);background-repeat:no-repeat;background-position:center;background-size:25px}
+      #admStats .stat:nth-child(1){background:var(--navy-soft)}
+      #admStats .stat:nth-child(1)::before{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230a2540' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='5' y='4' width='14' height='17' rx='2'/><path d='M9 9h6M9 13h6M9 17h3'/></svg>")}
+      #admStats .stat:nth-child(2){background:var(--blue-soft)}
+      #admStats .stat:nth-child(2) .num{color:var(--blue)}
+      #admStats .stat:nth-child(2)::before{background-color:var(--surface);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231d5fae' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M18 9a6 6 0 1 0-12 0c0 6-2.5 7.5-2.5 7.5h17S18 15 18 9'/><path d='M10 20a2.2 2.2 0 0 0 4 0'/></svg>")}
+      #admStats .stat:nth-child(3){background:var(--amber-soft)}
+      #admStats .stat:nth-child(3)::before{background-color:var(--surface);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b97a0c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M2.5 7h11v9h-11z'/><path d='M13.5 10h3.8l3 3v3h-6.8z'/><circle cx='6.5' cy='18' r='1.7'/><circle cx='16.8' cy='18' r='1.7'/></svg>")}
+      #admStats .stat:nth-child(4){background:var(--green-soft)}
+      #admStats .stat:nth-child(4)::before{background-color:var(--surface);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230f7a4a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='8.5'/><path d='M8.6 12.4l2.4 2.4 4.4-5.3'/></svg>")}
+      #admStats .stat:nth-child(5){background:var(--red-soft)}
+      #admStats .stat:nth-child(5)::before{background-color:var(--surface);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c0392b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='8.5'/><path d='M9.2 9.2l5.6 5.6M14.8 9.2l-5.6 5.6'/></svg>")}
+      #admStats .stat:nth-child(6){background:var(--red-soft)}
+      #admStats .stat:nth-child(7){background:var(--surface)}
+      #admStats .stat:nth-child(8){background:var(--green-soft)}
+      #admStats .stat:nth-child(9){background:var(--surface)}
+      #admStats .stat:nth-child(10){background:var(--green-soft)}
+
+      /* فلاتر حالات الطلبات: أقراص لمس كبيرة فوق قائمة الطلبات */
+      .adm-order-filters{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+      .adm-order-filters::-webkit-scrollbar{display:none}
+      .adm-order-filters button{flex:none;border-radius:999px;min-height:48px;padding:.45rem 1.1rem;background:var(--surface);border:1.5px solid var(--line);color:var(--ink);font-weight:700}
+      .adm-order-filters button.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+      /* بطاقات المناديب على الجوال: تكديس عمودي وأزرار بعرض مريح */
+      #viewAdmin .courier-row{border-radius:20px;padding:18px;box-shadow:0 1px 2px rgba(10,37,64,.05),0 10px 26px rgba(10,37,64,.07)}
+      @media(max-width:680px){
+        #viewAdmin .courier-row{flex-direction:column;align-items:stretch}
+        #viewAdmin .courier-row .btn-row{width:100%}
+        #viewAdmin .courier-row .btn-row button{flex:1;min-width:0;min-height:54px}
+      }
+
+      /* جدول الطلبات على الجوال: بطاقات بدل التمرير الأفقي — كل بيانات الصف ظاهرة */
+      @media(max-width:760px){
+        #page-orders .table-scroll{overflow:visible}
+        #page-orders table,#page-orders thead,#page-orders tbody,#page-orders tr,#page-orders td{display:block;width:100%}
+        #page-orders thead{display:none}
+        #page-orders tr{border:1.5px solid var(--line);border-radius:18px;margin-top:14px;padding:6px 14px;background:var(--surface);box-shadow:0 6px 18px rgba(10,37,64,.06)}
+        #page-orders td{border-bottom:1px dashed var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;padding:.6rem 0;text-align:left}
+        #page-orders td:last-child{border-bottom:none}
+        #page-orders td:nth-child(1)::before{content:"رقم الطلب";font-weight:700;color:var(--ink-2);flex:none}
+        #page-orders td:nth-child(2)::before{content:"العميل";font-weight:700;color:var(--ink-2);flex:none}
+        #page-orders td:nth-child(3)::before{content:"الشركة";font-weight:700;color:var(--ink-2);flex:none}
+        #page-orders td:nth-child(4)::before{content:"المندوب";font-weight:700;color:var(--ink-2);flex:none}
+        #page-orders td:nth-child(5)::before{content:"الحالة";font-weight:700;color:var(--ink-2);flex:none}
+        #page-orders td:nth-child(6)::before{content:"الأولوية";font-weight:700;color:var(--ink-2);flex:none}
+        #page-orders td:nth-child(7)::before{content:"وقت التسليم";font-weight:700;color:var(--ink-2);flex:none}
+        #page-orders td:nth-child(8)::before{content:"الرسوم";font-weight:700;color:var(--ink-2);flex:none}
+        #page-orders td:nth-child(9)::before{content:"رمز التسليم";font-weight:700;color:var(--ink-2);flex:none}
+        #page-orders td:nth-child(10)::before{content:"نقل لمندوب";font-weight:700;color:var(--ink-2);flex:none}
+        #page-orders td select{max-width:62%}
+      }
+
+      /* شريط التنقل السفلي للمشرف: ثابت، خمس وجهات — أربع أقسام رئيسية + المزيد */
+      #viewAdmin .adm-bottomnav{position:fixed;bottom:0;inset-inline:0;z-index:620;display:flex;background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -6px 22px rgba(10,37,64,.12);padding-bottom:env(safe-area-inset-bottom)}
+      #viewAdmin .adm-bottomnav button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:64px;padding:7px 2px 9px;color:var(--ink-2);background:transparent;border-radius:0;font-size:.84rem;font-weight:700}
+      #viewAdmin .adm-bottomnav button svg{width:25px;height:25px}
+      #viewAdmin .adm-bottomnav button.active{color:var(--green-dark)}
+      #viewAdmin .adm-bottomnav button.active svg{stroke:var(--green-dark)}
+
+      /* ورقة «المزيد»: كل الأقسام المتبقية في شبكة بلاطات كبيرة للمس */
+      .adm-more-backdrop{position:fixed;inset:0;background:rgba(5,20,35,.55);z-index:700;display:flex;align-items:flex-end;justify-content:center}
+      .adm-more-panel{background:var(--surface);color:var(--ink);width:100%;max-width:560px;border-radius:22px 22px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom));max-height:88vh;overflow:auto}
+      @media(min-width:640px){.adm-more-backdrop{align-items:center;padding:20px}.adm-more-panel{border-radius:22px}}
+      .adm-more-panel h3{font-size:1.25rem;margin-bottom:4px}
+      .adm-more-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+      .adm-more-grid button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:18px 10px 14px;background:var(--surface-2);border:1.5px solid var(--line);border-radius:18px;color:var(--ink);font-weight:800;font-size:1.02rem;min-height:104px}
+      .adm-more-grid button svg{width:28px;height:28px}
+      .adm-more-grid button.active{border-color:var(--green);background:var(--green-soft);color:var(--green-dark)}
+      @media(max-width:480px){
+        #viewAdmin .card{padding:16px}
+        #admStats .stat::before{width:38px;height:38px;background-size:22px;border-radius:12px}
+        #admStats .stat .num{font-size:1.7rem}
+      }
     </style>
   </head>
   <body>
@@ -702,6 +813,13 @@
           </div>
           <div class="card">
             <h2>كل الطلبات</h2>
+            <div class="adm-order-filters" id="admOrderFilters" role="group" aria-label="تصفية الطلبات حسب الحالة">
+              <button type="button" data-f="all" class="active">الكل</button>
+              <button type="button" data-f="new">جديدة</button>
+              <button type="button" data-f="progress">قيد التنفيذ</button>
+              <button type="button" data-f="delivered">مكتملة</button>
+              <button type="button" data-f="cancelled">ملغاة</button>
+            </div>
             <label for="orderSearch">بحث برقم الطلب أو اسم العميل</label>
             <input id="orderSearch" placeholder="مثال: 1024 أو سارة" />
             <div class="table-scroll"><table>
@@ -828,6 +946,52 @@
             <h2>التنبيهات</h2>
             
             <div id="notifList"></div>
+          </div>
+        </div>
+
+        <!-- شريط التنقل السفلي للمشرف: اختصارات تنقّل للأقسام الحالية فقط -->
+        <nav class="adm-bottomnav" id="adminBottomNav" aria-label="التنقل السفلي للمشرف">
+          <button type="button" data-b="home" class="active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.8 12 3.5l8.5 7.3"/><path d="M5.5 9.5V20h13V9.5"/><path d="M9.8 20v-5.5h4.4V20"/></svg>
+            <span>الرئيسية</span>
+          </button>
+          <button type="button" data-b="orders">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 9h6M9 13h6M9 17h3"/></svg>
+            <span>الطلبات</span>
+          </button>
+          <button type="button" data-b="couriers">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8.2" r="3.8"/><path d="M4.8 20a7.4 7.4 0 0 1 14.4 0"/></svg>
+            <span>المندوبون</span>
+          </button>
+          <button type="button" data-b="reports">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V4"/><path d="M4 20h16"/><path d="M8.5 16v-5M12.5 16V8M16.5 16v-3"/></svg>
+            <span>التقارير</span>
+          </button>
+          <button type="button" data-b="more" id="adminMoreBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>
+            <span>المزيد</span>
+          </button>
+        </nav>
+
+        <!-- ورقة المزيد: بقية أقسام الإدارة الحالية كلها -->
+        <div class="adm-more-backdrop hidden" id="adminMoreSheet" role="dialog" aria-modal="true" aria-label="كل أقسام الإدارة">
+          <div class="adm-more-panel">
+            <h3>كل الأقسام</h3>
+            <p class="muted small" style="margin:0">اختر قسماً للانتقال إليه — كل أقسام لوحة المشرف الحالية موجودة هنا.</p>
+            <div class="adm-more-grid" id="adminMoreGrid">
+              <button type="button" data-p="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.8 12 3.5l8.5 7.3"/><path d="M5.5 9.5V20h13V9.5"/></svg><span>الرئيسية</span></button>
+              <button type="button" data-p="orders"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 9h6M9 13h6M9 17h3"/></svg><span>الطلبات</span></button>
+              <button type="button" data-p="couriers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8.2" r="3.8"/><path d="M4.8 20a7.4 7.4 0 0 1 14.4 0"/></svg><span>المندوبون</span></button>
+              <button type="button" data-p="livemap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6-7-11a7 7 0 1 1 14 0c0 5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><span>الخريطة المباشرة</span></button>
+              <button type="button" data-p="dispatch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg><span>إدارة وتوزيع الطلبات</span></button>
+              <button type="button" data-p="companies"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21V8l8-5 8 5v13"/><path d="M9 21v-6h6v6"/></svg><span>الشركات</span></button>
+              <button type="button" data-p="reports"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V4"/><path d="M4 20h16"/><path d="M8.5 16v-5M12.5 16V8M16.5 16v-3"/></svg><span>التقارير</span></button>
+              <button type="button" data-p="notifs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 9a6 6 0 1 0-12 0c0 6-2.5 7.5-2.5 7.5h17S18 15 18 9"/><path d="M10 20a2.2 2.2 0 0 0 4 0"/></svg><span>التنبيهات</span></button>
+            </div>
+            <div class="btn-row" style="margin-top:16px">
+              <button class="btn-ghost" type="button" id="adminMoreClose">إغلاق</button>
+              <button class="btn-red" type="button" id="adminMoreLogout">تسجيل خروج المشرف</button>
+            </div>
           </div>
         </div>
 
@@ -1874,22 +2038,40 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
       var nNew=orders.filter(function(o){return o.status==="new";}).length;
       var nProg=orders.filter(function(o){return ["accepted","picked","onway","arrived"].indexOf(o.status)>=0;}).length;
       var nDone=orders.filter(function(o){return o.status==="delivered";}).length;
+      var nCanc=orders.filter(function(o){return o.status==="cancelled";}).length;
       var nLate=orders.filter(isLate).length;
       var on=couriers.filter(function(c){return c.online;}).length;
       var off=couriers.length-on;
       var rev=orders.filter(function(o){return o.status==="delivered";}).reduce(function(s,o){return s+o.fee;},0);
       $("admStats").innerHTML=
-        statHtml(total,"إجمالي طلبات اليوم","")+
+        statHtml(total,"إجمالي الطلبات","")+
         statHtml(nNew,"طلبات جديدة","")+
-        statHtml(nProg,"قيد التوصيل","amber")+
+        statHtml(nProg,"قيد التنفيذ","amber")+
         statHtml(nDone,"طلبات مكتملة","green")+
+        statHtml(nCanc,"طلبات ملغاة","red")+
         statHtml(nLate,"طلبات متأخرة","red")+
-        statHtml(on,"مناديب متصلون","green")+
-        statHtml(off,"مناديب غير متصلين","")+
+        statHtml(couriers.length,"إجمالي المندوبين","")+
+        statHtml(on,"مندوبون متصلون","green")+
+        statHtml(off,"مندوبون غير متصلين","")+
         statHtml(rev+" ر.س","إيرادات اليوم (طلبات مسلّمة)","green");
     }
 
     /* ============ Admin: nav ============ */
+    function goAdminPage(p){
+      var b=document.querySelector('#adminNav button[data-p="'+p+'"]');
+      if(b) b.click();
+    }
+    function syncAdminBottomNav(){
+      var bn=$("adminBottomNav"); if(!bn) return;
+      var main=["home","orders","couriers","reports"];
+      var bs=bn.querySelectorAll("button[data-b]");
+      for(var i=0;i<bs.length;i++){
+        var k=bs[i].getAttribute("data-b");
+        bs[i].classList.toggle("active", k===state.adminPage || (k==="more" && main.indexOf(state.adminPage)<0));
+      }
+      var mg=$("adminMoreGrid");
+      if(mg){ var mb=mg.querySelectorAll("button[data-p]"); for(var j=0;j<mb.length;j++) mb[j].classList.toggle("active", mb[j].getAttribute("data-p")===state.adminPage); }
+    }
     $("adminNav").addEventListener("click", function(e){
       var b=e.target.closest("button"); if(!b) return;
       state.adminPage=b.getAttribute("data-p");
@@ -1899,8 +2081,31 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
       for(var j=0;j<pages.length;j++) pages[j].classList.toggle("hidden", pages[j].id!=="page-"+state.adminPage);
       if(state.adminPage==="home"||state.adminPage==="livemap") setTimeout(initMaps,60);
       if(state.adminPage==="orders") setTimeout(initPickupMap,60);
+      syncAdminBottomNav();
       window.scrollTo({top:0});
     });
+    /* شريط التنقل السفلي وورقة المزيد: اختصارات تضغط أزرار #adminNav الحالية نفسها */
+    (function(){
+      var bn=$("adminBottomNav"), sheet=$("adminMoreSheet");
+      function closeSheet(){ if(sheet) sheet.classList.add("hidden"); }
+      function openSheet(){ if(sheet){ syncAdminBottomNav(); sheet.classList.remove("hidden"); } }
+      if(bn) bn.addEventListener("click", function(e){
+        var b=e.target.closest("button[data-b]"); if(!b) return;
+        var k=b.getAttribute("data-b");
+        if(k==="more"){ openSheet(); return; }
+        closeSheet(); goAdminPage(k);
+      });
+      if(sheet){
+        sheet.addEventListener("click", function(e){ if(e.target===sheet) closeSheet(); });
+        var grid=$("adminMoreGrid");
+        if(grid) grid.addEventListener("click", function(e){
+          var b=e.target.closest("button[data-p]"); if(!b) return;
+          closeSheet(); goAdminPage(b.getAttribute("data-p"));
+        });
+        var cl=$("adminMoreClose"); if(cl) cl.addEventListener("click", closeSheet);
+        var lo=$("adminMoreLogout"); if(lo) lo.addEventListener("click", function(){ closeSheet(); var x=$("admLogoutBtn"); if(x) x.click(); });
+      }
+    })();
 
     /* ============ Admin: couriers ============ */
     function ratingHtml(c){
@@ -2244,9 +2449,16 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
         if(la!==null && ln!==null){ initPickupMap(); setPickupCoords(la,ln); }
       });
     });
+    var admOrderFilter="all";
     function renderAdmOrders(){
       var q=($("orderSearch").value||"").trim();
-      var rows=orders.filter(function(o){ return !q || String(o.no).indexOf(q)>=0 || o.customer.indexOf(q)>=0; });
+      var rows=orders.filter(function(o){
+        if(admOrderFilter==="new" && o.status!=="new") return false;
+        if(admOrderFilter==="progress" && ["accepted","picked","onway","arrived"].indexOf(o.status)<0) return false;
+        if(admOrderFilter==="delivered" && o.status!=="delivered") return false;
+        if(admOrderFilter==="cancelled" && ["cancelled","rejected","failed"].indexOf(o.status)<0) return false;
+        return !q || String(o.no).indexOf(q)>=0 || o.customer.indexOf(q)>=0;
+      });
       $("admOrdersBody").innerHTML=rows.map(function(o){
         var c=courierById(o.courier); var comp=companies[o.company];
         var others=couriers.filter(function(x){return x.active && x.id!==o.courier;}).map(function(x){ return '<option value="'+x.id+'">'+esc(x.name)+'</option>'; }).join("");
@@ -2257,6 +2469,15 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
       }).join("") || '<tr><td colspan="10" class="muted">لا توجد طلبات مطابقة للبحث.</td></tr>';
     }
     $("orderSearch").addEventListener("input", renderAdmOrders);
+    (function(){
+      var fbox=$("admOrderFilters");
+      if(fbox) fbox.addEventListener("click", function(e){
+        var b=e.target.closest("button[data-f]"); if(!b) return;
+        admOrderFilter=b.getAttribute("data-f");
+        var bs=fbox.querySelectorAll("button"); for(var i=0;i<bs.length;i++) bs[i].classList.toggle("active", bs[i]===b);
+        renderAdmOrders();
+      });
+    })();
     $("admOrdersBody").addEventListener("change", function(e){
       var s=e.target.closest("[data-transfer]"); if(!s||!s.value) return;
       var no=parseInt(s.getAttribute("data-transfer"),10); var o=null; orders.forEach(function(x){ if(x.no===no) o=x; }); if(!o) return;
