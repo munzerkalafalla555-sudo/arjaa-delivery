@@ -419,7 +419,7 @@
       #viewDriver .drv-bottomnav a:active{color:var(--green-dark)}
 
       /* مسافة تمرير مريحة عند الوصول لأي قسم عبر البلاطات أو الشريط السفلي */
-      #drvProfile,#receiptCard,#drvStats,#gpsCard,#drvOrders{scroll-margin-top:12px}
+      #drvProfile,#receiptCard,#drvStats,#drvOrders{scroll-margin-top:12px}
 
       @media(max-width:480px){
         #viewDriver .drv-tiles .tile{min-height:110px;padding:16px 8px 14px}
@@ -526,10 +526,6 @@
               <span class="tile-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 9h6M9 13h6M9 17h3"/></svg></span>
               <span class="tile-lbl">طلباتي</span>
             </a>
-            <a class="tile tile-navy" href="#gpsCard">
-              <span class="tile-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3.5 6v14L9 18l6 2 5.5-2V4L15 6 9 4z"/><path d="M9 4v14M15 6v14"/></svg></span>
-              <span class="tile-lbl">موقعي والملاحة</span>
-            </a>
             <a class="tile tile-amber" href="#receiptCard">
               <span class="tile-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8.2v9.3a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5V8.2"/><path d="M3.3 8.2 5.6 4h12.8l2.3 4.2z"/><path d="M9.5 12.5l1.8 1.8 3.4-3.8"/></svg></span>
               <span class="tile-lbl">استلام الطلبات</span>
@@ -539,32 +535,6 @@
               <span class="tile-lbl">إحصائيات اليوم</span>
             </a>
           </nav>
-
-          <!-- GPS -->
-          <div class="card" id="gpsCard">
-            <h2>موقعي GPS</h2>
-            
-            <label class="checkline">
-              <input type="checkbox" id="gpsConsent" />
-              <span>أوافق على مشاركة موقعي مع المشرف أثناء ساعات العمل فقط، وأعلم أن بإمكاني إيقاف المشاركة في أي وقت.</span>
-            </label>
-            <div class="btn-row">
-              <button class="btn-navy" id="gpsStartBtn" type="button">تفعيل مشاركة الموقع</button>
-              <button class="btn-ghost hidden" id="gpsStopBtn" type="button">إيقاف المشاركة</button>
-            </div>
-            <div class="gps-box" id="gpsBox">
-              <div id="gpsStatus">المشاركة متوقفة حالياً.</div>
-              <div id="gpsCoords" class="hidden" style="margin-top:6px">
-                <div>خط العرض: <strong id="gpsLat">—</strong> &nbsp;|&nbsp; خط الطول: <strong id="gpsLng">—</strong></div>
-                <div>دقة الموقع: <span id="gpsAcc">—</span> متر تقريباً</div>
-                <div>آخر تحديث: <strong id="gpsTime">—</strong></div>
-                <div>إرسال الموقع إلى المشرف: <span id="gpsSentInfo">جارٍ أول إرسال…</span></div>
-                <div>بطارية الهاتف: <span id="gpsBatt">غير متاحة في هذا المتصفح</span></div>
-                <div style="margin-top:6px"><a id="gpsMapLink" href="#" target="_blank" rel="noopener">فتح موقعي الحالي في خرائط جوجل</a></div>
-              </div>
-              <div class="small muted" style="margin-top:8px">النقاط المحفوظة: <span id="gpsTrailCount">0</span></div>
-            </div>
-          </div>
 
           <!-- Orders: كل طلبات اليوم متتالية بتفاصيلها، دون تصفية -->
           <div id="drvOrders"></div>
@@ -578,10 +548,6 @@
             <a href="#drvOrders">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 9h6M9 13h6M9 17h3"/></svg>
               <span>طلباتي</span>
-            </a>
-            <a href="#gpsCard">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.8-5.6-6.8-10.4A6.8 6.8 0 0 1 12 3.5a6.8 6.8 0 0 1 6.8 6.8C18.8 15.4 12 21 12 21z"/><circle cx="12" cy="10.2" r="2.4"/></svg>
-              <span>موقعي</span>
             </a>
             <a href="#drvProfile">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8.2" r="3.8"/><path d="M4.8 20a7.4 7.4 0 0 1 14.4 0"/></svg>
@@ -1272,7 +1238,7 @@ if(!document.hidden && sbSession) loadAllData().then(function(){ renderCurrent()
    مستقلة على الشاشة الرئيسية. وداخل كل لوحة لا يوجد أي رابط يعود إلى
    شاشة الدخول أو إلى اللوحة الأخرى: المندوب داخل لوحته لا يستطيع الوصول
    منها إلى لوحة المشرفين إطلاقاً. بقية روابط المرساة داخل لوحة المندوب
-   (‎#drvOrders و‎#gpsCard وغيرها) روابط تنقّل داخلية ولا تغيّر اللوحة. */
+   (‎#drvOrders و‎#drvProfile وغيرها) روابط تنقّل داخلية ولا تغيّر اللوحة. */
 var currentView = "home";
 function routeTo(v){
 currentView = v;
@@ -1396,7 +1362,6 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
       var c=courierById(state.driverId);
       state.working=false; state.received=false;
       stopGps();
-      var gc=$("gpsConsent"); if(gc) gc.checked=false;
       $("shiftInfo").textContent="أنهيت العمل.";
       if(c){
         var ps=[sbUpdate("drivers","id=eq."+c.uuid,{is_online:false, last_lat:null, last_lng:null, last_loc_at:null}), writeLog(null,"work_ended","أنهى المندوب "+c.name+" العمل في "+fmtTime(new Date()))];
@@ -1472,7 +1437,7 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
         pushNotif("accepted","استلام طلبات وبدء عمل","أكّد "+c.name+" استلام "+entered+" طلباً (مطابقة كاملة مع المسند إليه) وبدأ العمل في "+fmtTime(when));
         $("shiftInfo").textContent="بدأ العمل في "+fmtTime(when)+".";
         renderDriver();
-        if($("gpsConsent").checked){ $("gpsStartBtn").click(); }
+        startGpsAuto();
         toast("مطابقة ناجحة — تم اعتماد استلام "+entered+" طلباً وبدأ العمل");
         syncAfter(ps);
       } else {
@@ -1514,10 +1479,14 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
       }
     }
 
-    /* ============ Driver: GPS (real device geolocation, consent-based) ============ */
+    /* ============ Driver: GPS تلقائي — بلا أي زر أو شرح في لوحة المندوب ============
+       لا يوجد في لوحة المندوب أي مفتاح أو زر للموقع: عند بدء العمل (تأكيد
+       استلام الطلبات بمطابقة ناجحة) يبدأ تتبع الموقع تلقائياً، فتظهر للمندوب
+       رسالة إذن الموقع من جواله نفسه، ويُرسل موقعه إلى المشرف أثناء العمل
+       فقط. ويتوقف التتبع تلقائياً عند إنهاء العمل أو تسجيل الخروج. */
     /* إرسال موقع المندوب الحقيقي إلى قاعدة البيانات (أعمدة last_lat/last_lng/last_loc_at
        في جدول drivers) ليراه المشرف مباشرة على خريطته من أي جهاز. الإرسال مثبّت
-       بحد أقصى مرة كل 20 ثانية، ولا يحدث إلا أثناء مشاركة موقع مفعّلة في ساعات العمل. */
+       بحد أقصى مرة كل 20 ثانية، ولا يحدث إلا أثناء العمل. */
     function maybeSendLocation(lat,lng){
       var c=courierById(state.driverId); if(!c) return;
       if(!state.working || state.gpsWatch===null) return; /* لا إرسال خارج ساعات العمل أبداً */
@@ -1526,13 +1495,11 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
       state.gpsSending=true;
       sbUpdate("drivers","id=eq."+c.uuid,{last_lat:lat,last_lng:lng,last_loc_at:nowIso()}).then(function(){
         state.gpsLastSentAt=Date.now(); state.gpsSending=false;
-        var el=$("gpsSentInfo"); if(el) el.textContent="تم إرسال موقعك إلى المشرف — آخر إرسال "+fmtTime(new Date());
       }).catch(function(){
         state.gpsSending=false;
-        var el=$("gpsSentInfo"); if(el) el.textContent="تعذر إرسال الموقع الآن (اتصال ضعيف) — ستتم إعادة المحاولة مع التحديث التالي";
       });
     }
-    /* مسح الموقع المحفوظ عند إيقاف المشاركة أو إنهاء العمل أو الخروج،
+    /* مسح الموقع المحفوظ عند إنهاء العمل أو الخروج،
        فلا يبقى موقع قديم ظاهراً للمشرف بعد توقف المندوب عن الإرسال */
     function clearDriverDbLocation(){
       var c=courierById(state.driverId); if(!c) return;
@@ -1541,39 +1508,24 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
     function stopGps(){
       if(state.gpsWatch!==null && navigator.geolocation){ navigator.geolocation.clearWatch(state.gpsWatch); }
       state.gpsWatch=null; state.realPos=null; state.gpsLastSentAt=0;
-      var sb=$("gpsStopBtn"), st=$("gpsStartBtn");
-      if(sb) sb.classList.add("hidden"); if(st) st.classList.remove("hidden");
-      var gs=$("gpsStatus"); if(gs) gs.textContent="المشاركة متوقفة حالياً.";
-      var gsi=$("gpsSentInfo"); if(gsi) gsi.textContent="جارٍ أول إرسال…";
-      var gc2=$("gpsCoords"); if(gc2) gc2.classList.add("hidden");
     }
-    $("gpsStartBtn").addEventListener("click", function(){
-      if(!state.working){ toast("ابدأ العمل أولاً، ثم فعّل مشاركة الموقع"); return; }
-      if(!$("gpsConsent").checked){ toast("يلزم وضع علامة الموافقة على مشاركة الموقع أولاً"); return; }
-      if(!("geolocation" in navigator)){ $("gpsStatus").textContent="هذا المتصفح لا يدعم تحديد الموقع."; return; }
-      $("gpsStatus").textContent="جارٍ طلب إذن الموقع من الجهاز…";
+    /* بدء التتبع تلقائياً عند بدء العمل: طلب watchPosition مباشرة يجعل
+       المتصفح يعرض على المندوب رسالة إذن فتح الموقع من جواله، دون أي زر. */
+    function startGpsAuto(){
+      if(!state.working || state.gpsWatch!==null) return;
+      if(!("geolocation" in navigator)) return;
       state.gpsWatch = navigator.geolocation.watchPosition(function(pos){
         var lat=pos.coords.latitude, lng=pos.coords.longitude;
         state.realPos={lat:lat,lng:lng};
         state.gpsTrail.push({lat:lat,lng:lng,t:new Date()});
         var c=courierById(state.driverId); if(c){ c.lat=lat; c.lng=lng; c.lastUpdate=new Date(); }
-        $("gpsStatus").innerHTML='<strong style="color:var(--green-dark)">المشاركة مفعّلة — موقعك يُرسل إلى المشرف مباشرة الآن.</strong> يتوقف الإرسال فور إيقاف المشاركة أو إنهاء العمل.';
-        $("gpsCoords").classList.remove("hidden");
-        $("gpsLat").textContent=lat.toFixed(5); $("gpsLng").textContent=lng.toFixed(5);
-        $("gpsAcc").textContent=Math.round(pos.coords.accuracy);
-        $("gpsTime").textContent=fmtDateTime(new Date());
-        $("gpsTrailCount").textContent=state.gpsTrail.length;
-        $("gpsMapLink").href=mapsLink(lat,lng);
         maybeSendLocation(lat,lng);
-        $("gpsStartBtn").classList.add("hidden"); $("gpsStopBtn").classList.remove("hidden");
         if(window.__mapsReady) refreshMarkers();
       }, function(err){
-        $("gpsStatus").textContent="تعذر الحصول على الموقع: "+(err.message||"تم رفض الإذن أو GPS غير مفعّل في الجهاز.");
         state.gpsWatch=null;
+        toast("تعذر الحصول على موقعك — فعّل إذن الموقع من إعدادات المتصفح ليصل موقعك إلى المشرف");
       }, {enableHighAccuracy:true, maximumAge:15000, timeout:20000});
-      if(navigator.getBattery){ navigator.getBattery().then(function(b){ $("gpsBatt").textContent=Math.round(b.level*100)+"%"+(b.charging?" (يُشحن)":""); }).catch(function(){}); }
-    });
-    $("gpsStopBtn").addEventListener("click", function(){ clearDriverDbLocation(); stopGps(); toast("توقفت مشاركة الموقع — لم يعد موقعك يظهر للمشرف"); });
+    }
 
     /* ============ Driver: orders ============ */
     function gmapsDirectionsUrl(o){ return "https://www.google.com/maps/dir/?api=1&destination="+o.lat+","+o.lng; }
@@ -2625,7 +2577,7 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
       var box=$("courierDetail");
       var locRow = (c.lat!=null && c.lng!=null && !isNaN(c.lat) && !isNaN(c.lng))
         ? (locFresh(c)?'<strong style="color:var(--green-dark)">موقع مباشر الآن</strong>':'<strong>آخر موقع معروف</strong>')+' — أرسله المندوب من جهازه، وآخر تحديث '+fmtDateTime(c.lastUpdate)+' — <a href="'+mapsLink(c.lat,c.lng)+'" target="_blank" rel="noopener">فتح في خرائط جوجل</a>'
-        : 'لا يوجد موقع مُرسل بعد — يظهر هنا مباشرة عندما يفعّل المندوب مشاركة GPS من جهازه أثناء العمل';
+        : 'لا يوجد موقع مُرسل بعد — يظهر هنا مباشرة عندما يبدأ المندوب العمل ويوافق على إذن الموقع في جواله';
       box.innerHTML='<h2>تفاصيل المندوب: '+esc(c.name)+'</h2>'+
         '<dl class="kv"><dt>الرقم الوظيفي</dt><dd>'+c.id+'</dd><dt>الهاتف</dt><dd>'+esc(c.phone||"—")+'</dd>'+
         '<dt>المركبة</dt><dd>'+esc(c.vehicle)+'</dd><dt>الحالة</dt><dd>'+(c.online?"متصل":"غير متصل")+' — '+(c.active?"الحساب مفعّل":"الحساب موقوف")+'</dd>'+
@@ -2696,7 +2648,7 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
           '<div class="small"><span class="status-dot '+(c.online?"on":"off")+'"></span>'+(c.online?"متصل":"غير متصل")+' · '+esc(c.district)+' · آخر تحديث موقع: '+fmtDateTime(c.lastUpdate)+' · البطارية: '+(c.battery==null?"غير متاحة":c.battery+"%")+'</div>'+
           '<div class="small">الطلبات النشطة الآن: <strong>'+act+'</strong> من القدرة التشغيلية <strong>'+cap+'</strong>'+(act>cap?' <span class="chip chip-bad">تجاوز القدرة التشغيلية</span>':(act===cap?' <span class="chip chip-progress">ممتلئ</span>':""))+'</div>'+
           '<div class="cap-track"><div class="cap-fill '+cls+'" style="width:'+pct+'%"></div></div>'+
-          '<div class="small muted">'+((c.lat!=null&&c.lng!=null&&!isNaN(c.lat)&&!isNaN(c.lng))? (locFresh(c)?"موقع GPS مباشر الآن من جهاز المندوب — مشاركته مفعّلة":"آخر موقع GPS معروف من جهاز المندوب — أُرسل في "+fmtDateTime(c.lastUpdate)) : "لا موقع مُرسل بعد لهذا المندوب — يظهر عندما يفعّل مشاركة GPS من جهازه أثناء العمل")+'</div></div>'+
+          '<div class="small muted">'+((c.lat!=null&&c.lng!=null&&!isNaN(c.lat)&&!isNaN(c.lng))? (locFresh(c)?"موقع GPS مباشر الآن من جهاز المندوب — مشاركته مفعّلة":"آخر موقع GPS معروف من جهاز المندوب — أُرسل في "+fmtDateTime(c.lastUpdate)) : "لا موقع مُرسل بعد لهذا المندوب — يظهر عندما يبدأ العمل ويوافق على إذن الموقع في جواله")+'</div></div>'+
           '<button class="btn-navy" data-gotomap="'+c.id+'" type="button" style="flex:none;min-width:150px">عرض على الخريطة</button></div>';
       }).join("") || '<p class="muted">لا يوجد مناديب مفعّلون.</p>';
       var bc=$("bulkCourier");
