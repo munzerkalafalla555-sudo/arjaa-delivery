@@ -142,13 +142,6 @@
       .steps span.now{background:var(--navy);color:#fff}
       .proof-img{max-width:180px;border-radius:10px;margin-top:8px;border:1px solid var(--line)}
       .gps-box{background:var(--navy-soft);border-radius:12px;padding:14px;margin-top:10px}
-      /* تنبيه «الموقع مغلق» في لوحة المندوب: يظهر من أول فتح اللوحة (قبل بدء
-         العمل وأثناءه) عندما يتعذر تحديد الموقع (الإذن مرفوض أو GPS مطفأ)،
-         ويختفي وحده فور عودة التتبع */
-      .gps-alert{display:flex;gap:12px;align-items:flex-start;background:var(--red-soft);border:2px solid var(--red);border-radius:16px;padding:16px 18px;margin-top:16px}
-      .gps-alert svg{width:30px;height:30px;flex:none;color:var(--red);margin-top:2px}
-      .gps-alert .gps-alert-title{font-family:"Cairo",sans-serif;font-weight:800;font-size:1.2rem;color:var(--red);line-height:1.5}
-      .gps-alert .gps-alert-text{font-weight:600;line-height:1.9}
       .checkline{display:flex;gap:10px;align-items:flex-start;background:var(--surface-2);border-radius:12px;padding:12px;margin-top:10px}
       .checkline input{width:26px;height:26px;flex:none;margin-top:4px}
 
@@ -517,16 +510,6 @@
               <button class="btn-red hidden" id="endWorkBtn" type="button" style="min-height:58px;font-size:1.1rem">إنهاء العمل</button>
             </div>
             <p class="small muted" id="shiftInfo"></p>
-          </div>
-
-          <!-- تنبيه الموقع المغلق: مخفي دائماً ما دام التتبع يعمل، ويظهر من
-               أول فتح اللوحة إذا كان موقع الجوال مغلقاً أو إذنه مرفوضاً -->
-          <div class="gps-alert hidden" id="gpsAlert" role="alert">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6-7-11a7 7 0 1 1 14 0c0 5-7 11-7 11z"/><path d="M9.5 9.5l5 5M14.5 9.5l-5 5"/></svg>
-            <div>
-              <div class="gps-alert-title">الموقع مغلق — لا يتم تحديد موقعك الآن</div>
-              <div class="gps-alert-text" id="gpsAlertText">فعّل الموقع من جوالك حتى يتم تحديد موقعك وإرساله إلى المشرف.</div>
-            </div>
           </div>
 
           <!-- استلام طلبات اليوم -->
@@ -1091,7 +1074,7 @@ var couriers = [], companies = [], orders = [], notifications = [], opLog = [], 
 var driverByUuid = {}, driverByNo = {}, compIndexByUuid = {};
 var nextCourierSeq = 1001;
 var locallyDeactivated = {}; /* إيقاف حساب مندوب من اللوحة — يُحفظ داخل جلسة الصفحة (لا عمود له في الجدول بعد) */
-var state = { driverId:null, working:false, received:false, filter:"all", adminPage:"home", reportRange:"day", gpsWatch:null, gpsTrail:[], realPos:null, gpsLastSentAt:0, gpsSending:false, gpsOk:false, gpsRetry:null, gpsAlertShown:false, gpsLastFixAt:0, gpsMonitor:null, gpsProbing:false};
+var state = { driverId:null, working:false, received:false, filter:"all", adminPage:"home", reportRange:"day", gpsWatch:null, gpsTrail:[], realPos:null, gpsLastSentAt:0, gpsSending:false, gpsOk:false, gpsRetry:null, gpsPromptAt:0, gpsLastFixAt:0, gpsMonitor:null, gpsProbing:false};
 var PRIO_TAG = " ";
 
 function courierById(id){ return driverByNo[id] || null;}
@@ -1309,7 +1292,7 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
             syncWorkState();
             $("driverLogin").classList.add("hidden"); $("driverApp").classList.remove("hidden");
             renderDriver(); startPolling();
-            startGpsAuto(); /* فحص الموقع من أول فتح للوحة: إن كان مغلقاً تصل المندوب رسالة «الموقع مغلق» فوراً حتى قبل بدء العمل، وإن كانت وردية جارية يُستأنف التتبع والمراقبة */
+            startGpsAuto(); /* فحص الموقع من أول فتح للوحة: إن كان مغلقاً تصل المندوب رسالة نظام جواله لفتحه فوراً حتى قبل بدء العمل، وإن كانت وردية جارية يُستأنف التتبع والمراقبة */
             var c=courierById(state.driverId);
             toast("مرحباً "+(c?c.name:"")+" — سجلت دخولك بنجاح");
           });
@@ -1380,7 +1363,7 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
       var c=courierById(state.driverId);
       state.working=false; state.received=false;
       stopGps();
-      startGpsAuto(); /* اللوحة ما زالت مفتوحة بعد إنهاء العمل: يستمر فحص الموقع وتنبيه «الموقع مغلق» حتى تسجيل الخروج، دون إرسال أي موقع للمشرف */
+      startGpsAuto(); /* اللوحة ما زالت مفتوحة بعد إنهاء العمل: يستمر فحص الموقع ومراقبته حتى تسجيل الخروج، دون إرسال أي موقع للمشرف */
       $("shiftInfo").textContent="أنهيت العمل.";
       if(c){
         var ps=[sbUpdate("drivers","id=eq."+c.uuid,{is_online:false, last_lat:null, last_lng:null, last_loc_at:null}), writeLog(null,"work_ended","أنهى المندوب "+c.name+" العمل في "+fmtTime(new Date()))];
@@ -1500,8 +1483,8 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
 
     /* ============ Driver: GPS تلقائي — بلا أي زر أو شرح في لوحة المندوب ============
        لا يوجد في لوحة المندوب أي مفتاح أو زر للموقع: من أول فتح اللوحة
-       يبدأ فحص الموقع تلقائياً، فتظهر للمندوب رسالة إذن الموقع من جواله
-       نفسه أو تنبيه «الموقع مغلق» إن كان مغلقاً، وعند بدء العمل (تأكيد
+       يبدأ فحص الموقع تلقائياً، فتظهر للمندوب رسالة نظام جواله نفسه لفتح
+       الموقع إن كان مغلقاً (ولا توجد أي رسالة داخل اللوحة)، وعند بدء العمل (تأكيد
        استلام الطلبات بمطابقة ناجحة) يتحول الفحص إلى تتبع كامل ويُرسل
        موقعه إلى المشرف أثناء العمل فقط. ويتوقف كل ذلك عند تسجيل الخروج. */
     /* إرسال موقع المندوب الحقيقي إلى قاعدة البيانات (أعمدة last_lat/last_lng/last_loc_at
@@ -1531,42 +1514,42 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
       state.gpsWatch=null; state.realPos=null; state.gpsLastSentAt=0; state.gpsLastFixAt=0; state.gpsProbing=false;
       if(state.gpsRetry!==null){ clearTimeout(state.gpsRetry); state.gpsRetry=null; }
       state.gpsOk=false;
-      hideGpsAlert();
     }
-    /* ============ تنبيه «الموقع مغلق» وإعادة المحاولة التلقائية ============
-       طلب المالك: من أول مرة يفتح فيها المندوب لوحته — قبل بدء العمل
-       وأثناءه — إذا كان موقع الجوال مغلقاً (إذن الموقع مرفوض أو GPS مطفأ)
-       تصل المندوب رسالة واضحة ثابتة في لوحته أن الموقع مغلق حتى يفعّله،
-       وإذا كان الموقع مفتوحاً لا تصله أي رسالة ويعمل التتبع بصمت. التنبيه
-       ثابت (لا يختفي وحده مثل الإشعار العابر) ويبقى ظاهراً طوال انقطاع
-       الموقع، وتعيد اللوحة المحاولة تلقائياً كل 10 ثوانٍ وعند عودة المندوب
-       إلى الصفحة، فبمجرد أن يفعّل الموقع يبدأ التتبع ويختفي التنبيه من
-       تلقاء نفسه دون أي زر أو إعادة تحميل.
+    /* ============ رسالة نظام الجوال عند إغلاق الموقع وإعادة المحاولة ============
+       طلب المالك: لا توجد أي رسالة داخل اللوحة نفسها عن الموقع — حُذفت
+       الرسالة الحمراء نهائياً. الرسالة الوحيدة التي تصل المندوب هي رسالة
+       نظام جواله نفسه (نافذة تفعيل «الموقع الجغرافي / دقة الموقع» بزر
+       «تفعيل»)، وهي نفس الرسالة التي تصله أول مرة يفتح فيها التطبيق دون
+       موقع. هذه النافذة لا ترسمها الصفحة بل يعرضها الجوال عندما تطلب
+       الصفحة موقعاً عالي الدقة والموقع مغلق، لذلك كلما اكتشفت المراقبة
+       أن الموقع أُغلق — من أول فتح اللوحة وقبل بدء العمل وأثناءه —
+       تُصدر اللوحة طلب موقع جديد فوراً (requestLocationPrompt) فتصل
+       المندوب رسالة النظام على طول، وتُعاد المحاولة كل 10 ثوانٍ وعند
+       عودة المندوب إلى الصفحة حتى يفعّل الموقع، فبمجرد تفعيله يبدأ
+       التتبع من تلقاء نفسه دون أي زر أو إعادة تحميل. وإن كان الموقع
+       مفتوحاً لا تصله أي رسالة ويعمل التتبع بصمت.
        مراقبة مستمرة إضافية (gpsMonitor): عند إطفاء الموقع من الجوال أثناء
        العمل واللوحة مفتوحة، تتوقف watchPosition في متصفحات كثيرة بصمت —
        لا موقع جديد ولا خطأ — فلا تكفي إعادة المحاولة المرتبطة بالأخطاء.
        لذلك يعمل أثناء العمل مؤقّت كل 10 ثوانٍ يفحص حداثة آخر موقع وردنا:
        إن مرّت 30 ثانية بلا موقع جديد، أو توقفت المراقبة نفسها، يفحص
        الموقع فحصاً مباشراً (getCurrentPosition) ويعيد تشغيل المراقبة؛
-       فإن فشل الفحص ظهر تنبيه «الموقع مغلق» فوراً، وإن نجح عاد التتبع
-       واختفى التنبيه — دون أن ينتظر المندوب خطأً أو عودةً إلى الصفحة. */
-    function showGpsAlert(msg){
-      var box=$("gpsAlert"); if(!box) return;
-      $("gpsAlertText").textContent=msg;
-      box.classList.remove("hidden");
-      if(!state.gpsAlertShown){
-        state.gpsAlertShown=true;
-        toast("الموقع مغلق — فعّل الموقع من جوالك حتى يتم تحديد موقعك");
-      }
-    }
-    function hideGpsAlert(){
-      var box=$("gpsAlert"); if(box) box.classList.add("hidden");
-      state.gpsAlertShown=false;
-    }
-    function gpsErrorMessage(err){
-      if(err && err.code===1) return "لم تسمح بالموقع لهذا المتصفح. من إعدادات جوالك: التطبيقات ← المتصفح ← الأذونات ← الموقع ← «سماح»، ثم ارجع إلى هذه الصفحة وسيبدأ التتبع تلقائياً.";
-      if(err && err.code===2) return "فعّل الموقع (GPS) من إعدادات جوالك أو اسحب من أعلى الشاشة وفعّل أيقونة «الموقع»، ثم ارجع إلى هذه الصفحة وسيبدأ التتبع تلقائياً.";
-      return "تأكد أن الموقع مفعّل في جوالك وأنك في مكان تصله إشارة GPS — نحاول تحديد موقعك تلقائياً الآن.";
+       فإن فشل الفحص صدر طلب موقع جديد فأظهر الجوال رسالته فوراً، وإن
+       نجح عاد التتبع بصمت — دون أن ينتظر المندوب خطأً أو عودةً إلى الصفحة. */
+    /* طلب موقع جديد عالي الدقة الآن: إذا كان موقع الجوال مغلقاً يعرض
+       الجوال على المندوب رسالة نظامه لتفعيل الموقع (نفس رسالة أول مرة)،
+       وإذا كان مفتوحاً يصلنا موقع حديث فيستأنف التتبع بصمت. خنق خفيف
+       (5 ثوانٍ) حتى لا تتزاحم الطلبات من مصادر الكشف المختلفة. */
+    function requestLocationPrompt(){
+      if(!state.driverId || !("geolocation" in navigator)) return;
+      if(Date.now()-(state.gpsPromptAt||0) < 5000) return;
+      state.gpsPromptAt=Date.now();
+      navigator.geolocation.getCurrentPosition(function(pos){
+        if(state.gpsWatch===null) startGpsWatch();
+        onGpsPosition(pos);
+      }, function(err){
+        scheduleGpsRetry();
+      }, {enableHighAccuracy:true, maximumAge:0, timeout:15000});
     }
     function onGpsPosition(pos){
       var lat=pos.coords.latitude, lng=pos.coords.longitude;
@@ -1574,7 +1557,7 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
       state.realPos={lat:lat,lng:lng};
       state.gpsTrail.push({lat:lat,lng:lng,t:new Date()});
       var c=courierById(state.driverId); if(c){ c.lat=lat; c.lng=lng; c.lastUpdate=new Date(); }
-      if(!state.gpsOk){ state.gpsOk=true; hideGpsAlert(); }
+      state.gpsOk=true;
       maybeSendLocation(lat,lng);
       if(window.__mapsReady) refreshMarkers();
     }
@@ -1583,7 +1566,7 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
       /* بعض المتصفحات توقف المراقبة بعد الرفض، فنلغيها هنا ونعتمد على
          إعادة المحاولة الدورية حتى لا يموت التتبع نهائياً كما كان يحدث */
       if(state.gpsWatch!==null && navigator.geolocation){ navigator.geolocation.clearWatch(state.gpsWatch); state.gpsWatch=null; }
-      showGpsAlert(gpsErrorMessage(err));
+      requestLocationPrompt(); /* خطأ موقع (أُغلق الموقع أو رُفض إذنه): طلب موقع جديد فوراً فتظهر للمندوب رسالة نظام جواله لتفعيل الموقع */
       scheduleGpsRetry();
     }
     function startGpsWatch(){
@@ -1597,7 +1580,7 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
         startGpsWatch();
         onGpsPosition(pos);
       }, function(err){
-        showGpsAlert(gpsErrorMessage(err));
+        requestLocationPrompt();
         scheduleGpsRetry();
       }, {enableHighAccuracy:true, maximumAge:0, timeout:15000});
     }
@@ -1609,7 +1592,7 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
        يعمل طوال بقاء لوحة المندوب مفتوحة ويفحص كل 10 ثوانٍ: هل ما زال الموقع يصلنا؟
        يكشف الحالة التي عجزت عنها المراقبة وحدها: إطفاء الموقع من الجوال
        أثناء العمل مع بقاء اللوحة مفتوحة، إذ تصمت watchPosition تماماً
-       (لا موقع ولا خطأ) فيبقى gpsOk خادعاً ولا يظهر أي تنبيه. */
+       (لا موقع ولا خطأ) فيبقى gpsOk خادعاً ولا تصل المندوب أي رسالة. */
     function startGpsMonitor(){
       if(state.gpsMonitor!==null) return;
       state.gpsMonitor=setInterval(gpsMonitorTick, 10000);
@@ -1628,15 +1611,15 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
         state.gpsProbing=false;
         if(!state.driverId) return;
         if(state.gpsWatch===null) startGpsWatch(); /* إحياء المراقبة إن كانت متوقفة */
-        onGpsPosition(pos); /* نجاح الفحص يخفي التنبيه ويجدّد ختم الحداثة */
+        onGpsPosition(pos); /* نجاح الفحص يجدّد ختم الحداثة ويستأنف التتبع بصمت */
       }, function(err){
         state.gpsProbing=false;
         if(!state.driverId) return;
         state.gpsOk=false;
-        showGpsAlert(gpsErrorMessage(err));
+        requestLocationPrompt(); /* فشل الفحص: طلب موقع جديد فوراً فتظهر للمندوب رسالة نظام جواله لتفعيل الموقع */
         /* إعادة تشغيل المراقبة من الصفر: إن كان الموقع مطفأً ستصلنا
            أخطاؤها أو تصمت فيعيد المراقب الفحص، وإن فُتح الموقع تعود
-           المواقع فوراً ويختفي التنبيه وحده */
+           المواقع فوراً ويستأنف التتبع وحده */
         if(state.gpsWatch!==null && navigator.geolocation){ navigator.geolocation.clearWatch(state.gpsWatch); state.gpsWatch=null; }
         startGpsWatch();
         scheduleGpsRetry();
@@ -1650,17 +1633,18 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
       attemptGpsRetry();
     });
     /* بدء فحص الموقع تلقائياً من أول فتح لوحة المندوب — قبل بدء العمل
-       وأثناءه: طلب watchPosition مباشرة يجعل المتصفح يعرض على المندوب
-       رسالة إذن فتح الموقع من جواله، دون أي زر. إن كان الموقع مفتوحاً
-       يعمل الفحص بصمت بلا أي رسالة (ولا يُرسل أي موقع للمشرف قبل بدء
-       العمل — maybeSendLocation تحرس ذلك)، وإن كان مغلقاً يظهر تنبيه
-       «الموقع مغلق» الثابت من أول فتح وتستمر إعادة المحاولة تلقائياً،
-       وعند بدء العمل يتحول الفحص نفسه إلى تتبع كامل بلا انقطاع. */
+       وأثناءه: طلب watchPosition مباشرة يجعل الجوال يعرض على المندوب
+       رسالة نظامه لفتح الموقع، دون أي زر ودون أي رسالة داخل اللوحة.
+       إن كان الموقع مفتوحاً يعمل الفحص بصمت بلا أي رسالة (ولا يُرسل أي
+       موقع للمشرف قبل بدء العمل — maybeSendLocation تحرس ذلك)، وإن كان
+       مغلقاً تصل المندوب رسالة نظام جواله من أول فتح وتستمر إعادة
+       المحاولة تلقائياً، وعند بدء العمل يتحول الفحص نفسه إلى تتبع كامل
+       بلا انقطاع. */
     function startGpsAuto(){
       if(!state.driverId) return;
-      if(!("geolocation" in navigator)){ showGpsAlert("هذا المتصفح لا يدعم تحديد الموقع — افتح لوحة المندوب من متصفح Chrome على جوالك."); return; }
+      if(!("geolocation" in navigator)){ toast("هذا المتصفح لا يدعم تحديد الموقع — افتح لوحة المندوب من متصفح Chrome على جوالك."); return; }
       startGpsWatch(); /* تحرس نفسها من التكرار إن كانت تعمل أصلاً */
-      startGpsMonitor(); /* مراقبة مستمرة: تنبيه فوري إن أُطفئ الموقع أثناء العمل */
+      startGpsMonitor(); /* مراقبة مستمرة: طلب موقع جديد فوراً إن أُطفئ الموقع أثناء العمل فتصل المندوب رسالة نظام جواله */
     }
 
     /* ============ Driver: orders ============ */
