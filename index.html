@@ -444,11 +444,10 @@
           </div>
           <div>
             <h1>ARJAA DELIVERY</h1>
-            <div class="ar-name">أرجاء اليمامة اللوجستية — توصيل الوجبات الصحية والطلبات داخل الرياض</div>
+            <div class="ar-name">أرجاء اليمامة اللوجستية</div>
           </div>
-          <span class="phase-badge">قاعدة بيانات حقيقية + تتبع GPS مباشر</span>
         </div>
-        <div class="area-line" id="areaLabel">شاشة الدخول — اختر لوحتك</div>
+        <div class="area-line" id="areaLabel">شاشة الدخول</div>
       </div>
     </header>
 
@@ -462,31 +461,19 @@
       <section id="viewHome">
         <div class="entry-intro">
           <h2>اختر لوحتك</h2>
-          <p class="muted">لوحة المندوب ولوحة المشرفين منفصلتان تماماً: لكل لوحة شاشتها الخاصة ورابطها الخاص، ولا تظهر أي لوحة داخل الأخرى. اختر اللوحة التي تخصك:</p>
         </div>
         <div class="entry-grid">
           <div class="entry-card driver">
             <div class="entry-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/></svg></div>
             <h3>لوحة تحكم المندوب</h3>
-            <ul>
-              <li>طلباتي المسندة إليّ فقط</li>
-              <li>استلام طلبات اليوم وبدء العمل</li>
-              <li>مشاركة موقعي GPS أثناء العمل</li>
-            </ul>
             <a href="#driver">دخول المندوب</a>
           </div>
           <div class="entry-card admin">
             <div class="entry-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></div>
             <h3>لوحة تحكم المشرفين</h3>
-            <ul>
-              <li>إدارة الطلبات وتوزيعها على المناديب</li>
-              <li>الخريطة المباشرة والتقارير الكاملة</li>
-              <li>إدارة المناديب والشركات والتنبيهات</li>
-            </ul>
             <a href="#admin">دخول المشرف</a>
           </div>
         </div>
-        <p class="entry-note muted">لحفظ أيقونة منفصلة لكل لوحة على شاشة هاتفك: افتح اللوحة التي تريدها من الأعلى، ثم من قائمة المتصفح اختر «إضافة إلى الشاشة الرئيسية» — تُحفظ أيقونة خاصة بهذه اللوحة وحدها وتفتحها مباشرة.</p>
       </section>
 
       <!-- ================= DRIVER VIEW ================= -->
@@ -496,7 +483,6 @@
           <div class="ph-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/></svg></div>
           <div style="flex:1;min-width:200px">
             <h2>لوحة تحكم المندوب</h2>
-            <p>لوحة خاصة بالمندوب فقط — طلباتك واستلامك وموقعك. لوحة المشرفين ليست هنا؛ لها شاشتها المنفصلة.</p>
           </div>
           <a href="#home">شاشة الدخول</a>
         </div>
@@ -504,7 +490,7 @@
         <!-- Login -->
         <div class="card" id="driverLogin">
           <h2>تسجيل دخول المندوب</h2>
-          <p class="muted">ادخل برقم المندوب الخاص بك وكلمة المرور الموحّدة التي زوّدك بها المشرف — نفس كلمة المرور لكل المناديب، ويختلف رقم كل مندوب فقط. الدخول حقيقي عبر قاعدة بيانات النظام، ولا يرى أي مندوب إلا طلباته المسندة إليه فقط.</p>
+          
           <form id="loginForm" style="margin-top:14px">
             <div class="form-grid">
               <div>
@@ -516,13 +502,13 @@
                 <input id="loginPass" type="password" autocomplete="current-password" placeholder="••••" required />
               </div>
             </div>
-            <p class="small muted" style="margin-top:12px">ادخل برقمك أنت وكلمة المرور الموحّدة التي أعطاك إياها المشرف عند إضافتك إلى النظام — كلمة المرور نفسها لكل المناديب ورقمك وحدك هو المختلف. إن نسيتها تواصل مع المشرف.</p>
+            
             <p id="loginError" class="hidden" style="color:var(--red);font-weight:700"></p>
             <button class="btn-green btn-big" type="submit" style="margin-top:14px">دخول</button>
             <button class="btn-ghost btn-big" type="button" id="connTestBtnDrv" style="margin-top:10px">فحص الاتصال بقاعدة البيانات</button>
             <p id="connTestResultDrv" class="hidden" style="font-weight:700"></p>
           </form>
-          <p class="small muted" style="margin-top:10px">حسابك مرتبط بقاعدة البيانات: طلباتك وحالة عملك واستلاماتك تُحفظ فوراً وتظهر للمشرف، حتى لو فتحت التطبيق من جهاز آخر.</p>
+          
         </div>
 
         <!-- Driver app -->
@@ -545,12 +531,12 @@
               <form id="pwForm" class="hidden" style="margin-top:10px">
                 <label for="newPw">كلمة المرور الجديدة (8 أحرف أو أكثر)</label>
                 <input id="newPw" type="password" dir="ltr" style="text-align:left" autocomplete="new-password" placeholder="••••••••" />
-                <p class="small muted" style="margin:4px 0 0">تنبيه: كلمة المرور الموحّدة واحدة لكل المناديب. إن غيّرت كلمتك هنا تصبح كلمتك خاصة بك وحدك ومختلفة عن الموحّدة، وستدخل بها وحدها بعد ذلك.</p>
+                
                 <button class="btn-green" type="submit" style="margin-top:10px">حفظ كلمة المرور الجديدة</button>
                 <p id="pwMsg" class="hidden" style="font-weight:700;margin-top:8px"></p>
               </form>
             </div>
-            <p class="small muted" id="shiftInfo">يبدأ عملك من قسم «استلام طلبات اليوم» بالأسفل: عدّ الطلبات التي استلمتها فعلياً من المشرف وأدخل عددها، وعند مطابقة العدد للطلبات المسندة إليك يبدأ العمل وتظهر مهام التوصيل. مشاركة الموقع اختيارية وبموافقتك، وتتوقف تلقائياً عند إنهاء العمل — لا يوجد أي تتبع خارج ساعات العمل.</p>
+            <p class="small muted" id="shiftInfo"></p>
           </div>
 
           <!-- استلام طلبات اليوم -->
@@ -566,29 +552,25 @@
             <a class="tile tile-blue" href="#drvOrders">
               <span class="tile-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 9h6M9 13h6M9 17h3"/></svg></span>
               <span class="tile-lbl">طلباتي</span>
-              <span class="tile-sub">عرض الطلبات الحالية</span>
             </a>
             <a class="tile tile-navy" href="#gpsCard">
               <span class="tile-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3.5 6v14L9 18l6 2 5.5-2V4L15 6 9 4z"/><path d="M9 4v14M15 6v14"/></svg></span>
               <span class="tile-lbl">موقعي والملاحة</span>
-              <span class="tile-sub">مشاركة موقعي GPS</span>
             </a>
             <a class="tile tile-amber" href="#receiptCard">
               <span class="tile-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8.2v9.3a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5V8.2"/><path d="M3.3 8.2 5.6 4h12.8l2.3 4.2z"/><path d="M9.5 12.5l1.8 1.8 3.4-3.8"/></svg></span>
               <span class="tile-lbl">استلام الطلبات</span>
-              <span class="tile-sub">تأكيد استلام طلبات اليوم</span>
             </a>
             <a class="tile tile-green" href="#drvStats">
               <span class="tile-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V4"/><path d="M4 20h16"/><path d="M8.5 16v-5M12.5 16V8M16.5 16v-3"/></svg></span>
               <span class="tile-lbl">إحصائيات اليوم</span>
-              <span class="tile-sub">ملخص طلباتي اليوم</span>
             </a>
           </nav>
 
           <!-- GPS -->
           <div class="card" id="gpsCard">
             <h2>موقعي GPS</h2>
-            <p class="muted">مشاركة الموقع تتم بموافقتك الصريحة، وتعمل فقط أثناء العمل: يُرسل موقع جهازك الحقيقي إلى قاعدة بيانات النظام كل 20 ثانية تقريباً ما دامت المشاركة مفعّلة والصفحة مفتوحة، فيراه المشرف مباشرة على خريطته من أي جهاز. يتوقف الإرسال فوراً عند إيقاف المشاركة أو إنهاء العمل أو تسجيل الخروج — لا يوجد أي تتبع خارج ساعات العمل.</p>
+            
             <label class="checkline">
               <input type="checkbox" id="gpsConsent" />
               <span>أوافق على مشاركة موقعي مع المشرف أثناء ساعات العمل فقط، وأعلم أن بإمكاني إيقاف المشاركة في أي وقت.</span>
@@ -607,7 +589,7 @@
                 <div>بطارية الهاتف: <span id="gpsBatt">غير متاحة في هذا المتصفح</span></div>
                 <div style="margin-top:6px"><a id="gpsMapLink" href="#" target="_blank" rel="noopener">فتح موقعي الحالي في خرائط جوجل</a></div>
               </div>
-              <div class="small muted" style="margin-top:8px">سجل المسار في هذا الجهاز (جلسة العمل الحالية): <span id="gpsTrailCount">0</span> نقطة محفوظة في هذا الجهاز. موقعك الحالي المُرسل هو ما يراه المشرف مباشرة على خريطته.</div>
+              <div class="small muted" style="margin-top:8px">النقاط المحفوظة: <span id="gpsTrailCount">0</span></div>
             </div>
           </div>
 
@@ -642,13 +624,12 @@
           <div class="ph-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></div>
           <div style="flex:1;min-width:200px">
             <h2>لوحة تحكم المشرفين</h2>
-            <p>لوحة خاصة بالمشرفين فقط — الإدارة والتوزيع والتقارير والخريطة. لوحة المندوب ليست هنا؛ لها شاشتها المنفصلة.</p>
           </div>
           <a href="#home">شاشة الدخول</a>
         </div>
         <div class="card" id="adminLogin">
           <h2>تسجيل دخول المشرف</h2>
-          <p class="muted">لوحة المشرف محمية بدخول حقيقي عبر قاعدة البيانات. ادخل بالبريد الإلكتروني وكلمة المرور.</p>
+          
           <form id="adminLoginForm" style="margin-top:14px">
             <div class="form-grid">
               <div>
@@ -680,7 +661,6 @@
           <button type="button" data-p="companies">الشركات</button>
           <button type="button" data-p="reports">التقارير</button>
           <button type="button" data-p="notifs">التنبيهات <span id="notifCount"></span></button>
-          <button type="button" data-p="guide">دليل التشغيل والمراحل</button>
         </nav>
 
         <!-- Admin home -->
@@ -688,12 +668,12 @@
           <div class="grid stats-grid" style="margin-top:16px" id="admStats"></div>
           <div class="card">
             <h2>استلام طلبات اليوم — متابعة المناديب</h2>
-            <p class="muted small">يظهر هنا لكل مندوب: عدد الطلبات المسندة إليه، والعدد الذي أدخله عند الاستلام، ونتيجة المطابقة، وحالة الاستلام، ووقت بدء العمل. أي اختلاف في العدد يُسجَّل فوراً ويُجهَّز إشعار واتساب عنه إلى رقم المشرف المسجل في إعدادات النظام.</p>
+            
             <div id="receiptAdminList"></div>
           </div>
           <div class="card">
             <h2>خريطة الرياض — مواقع المناديب</h2>
-            <p class="muted small">خريطة حقيقية من OpenStreetMap عبر مكتبة Leaflet المجانية. تظهر علامة لكل مندوب أرسل موقعه الحقيقي من جهازه: المندوب يفعّل مشاركة GPS بموافقته أثناء العمل فقط، فيُحفظ موقعه في قاعدة البيانات ويظهر هنا مباشرة من أي جهاز — مع بيان ما إذا كان الموقع مباشراً الآن أو آخر موقع معروف، ووقت آخر تحديث. لا تتبع خارج ساعات العمل.</p>
+            
             <div id="mapAdmin"></div>
           </div>
           <div class="card">
@@ -706,13 +686,13 @@
         <div class="admin-page hidden" id="page-couriers">
           <div class="card">
             <h2>إضافة مندوب جديد</h2>
-            <p class="muted" style="font-size:1.05rem;line-height:1.9">أنت من ينشئ بيانات الدخول بنفسك: اكتب <strong>رقم المندوب</strong> و<strong>كلمة المرور</strong> في الخانتين المخصصتين بالأسفل، فيُنشأ حساب دخوله في النظام بنفس الرقم ونفس كلمة المرور التي كتبتها ويرتبط بسجله فوراً. استخدم <strong>نفس كلمة المرور لكل المناديب</strong> — لا تغيّر إلا رقم المندوب واسم كل مندوب جديد، فتبقى كلمة المرور واحدة للجميع. عند الدخول يكتب كل مندوب رقمه هو + نفس كلمة المرور الموحّدة.</p>
+            
             <form id="addCourierForm">
               <div class="form-grid">
-                <div style="border:2px solid var(--green);border-radius:14px;padding:12px;background:var(--green-soft)"><label for="ncNo">١ — رقم المندوب (رقم الدخول)</label><input id="ncNo" required inputmode="numeric" autocomplete="off" placeholder="مثال: 1006" style="font-size:1.2rem;font-weight:800;text-align:center" /><p class="small" style="margin:4px 0 0">اكتب الرقم الذي تريده أنت لهذا المندوب — هو الرقم الذي سيدخل به. يظهر هنا اقتراح بالرقم التالي، ويمكنك تغييره لأي رقم غير مستخدم من قبل.</p></div>
+                <div style="border:2px solid var(--green);border-radius:14px;padding:12px;background:var(--green-soft)"><label for="ncNo">١ — رقم المندوب (رقم الدخول)</label><input id="ncNo" required inputmode="numeric" autocomplete="off" placeholder="مثال: 1006" style="font-size:1.2rem;font-weight:800;text-align:center" /></div>
                 <div style="border:2px solid var(--green);border-radius:14px;padding:12px;background:var(--green-soft)"><label for="ncPassword">٢ — كلمة المرور الموحّدة (واحدة لكل المناديب)</label>
                   <input id="ncPassword" type="text" dir="ltr" style="text-align:left;font-size:1.15rem;font-weight:700" autocomplete="off" placeholder="اكتب كلمة المرور بنفسك" />
-                  <p class="small" style="margin:4px 0 0">اكتب كلمة المرور بنفسك هنا — أنت من يكتبها، والنظام لا يكتب ولا يولّد أي كلمة بدلاً عنك (٦ أحرف أو أكثر). تبقى كما كتبتها ولا تتغيّر بعد الإضافة، فتستخدمها نفسها للمندوب التالي والذي بعده — فقط غيّر رقم المندوب.</p></div>
+                  </div>
                 <div><label for="ncName">اسم المندوب</label><input id="ncName" required placeholder="مثال: محمد العنزي" /></div>
                 <div><label for="ncPhone">رقم الهاتف</label><input id="ncPhone" required inputmode="tel" placeholder="05xxxxxxxx" /></div>
                 <div><label for="ncVehicle">المركبة</label>
@@ -722,13 +702,13 @@
               </div>
               <button class="btn-green" type="submit" id="ncSubmit" style="margin-top:12px;min-width:200px">إضافة المندوب وإنشاء حساب دخوله</button>
               <div id="ncResult" class="hidden" style="background:var(--green-soft);border:1.5px solid var(--green);border-radius:14px;padding:14px 16px;margin-top:12px;line-height:2"></div>
-              <p class="small muted">عند الضغط على زر الإضافة يُنشأ حساب دخول المندوب في نفس اللحظة برقم المندوب وكلمة المرور اللذين كتبتهما أنت في الخانتين بالأعلى ويُربط بسجله في قاعدة البيانات — يدخل فوراً من لوحة المندوب برقمه + كلمة المرور الموحّدة، دون أي خطوة إضافية. بعد الإضافة تبقى كلمة المرور الموحّدة في خاناتها جاهزة للمندوب التالي، ويُقترح عليك الرقم التالي في خانة الرقم.</p>
+              
             </form>
           </div>
           <div class="card">
             <h2>إضافة عدة مناديب دفعة واحدة</h2>
-            <p class="muted">عندك مناديب كثير (حتى ١٠٠٠)؟ اكتب كلمة المرور الموحّدة مرة واحدة بالأسفل — نفس كلمة المرور لكل المناديب في الدفعة ولكل المناديب الجدد — ثم اكتب كل مندوب في سطر مستقل: الاسم ثم رقم الجوال، بأي فاصل (فاصلة أو شرطة أو مسافة). تُنشأ حسابات دخولهم كلها تلقائياً واحداً تلو الآخر بأرقام متسلسلة تبدأ من الرقم المقترح في نموذج الإضافة الفردية بالأعلى، وكل مندوب يدخل برقمه هو + نفس كلمة المرور الموحّدة. تظهر لك في النهاية قائمة بأرقامهم مع زر نسخ الكل. المركبة تُسجَّل «سيارة» والقدرة 5 طلبات افتراضياً، ويمكنك تعديل أي مندوب لاحقاً من قائمته بالأسفل.</p>
-            <div style="border:2px solid var(--green);border-radius:14px;padding:12px;background:var(--green-soft);margin-bottom:12px"><label for="bulkPassword">كلمة المرور الموحّدة لكل المناديب في هذه الدفعة</label><input id="bulkPassword" type="text" dir="ltr" style="text-align:left;font-size:1.15rem;font-weight:700" autocomplete="off" placeholder="اكتب كلمة المرور الموحّدة بنفسك (٦ أحرف أو أكثر)" /><p class="small" style="margin:4px 0 0">نفس الخانة في نموذج الإضافة الفردية بالأعلى — ما تكتبه في إحداهما يظهر في الأخرى، حتى تبقى كلمة واحدة لكل المناديب.</p></div>
+            
+            <div style="border:2px solid var(--green);border-radius:14px;padding:12px;background:var(--green-soft);margin-bottom:12px"><label for="bulkPassword">كلمة المرور الموحّدة لكل المناديب في هذه الدفعة</label><input id="bulkPassword" type="text" dir="ltr" style="text-align:left;font-size:1.15rem;font-weight:700" autocomplete="off" placeholder="اكتب كلمة المرور الموحّدة بنفسك (٦ أحرف أو أكثر)" /></div>
             <label for="bulkDrivers">المناديب — كل مندوب في سطر</label>
             <textarea id="bulkDrivers" rows="8" dir="rtl" placeholder="أحمد محمد، 0501234567&#10;خالد عمر - 0559876543&#10;سارة خالد 0561112233"></textarea>
             <button class="btn-navy btn-big" type="button" id="bulkAddBtn" style="margin-top:12px">إضافة كل المناديب وإنشاء حسابات دخولهم</button>
@@ -742,7 +722,7 @@
         <div class="admin-page hidden" id="page-livemap">
           <div class="card">
             <h2>الخريطة المباشرة — الرياض</h2>
-            <p class="muted">تظهر هنا قائمة المناديب من قاعدة البيانات وحالة اتصال كل منهم وموقعه المباشر: كل مندوب فعّل مشاركة GPS من جهازه أثناء العمل يظهر موقعه الحقيقي هنا مباشرة ويتحدث كل ثوانٍ، وتُبيّن القائمة ما إذا كان موقعه مباشراً الآن أو آخر موقع معروف مع وقت آخر تحديث. اضغط «عرض التفاصيل» عند أي مندوب لعرض تفاصيله وسجل حركته.</p>
+            
             <div id="mapLive"></div>
           </div>
           <div class="grid" style="grid-template-columns:1fr;gap:0" id="liveLayout">
@@ -762,10 +742,10 @@
                 <div><label for="noCompany">الشركة (مصدر الطلب)</label><select id="noCompany"></select></div>
                 <div><label for="noCourier">إسناد إلى مندوب</label><select id="noCourier"></select></div>
                 <div><label for="noLocUrl">رابط موقع التسليم — موقع العميل</label><input id="noLocUrl" required dir="ltr" style="text-align:left" inputmode="url" placeholder="الصق رابط موقع العميل من خرائط Google أو واتساب" />
-                  <p class="small muted" style="margin:4px 0 0">بدل كتابة العنوان يدوياً: انسخ رابط الموقع الذي أرسله العميل (من واتساب أو خرائط Google) والصقه هنا — تُستخرج إحداثياته تلقائياً إن وُجدت فيه، ويفتحه زر «الذهاب إلى العميل» عند المندوب. يمكنك أيضاً لصق الإحداثيات نفسها مثل 24.81550, 46.68220</p>
+                  
                   <p class="small" id="delivLocMsg" style="font-weight:700;margin:4px 0 0"></p></div>
                 <div><label for="noPickupUrl">رابط موقع الاستلام — موقع الشركة / المطعم</label><input id="noPickupUrl" dir="ltr" style="text-align:left" inputmode="url" placeholder="الصق رابط موقع الاستلام من خرائط Google" />
-                  <p class="small muted" style="margin:4px 0 0">الصق رابط موقع الاستلام هنا أو ثبّته من الخريطة بالأسفل — الطريقتان تثبّتان الموقع نفسه. إن تركته فارغاً يُستخدم عنوان الشركة المعروف كنص فقط.</p>
+                  
                   <p class="small" id="pickupLinkMsg" style="font-weight:700;margin:4px 0 0"></p></div>
                 <div><label for="noMeals">عدد الوجبات</label><input id="noMeals" type="number" min="1" value="1" required /></div>
                 <div><label for="noPriority">الأولوية</label>
@@ -774,7 +754,7 @@
               </div>
               <div style="margin-top:14px">
                 <label>موقع الاستلام على الخريطة</label>
-                <p class="small muted" style="margin:0">اضغط على الخريطة عند مكان استلام الطلب من الشركة أو المطعم لتثبيت موقعه الجغرافي، أو الصق إحداثياته في الخانتين بالأسفل، أو الصق رابط الموقع في خانة «رابط موقع الاستلام» بالأعلى فتُستخرج إحداثياته هنا تلقائياً. يظهر هذا الموقع للمندوب في بطاقة الطلب مع رابط فتحه في خرائط Google، فيتوجّه إلى الاستلام أولاً ثم إلى عميل التسليم.</p>
+                
                 <div id="pickupMap" class="pick-map" role="application" aria-label="خريطة اختيار موقع استلام الطلب"></div>
                 <div class="form-grid" style="margin-top:10px">
                   <div><label for="noPickupLat">خط عرض موقع الاستلام</label><input id="noPickupLat" inputmode="decimal" placeholder="مثال: 24.71360" /></div>
@@ -787,7 +767,7 @@
                 <p class="small" id="pickupMapMsg" style="font-weight:700;margin-top:8px"></p>
               </div>
               <button class="btn-green" type="submit" style="margin-top:12px;min-width:220px">إنشاء الطلب وإسناده</button>
-              <p class="small muted">يُحفظ الطلب في قاعدة البيانات ويظهر في تطبيق المندوب المُسند إليه — حتى على جهازه هو — برابط موقع الاستلام ورابط موقع العميل اللذين يفتحهما في خرائط Google، ويُسجَّل في سجل العمليات وقائمة التنبيهات.</p>
+              
             </form>
           </div>
           <div class="card">
@@ -805,19 +785,19 @@
         <div class="admin-page hidden" id="page-dispatch">
           <div class="card">
             <h2>إدارة وتوزيع الطلبات</h2>
-            <p class="muted small">إنشاء الطلبات الجديد يتم من قسم «الطلبات» فقط. من هنا يسند المشرف الطلبات وينقلها بين المناديب أو يلغي إسنادها، ويتابع سجل كل عملية بوقتها. كل إسناد أو تحديث حالة يُحفظ في قاعدة البيانات ويظهر عند الطرف الآخر — حتى على جهاز مختلف — خلال ثوانٍ عبر التحديث الدوري التلقائي.</p>
+            
             <div id="dispatchAlert"></div>
           </div>
 
           <div class="card">
             <h2>المناديب — الحالة والقدرة التشغيلية</h2>
-            <p class="muted small">القدرة التشغيلية هي أقصى عدد طلبات نشطة عند المندوب في الوقت نفسه (تُضبط من قسم «المناديب» عند تعديل بياناته). عند تجاوزها يظهر تنبيه واضح هنا وعند الإسناد.</p>
+            
             <div id="dispatchCouriers"></div>
           </div>
 
           <div class="card" id="bulkCard">
             <h2>التوزيع الجماعي</h2>
-            <p class="muted">حدّد الطلبات من الجدول بالأسفل بعلامات التحديد، ثم اختر مندوباً واحداً لإسنادها إليه كلها، أو وزّعها تلقائياً على المناديب المتصلين مع مراعاة قدرة كل مندوب.</p>
+            
             <p>الطلبات المحددة حالياً: <strong id="selCount">0</strong></p>
             <div class="form-grid">
               <div><label for="bulkCourier">إسناد الطلبات المحددة إلى مندوب</label><select id="bulkCourier"></select></div>
@@ -843,7 +823,7 @@
 
           <div class="card">
             <h2>سجل العمليات</h2>
-            <p class="muted small">كل عملية تُسجل هنا بوقتها: من أنشأ الطلب، ومن أسنده وإلى أي مندوب، ومتى تغيّر المندوب، وتغيّرات الحالة، ووقت التسليم.</p>
+            
             <div id="opLogList"></div>
           </div>
         </div>
@@ -869,7 +849,7 @@
         <div class="admin-page hidden" id="page-reports">
           <div class="card">
             <h2>التقارير الكاملة</h2>
-            <p class="muted small">تقارير يومية وأسبوعية وشهرية — أو فترة مخصصة تختارها — محسوبة من طلبات قاعدة البيانات الفعلية، مع تصدير Excel وPDF.</p>
+            
             <div class="filter-tabs" id="reportTabs">
               <button type="button" data-r="day" class="active">تقرير يومي</button>
               <button type="button" data-r="week">تقرير أسبوعي</button>
@@ -903,7 +883,7 @@
               <tbody id="reportOrdersBody"></tbody>
             </table>
             <p class="small muted" id="reportOrdersNote"></p>
-            <p class="small muted">كل الأرقام محسوبة من بيانات قاعدة البيانات الفعلية ضمن الفترة المختارة. إيرادات التوصيل هي مجموع أسعار التوصيل المتفق عليها مع الشركات عن الطلبات المكتملة. مسافات المناديب لا تدخل في التقارير حالياً: التتبع المباشر يعرض الموقع الحالي فقط ولا يُحفظ سجل مسارات تاريخي بعد.</p>
+            
             <div class="btn-row">
               <button class="btn-navy" id="exportExcelBtn" type="button">تصدير Excel</button>
               <button class="btn-green" id="exportPdfBtn" type="button">تصدير PDF</button>
@@ -916,45 +896,16 @@
         <div class="admin-page hidden" id="page-notifs">
           <div class="card">
             <h2>التنبيهات</h2>
-            <p class="muted small">التنبيهات هنا هي أحدث عمليات النظام المسجلة في قاعدة البيانات: إنشاء الطلبات وإسنادها، تأكيدات استلام الطلبات والاختلافات، وتغيّرات الحالة والتسليم — وتتحدث تلقائياً كل بضع ثوانٍ.</p>
+            
             <div id="notifList"></div>
           </div>
         </div>
 
-        <!-- Guide -->
-        <div class="admin-page hidden" id="page-guide">
-          <div class="card">
-            <h2>كيف تُشغّل هذه النسخة على هاتفك الآن</h2>
-            <div class="guide-step"><span class="guide-num">1</span><div>افتح هذه الصفحة من متصفح هاتفك (Xiaomi أو Samsung) — تعمل كما هي على الجوال والكمبيوتر.</div></div>
-            <div class="guide-step"><span class="guide-num">2</span><div>من قائمة المتصفح اختر «إضافة إلى الشاشة الرئيسية» فتظهر أيقونة ARJAA DELIVERY وتفتح بملء الشاشة مثل التطبيق.</div></div>
-            <div class="guide-step"><span class="guide-num">3</span><div>سجّل الدخول كمندوب برقمك وكلمة المرور التي زوّدك بها المشرف (حساب المندوب 1001 مفعّل في قاعدة البيانات)، ثم من قسم «استلام طلبات اليوم» أدخل عدد الطلبات التي استلمتها فعلياً — عند المطابقة يبدأ العمل وتظهر المهام. فعّل مشاركة الموقع بموافقتك، ونفّذ طلباً كاملاً بالترتيب: «الذهاب إلى العميل» (يفتح موقع العميل في خرائط Google)، ثم «وصلت إلى العميل»، ثم التسليم برمز OTP.</div></div>
-            <div class="guide-step"><span class="guide-num">4</span><div>ارجع إلى «شاشة الدخول» وافتح لوحة تحكم المشرفين المنفصلة وسجّل الدخول (بالبريد وكلمة المرور) وسترى أثر كل إجراء: الإحصائيات، حالة الطلبات، التنبيهات، ومواقع المناديب المباشرة على الخريطة — كل إجراء يُحفظ في قاعدة البيانات ويظهر في اللوحة الأخرى حتى على جهاز مختلف.</div></div>
-          </div>
-          <div class="card">
-            <h2>خطة التنفيذ على مراحل — أين نقف الآن؟</h2>
-            <div class="phase-row"><div><strong>المرحلة الأولى — التصميم الكامل للواجهتين</strong><div class="small muted">تطبيق المندوب + لوحة المشرف + الشركات + التقارير + التنبيهات + خريطة Leaflet.</div></div><span class="st chip chip-done">اكتملت</span></div>
-            <div class="phase-row"><div><strong>المرحلة الثانية — قاعدة البيانات وتسجيل الدخول والصلاحيات</strong><div class="small muted">Supabase (الخطة المجانية): المناديب والطلبات والشركات وسجل العمليات والاستلامات محفوظة في قاعدة البيانات، ودخول آمن منفصل للمشرف (بالبريد وكلمة المرور) وللمندوب (برقمه وكلمة المرور)، والمندوب لا يرى إلا طلباته.</div></div><span class="st chip chip-done">اكتملت</span></div>
-            <div class="phase-row"><div><strong>المرحلة الثالثة — نظام الطلبات والإسناد بين الأجهزة</strong><div class="small muted">قسم «إدارة وتوزيع الطلبات»: إسناد ونقل وإلغاء إسناد، توزيع جماعي مع تنبيه القدرة، وسجل عمليات — يعمل الآن عبر قاعدة البيانات بين الأجهزة المختلفة، وإنشاء الطلبات موحّد من قسم «الطلبات».</div></div><span class="st chip chip-done">مكتمل عبر قاعدة البيانات</span></div>
-            <div class="phase-row"><div><strong>المرحلة الرابعة — تتبع GPS المباشر بين الأجهزة</strong><div class="small muted">المندوب يرسل موقع جهازه الحقيقي إلى قاعدة البيانات أثناء العمل فقط وبموافقته (كل 20 ثانية تقريباً)، والمشرف يراه مباشرة على الخريطة المباشرة من أي جهاز مع وقت آخر تحديث وسجل حركة يُبنى أثناء فتح اللوحة. يتوقف الإرسال عند إيقاف المشاركة أو إنهاء العمل — لا تتبع خارج ساعات العمل، وبلا خادم إضافي أو تكلفة.</div></div><span class="st chip chip-done">اكتملت</span></div>
-            <div class="phase-row"><div><strong>المرحلة الخامسة — التقارير والإحصائيات الحقيقية</strong><div class="small muted">تقارير يومية وأسبوعية وشهرية وفترة مخصصة من طلبات قاعدة البيانات الفعلية، مع تصدير Excel وPDF كامل. مسافات المناديب لا تدخل التقارير بعد — التتبع المباشر يعرض الموقع الحالي فقط ولا يحفظ سجل مسارات تاريخياً.</div></div><span class="st chip chip-done">اكتملت</span></div>
-            <div class="phase-row"><div><strong>المرحلة السادسة — الاختبار الميداني</strong><div class="small muted">اختبار على هاتف Android حقيقي ولوحة المشرف، وإصلاح الملاحظات قبل الإطلاق.</div></div><span class="st chip">لاحقاً</span></div>
-          </div>
-          <div class="card">
-            <h2>ما الذي يحتاج استضافة أو تكلفة؟ (بشفافية كاملة)</h2>
-            <ul class="log-list">
-              <li><strong>هذه النسخة (المرحلة الثانية):</strong> تعمل على قاعدة بيانات Supabase بالخطة المجانية — بلا اشتراكات ولا مفاتيح مدفوعة.</li>
-              <li><strong>قاعدة البيانات Supabase:</strong> خطة مجانية تكفي للبداية؛ قد تحتاج ترقية مدفوعة فقط عند نمو كبير في عدد الطلبات والمناديب.</li>
-              <li><strong>الخرائط Leaflet + OpenStreetMap:</strong> مجانية ومفتوحة المصدر.</li>
-              <li><strong>تتبع GPS المباشر:</strong> يعمل من داخل هذا التطبيق نفسه عبر قاعدة بيانات Supabase المجانية — لا خادم إضافي ولا تطبيق آخر على هواتف المناديب ولا أي تكلفة.</li>
-              <li><strong>حماية البيانات:</strong> كل مندوب يرى طلباته فقط، وبيانات العملاء لا تظهر إلا للمندوب المُسند إليه الطلب وللمشرف.</li>
-            </ul>
-          </div>
-        </div>
         </div>
       </section>
     </main>
 
-    <footer>ARJAA DELIVERY — أرجاء اليمامة اللوجستية · الرياض · بيانات حقيقية عبر قاعدة بيانات Supabase · تتبع GPS مباشر بين الأجهزة أثناء العمل فقط وبموافقة المندوب</footer>
+    <footer>ARJAA DELIVERY — أرجاء اليمامة اللوجستية · الرياض</footer>
 
     <!-- حاوية تقرير PDF: تُملأ عند التصدير وتُفتح مؤقتاً خلف غطاء التحميل أثناء الالتقاط -->
     <div id="pdfReport" aria-hidden="true"></div>
@@ -1528,7 +1479,7 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
       state.working=false; state.received=false;
       stopGps();
       var gc=$("gpsConsent"); if(gc) gc.checked=false;
-      $("shiftInfo").textContent="أنهيت العمل. توقفت مشاركة الموقع بالكامل — لا يتم تتبعك خارج ساعات العمل. لبدء يوم عمل جديد أكّد استلام الطلبات من قسم «استلام طلبات اليوم».";
+      $("shiftInfo").textContent="أنهيت العمل.";
       if(c){
         var ps=[sbUpdate("drivers","id=eq."+c.uuid,{is_online:false, last_lat:null, last_lng:null, last_loc_at:null}), writeLog(null,"work_ended","أنهى المندوب "+c.name+" العمل في "+fmtTime(new Date()))];
         c.online=false;
@@ -1575,7 +1526,7 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
         h+='<div style="margin-top:12px"><label for="receiptCount">عدد الطلبات التي استلمتها فعلياً من المشرف</label>'+
            '<input id="receiptCount" type="number" min="0" inputmode="numeric" placeholder="اكتب العدد بعد عدّ الطلبات بيدك" /></div>'+
            '<button class="btn-green btn-big" id="receiptConfirmBtn" type="button" style="margin-top:12px">تأكيد استلام الطلبات وبدء العمل</button>'+
-           '<p class="small muted" style="margin-top:8px">المشرف وحده هو من يضيف الطلبات ويسندها. لا تظهر مهام التوصيل ولا يبدأ العمل إلا إذا طابق العدد الذي تدخله عدد الطلبات المسندة إليك تماماً.</p>';
+           '';
       }
       box.innerHTML=h;
       if(prevVal!==null && $("receiptCount")) $("receiptCount").value=prevVal;
@@ -1601,7 +1552,7 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
         if(myNew.length) ps.push(sbUpdate("orders","driver_id=eq."+c.uuid+"&status=eq.new",{status:"received"}));
         myNew.forEach(function(o){ ps.push(writeLog(o.uuid,"received","استلم المندوب الطلب من المشرف — تأكيد مطابقة عدد الطلبات")); });
         pushNotif("accepted","استلام طلبات وبدء عمل","أكّد "+c.name+" استلام "+entered+" طلباً (مطابقة كاملة مع المسند إليه) وبدأ العمل في "+fmtTime(when));
-        $("shiftInfo").textContent="بدأ العمل في "+fmtTime(when)+" بعد مطابقة عدد الطلبات. أنت الآن متصل ومهام التوصيل مفعّلة. فعّل مشاركة الموقع من قسم «موقعي GPS» إذا أردت أن يراك المشرف على الخريطة.";
+        $("shiftInfo").textContent="بدأ العمل في "+fmtTime(when)+".";
         renderDriver();
         if($("gpsConsent").checked){ $("gpsStartBtn").click(); }
         toast("مطابقة ناجحة — تم اعتماد استلام "+entered+" طلباً وبدأ العمل");
@@ -1734,7 +1685,7 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
 
     function renderDriverOrders(){
       var c=courierById(state.driverId); if(!c) return;
-      if(!state.received){ $("drvOrders").innerHTML='<div class="card"><h3>مهام اليوم تظهر بعد تأكيد الاستلام</h3><p class="muted">عدّ الطلبات التي استلمتها فعلياً من المشرف وأدخل عددها في قسم «استلام طلبات اليوم» بالأعلى. عند مطابقة العدد للطلبات المسندة إليك تظهر هنا جميع مهامك وتُفعَّل أزرار التوصيل بالترتيب.</p></div>'; return; }
+      if(!state.received){ $("drvOrders").innerHTML='<div class="card"><h3>مهام اليوم تظهر بعد تأكيد الاستلام</h3></div>'; return; }
       var mine=orders.filter(function(o){return o.courier===c.id;});
       var list=mine;
       if(!list.length){ $("drvOrders").innerHTML='<div class="card"><p class="muted">لا توجد طلبات مسندة إليك اليوم.</p></div>'; return; }
@@ -1756,7 +1707,7 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
         } else if(o.pickupUrl){
           h+='<dt>موقع الاستلام</dt><dd><a href="'+esc(o.pickupUrl)+'" target="_blank" rel="noopener">فتح موقع الاستلام في خرائط Google</a></dd>';
         } else {
-          h+='<dt>موقع الاستلام</dt><dd class="muted">العنوان مكتوب بالأعلى، ورابط موقع الاستلام غير مسجل بعد — يضيفه المشرف من خانة «رابط موقع الاستلام» أو خريطة موقع الاستلام في نموذج إنشاء الطلب</dd>';
+          h+='<dt>موقع الاستلام</dt><dd class="muted">رابط موقع الاستلام غير مسجل بعد</dd>';
         }
         h+='<dt>نوع الوجبة</dt><dd>'+esc(o.mealType||"—")+'</dd>';
         h+='<dt>عدد الوجبات</dt><dd>'+o.meals+'</dd>';
@@ -1843,7 +1794,7 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
 
     function openOtpModal(o){
       openModal('<h3>إثبات تسليم الطلب #'+o.no+'</h3>'+
-        '<p class="muted">اطلب من العميل رمز التسليم (OTP) المكوّن من 4 أرقام وأدخله هنا، أو التقط صورة إثبات بعد موافقة العميل. <span class="small">(رمز هذا الطلب ظاهر للمشرف في جدول الطلبات بلوحة المشرف.)</span></p>'+
+        '<p class="muted">اطلب من العميل رمز التسليم (OTP) المكوّن من 4 أرقام وأدخله هنا، أو التقط صورة إثبات بعد موافقة العميل.</p>'+
         '<label for="otpIn">رمز التسليم OTP</label><input id="otpIn" class="otp-input" inputmode="numeric" maxlength="4" placeholder="____" />'+
         '<p id="otpErr" class="hidden" style="color:var(--red);font-weight:700"></p>'+
         '<div class="btn-row"><button class="btn-green" id="otpOk" type="button">تأكيد التسليم بالرمز</button></div>'+
@@ -2482,7 +2433,7 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
         statHtml(r.rate==null?"—":r.rate+"%","نسبة إنجاز التسليم","green")+
         statHtml(r.revenue+" ر.س","إيرادات التوصيل","green")+'</div>';
       var buckets=reportBuckets(r);
-      $("reportChart").innerHTML=renderChartSvg(buckets)+'<p class="small muted">'+(buckets.length===24?"عدد الطلبات المكتملة حسب ساعة التسليم خلال اليوم.":"عدد الطلبات المكتملة حسب يوم التسليم خلال الفترة.")+'</p>';
+      $("reportChart").innerHTML=renderChartSvg(buckets);
       $("reportBody").innerHTML=r.perCourier.map(function(x){
         return '<tr><td data-label="المندوب"><strong>'+esc(x.c.name)+'</strong></td><td data-label="طلبات مسندة">'+x.assigned+'</td><td data-label="مكتملة">'+x.done+'</td><td data-label="متأخرة">'+x.late+'</td><td data-label="فاشلة / ملغاة">'+x.failed+'</td><td data-label="نسبة الإنجاز">'+(x.rate==null?"—":x.rate+"%")+'</td><td data-label="إيرادات التوصيل">'+x.revenue+' ر.س</td></tr>';
       }).join("") || '<tr><td>لا يوجد مناديب مسجلون بعد.</td></tr>';
@@ -2764,7 +2715,7 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
         '<dt>آخر تحديث للموقع</dt><dd>'+fmtDateTime(c.lastUpdate)+'</dd><dt>بطارية الهاتف</dt><dd>'+(c.battery==null?"غير متاحة":c.battery+"%")+'</dd>'+
         '<dt>طلبات منجزة اليوم</dt><dd>'+c.doneToday+'</dd><dt>المسافة اليوم</dt><dd>'+c.km+' كم</dd><dt>التقييم</dt><dd>'+(c.rating?c.rating+" من 5":"لا تقييم بعد")+'</dd></dl>'+
         '<h3 style="margin-top:14px">طلباته</h3>'+(assigned.length? assigned.map(function(o){ return '<div style="padding:6px 0;border-bottom:1px solid var(--line)">طلب #'+o.no+' — '+esc(o.customer)+' — '+esc((o.district||"").split("،")[0])+' '+statusChip(o.status)+'</div>'; }).join("") : '<p class="muted">لا توجد طلبات مسندة حالياً.</p>')+
-        '<h3 style="margin-top:14px">سجل الحركة</h3>'+(c.trail.length? '<ul class="log-list">'+c.trail.map(function(t){ return '<li><strong>'+esc(t[0])+'</strong> — '+esc(t[1])+'</li>'; }).join("")+'</ul><p class="small muted">سجل هذه الجلسة: يُبنى من تحديثات موقع المندوب المباشرة أثناء بقاء لوحة المشرف مفتوحة.</p>' : '<p class="muted">لا يوجد سجل حركة بعد في هذه الجلسة — يُبنى السجل هنا من تحديثات موقع المندوب المباشرة أثناء بقاء لوحة المشرف مفتوحة.</p>');
+        '<h3 style="margin-top:14px">سجل الحركة</h3>'+(c.trail.length? '<ul class="log-list">'+c.trail.map(function(t){ return '<li><strong>'+esc(t[0])+'</strong> — '+esc(t[1])+'</li>'; }).join("")+'</ul>' : '<p class="muted">لا يوجد سجل حركة بعد.</p>');
       box.classList.remove("hidden");
       box.scrollIntoView({behavior:"smooth",block:"start"});
     });
@@ -2963,7 +2914,7 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
     function openEditOrderModal(o){
       var courOpts='<option value="">بدون إسناد</option>'+couriers.filter(function(c){return c.active;}).map(function(c){ return '<option value="'+c.id+'"'+(o.courier===c.id?" selected":"")+'>'+esc(c.name)+'</option>'; }).join("");
       var mealOpts=["وجبة صحية متوازنة","سلطة طازجة","وجبة بروتين","وجبة منخفضة السعرات","وجبة نباتية","أخرى"].map(function(m){ return '<option'+(o.mealType===m?" selected":"")+'>'+m+'</option>'; }).join("");
-      openModal('<h3>تعديل الطلب #'+o.no+'</h3><p class="muted small">يمكن تعديل الطلب قبل اكتماله فقط. الحالة الحالية: '+esc(statusLabel(o.status))+'</p>'+
+      openModal('<h3>تعديل الطلب #'+o.no+'</h3><p class="muted small">الحالة الحالية: '+esc(statusLabel(o.status))+'</p>'+
       '<form id="editOrderForm"><div class="form-grid">'+
       '<div><label>اسم العميل</label><input id="efCustomer" required value="'+esc(o.customer)+'" /></div>'+
       '<div><label>رقم هاتف العميل</label><input id="efPhone" required value="'+esc(o.phone)+'" /></div>'+
