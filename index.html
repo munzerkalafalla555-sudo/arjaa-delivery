@@ -504,20 +504,10 @@
                 <div class="muted" id="drvMeta">—</div>
                 <div style="margin-top:4px"><span class="status-dot off" id="drvDot"></span><strong id="drvStatusText">غير متصل — لم يبدأ العمل</strong></div>
               </div>
-              <button class="btn-ghost" id="logoutBtn" type="button">تسجيل الخروج</button>
             </div>
-            <div class="btn-row">
+            <div style="margin-top:14px;display:grid;gap:10px">
+              <button class="btn-ghost" id="logoutBtn" type="button" style="min-height:56px;font-size:1.08rem">تسجيل الخروج</button>
               <button class="btn-red hidden" id="endWorkBtn" type="button" style="min-height:58px;font-size:1.1rem">إنهاء العمل</button>
-            </div>
-            <div style="margin-top:10px">
-              <button class="btn-ghost" id="pwToggleBtn" type="button">تغيير كلمة مروري</button>
-              <form id="pwForm" class="hidden" style="margin-top:10px">
-                <label for="newPw">كلمة المرور الجديدة (8 أحرف أو أكثر)</label>
-                <input id="newPw" type="password" dir="ltr" style="text-align:left" autocomplete="new-password" placeholder="••••••••" />
-                
-                <button class="btn-green" type="submit" style="margin-top:10px">حفظ كلمة المرور الجديدة</button>
-                <p id="pwMsg" class="hidden" style="font-weight:700;margin-top:8px"></p>
-              </form>
             </div>
             <p class="small muted" id="shiftInfo"></p>
           </div>
@@ -1044,21 +1034,6 @@ var b=e.target.closest("[data-copy-cred]");
 if(b){ copyTextToClipboard(credText(b.getAttribute("data-copy-name"), b.getAttribute("data-copy-no"), b.getAttribute("data-copy-pw")), "تم نسخ بيانات الدخول — الصقها للمندوب في واتساب بنفسك"); return; }
 if(e.target.closest("#bulkCopyBtn") && lastBulkCredText){ copyTextToClipboard(lastBulkCredText, "تم نسخ بيانات دخول كل المناديب الجدد — احفظها عندك والصق لكل مندوب بياناته"); }
 });
-/* تغيير المندوب كلمة مروره بنفسه وهو مسجل دخوله: طلب مصادقة على حسابه هو
-   بجلسة دخوله الحالية، فلا يستطيع أحد تغيير كلمة مرور غيره من المتصفح. */
-function sbUpdateOwnPassword(newPw){
-return sbFetch(SB_URL+"/auth/v1/user",{method:"PUT",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+(sbSession?sbSession.access_token:""),"Content-Type":"application/json"},body:JSON.stringify({password:newPw})},1)
-.then(function(r){
-return r.text().then(function(t){
-var d=null; try{ d=JSON.parse(t);}catch(e){}
-if(!r.ok){ var m=(d&&(d.msg||d.error_description||d.message))||"تعذر تغيير كلمة المرور"; throw new Error(m); }
-return d;
-});
-}).catch(function(err){
-if(sbIsNetErr(err)) throw new Error("تعذر الاتصال بقاعدة البيانات — تحقق من اتصال الإنترنت وحاول مرة أخرى");
-throw err;
-});
-}
 /* إنشاء حساب دخول مندوب جديد في Supabase Auth من داخل لوحة المشرف:
    يُستدعى /auth/v1/signup بمفتاح anon فقط. جلسة المشرف محفوظة في متغير
    sbSession داخل ذاكرة الصفحة ولا يمسّها هذا الطلب إطلاقاً، فيبقى المشرف
@@ -1360,20 +1335,6 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
         if(/غير صحيحة/.test(m)) m+=" — تأكد من كتابة كلمة المرور تماماً كما أعطاك إياها المشرف، دون مسافات زائدة في أولها أو آخرها.";
         er.textContent=m; er.classList.remove("hidden");
       }).then(function(){ btn.disabled=false; btn.textContent="دخول"; });
-    });
-    $("pwToggleBtn").addEventListener("click", function(){ $("pwForm").classList.toggle("hidden"); });
-    $("pwForm").addEventListener("submit", function(e){
-      e.preventDefault();
-      var np=$("newPw").value, msg=$("pwMsg");
-      if(np.length<8){ msg.textContent="كلمة المرور قصيرة — اكتب 8 أحرف أو أكثر"; msg.style.color="var(--red)"; msg.classList.remove("hidden"); return; }
-      var btn=e.target.querySelector('button[type="submit"]'); btn.disabled=true; btn.textContent="جارٍ الحفظ…";
-      sbUpdateOwnPassword(np).then(function(){
-        msg.textContent="تم تغيير كلمة مرورك بنجاح — استخدمها في تسجيل دخولك القادم، واحفظها في مكان آمن."; msg.style.color="var(--green-dark)"; msg.classList.remove("hidden");
-        $("newPw").value="";
-        return writeLog(null,"edited","غيّر المندوب "+(state.driverId||"")+" كلمة مرور دخوله بنفسه من لوحته");
-      }).catch(function(err){
-        msg.textContent=(err && err.message) || "تعذر تغيير كلمة المرور"; msg.style.color="var(--red)"; msg.classList.remove("hidden");
-      }).then(function(){ btn.disabled=false; btn.textContent="حفظ كلمة المرور الجديدة"; });
     });
     $("logoutBtn").addEventListener("click", function(){
       var c=courierById(state.driverId);
