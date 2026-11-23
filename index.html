@@ -516,6 +516,7 @@
                 <input id="loginPass" type="password" autocomplete="current-password" placeholder="••••" required />
               </div>
             </div>
+            <p class="small muted" style="margin-top:12px">ادخل برقمك وكلمة المرور الخاصة بك التي زوّدك بها المشرف عند إضافتك إلى النظام. إن نسيتها تواصل مع المشرف، وبعد دخولك تستطيع تغييرها بنفسك من بطاقة ملفك بالأعلى.</p>
             <p id="loginError" class="hidden" style="color:var(--red);font-weight:700"></p>
             <button class="btn-green btn-big" type="submit" style="margin-top:14px">دخول</button>
             <button class="btn-ghost btn-big" type="button" id="connTestBtnDrv" style="margin-top:10px">فحص الاتصال بقاعدة البيانات</button>
@@ -538,6 +539,15 @@
             </div>
             <div class="btn-row">
               <button class="btn-red hidden" id="endWorkBtn" type="button" style="min-height:58px;font-size:1.1rem">إنهاء العمل</button>
+            </div>
+            <div style="margin-top:10px">
+              <button class="btn-ghost" id="pwToggleBtn" type="button">تغيير كلمة مروري</button>
+              <form id="pwForm" class="hidden" style="margin-top:10px">
+                <label for="newPw">كلمة المرور الجديدة (8 أحرف أو أكثر)</label>
+                <input id="newPw" type="password" dir="ltr" style="text-align:left" autocomplete="new-password" placeholder="••••••••" />
+                <button class="btn-green" type="submit" style="margin-top:10px">حفظ كلمة المرور الجديدة</button>
+                <p id="pwMsg" class="hidden" style="font-weight:700;margin-top:8px"></p>
+              </form>
             </div>
             <p class="small muted" id="shiftInfo">يبدأ عملك من قسم «استلام طلبات اليوم» بالأسفل: عدّ الطلبات التي استلمتها فعلياً من المشرف وأدخل عددها، وعند مطابقة العدد للطلبات المسندة إليك يبدأ العمل وتظهر مهام التوصيل. مشاركة الموقع اختيارية وبموافقتك، وتتوقف تلقائياً عند إنهاء العمل — لا يوجد أي تتبع خارج ساعات العمل.</p>
           </div>
@@ -703,13 +713,26 @@
                   <select id="ncVehicle"><option>سيارة</option><option>دراجة نارية</option><option>دراجة هوائية</option></select></div>
                 <div><label for="ncPlate">رقم اللوحة / وصف المركبة</label><input id="ncPlate" placeholder="مثال: أ ب ج 1234" /></div>
                 <div><label for="ncCapacity">القدرة التشغيلية (أقصى طلبات نشطة معاً)</label><input id="ncCapacity" type="number" min="1" max="30" value="5" /></div>
-                <div><label for="ncPassword">كلمة مرور دخول المندوب</label><input id="ncPassword" type="password" dir="ltr" style="text-align:left" placeholder="اتركها فارغة — تُنشأ تلقائياً" />
-                  <p class="small muted" style="margin:4px 0 0">إن تركتها فارغة تُنشأ للمندوب كلمة مرور قوية عشوائية لا يمكن تخمينها، وتظهر لك مرة واحدة بعد الإضافة لتعطيها له.</p></div>
+                <div><label for="ncPassword">كلمة مرور دخول المندوب</label>
+                  <div style="display:flex;gap:8px">
+                    <input id="ncPassword" type="text" dir="ltr" style="text-align:left;flex:1" autocomplete="off" />
+                    <button class="btn-ghost" type="button" id="ncGenPw" style="flex:none">توليد أخرى</button>
+                  </div>
+                  <p class="small muted" style="margin:4px 0 0">مولّدة تلقائياً وعشوائية لكل مندوب على حدة، فلا يستطيع أحد تخمينها من رقم المندوب. تظهر لك مرة واحدة بعد الإضافة لتنسخها وتعطيها للمندوب. يمكنك كتابة كلمة من عندك بشرط أن تكون 8 أحرف أو أكثر — وكلمة أقصر من ذلك يرفضها النظام قبل الإرسال ولن تضيع الإضافة.</p></div>
               </div>
               <button class="btn-green" type="submit" id="ncSubmit" style="margin-top:12px;min-width:200px">إضافة المندوب وإنشاء حساب دخوله</button>
               <div id="ncResult" class="hidden" style="background:var(--green-soft);border:1.5px solid var(--green);border-radius:14px;padding:14px 16px;margin-top:12px;line-height:2"></div>
-              <p class="small muted">يُنشأ للمندوب رقم وظيفي داخلي تلقائياً، ويُنشأ حساب دخوله في نفس اللحظة ويُربط بسجله — يدخل فوراً من لوحة المندوب برقمه وكلمة المرور الظاهرة لك بعد الإضافة، دون أي خطوة إضافية في Supabase.</p>
+              <p class="small muted">يُنشأ للمندوب رقم وظيفي داخلي تلقائياً، ويُنشأ حساب دخوله في نفس اللحظة بكلمة المرور التي في الخانة بالأعلى ويُربط بسجله — يدخل فوراً من لوحة المندوب برقمه وكلمة مروره، دون أي خطوة إضافية في Supabase. بعد الإضافة تظهر لك بيانات دخوله مرة واحدة مع زر «نسخ» لتلصقها للمندوب في واتساب بنفسك.</p>
             </form>
+          </div>
+          <div class="card">
+            <h2>إضافة عدة مناديب دفعة واحدة</h2>
+            <p class="muted">عندك مناديب كثير؟ اكتب كل مندوب في سطر مستقل: الاسم ثم رقم الجوال، بأي فاصل (فاصلة أو شرطة أو مسافة). تُنشأ حسابات دخولهم كلها تلقائياً واحداً تلو الآخر، ولكل مندوب كلمة مرور عشوائية خاصة به لا يمكن تخمينها، وتظهر لك في النهاية قائمة بأرقامهم وكلمات مرورهم مرة واحدة مع زر نسخ الكل — انسخها واحفظها عندك أو أرسلها لهم، فهي لا تظهر مرة أخرى. المركبة تُسجَّل «سيارة» والقدرة 5 طلبات افتراضياً، ويمكنك تعديل أي مندوب لاحقاً من قائمته بالأسفل.</p>
+            <label for="bulkDrivers">المناديب — كل مندوب في سطر</label>
+            <textarea id="bulkDrivers" rows="8" dir="rtl" placeholder="أحمد محمد، 0501234567&#10;خالد عمر - 0559876543&#10;سارة خالد 0561112233"></textarea>
+            <button class="btn-navy btn-big" type="button" id="bulkAddBtn" style="margin-top:12px">إضافة كل المناديب وإنشاء حسابات دخولهم</button>
+            <p id="bulkProgress" class="hidden" style="font-weight:700;margin-top:10px"></p>
+            <div id="bulkResult" class="hidden" style="background:var(--green-soft);border:1.5px solid var(--green);border-radius:14px;padding:14px 16px;margin-top:12px;line-height:2"></div>
           </div>
           <div id="courierList"></div>
         </div>
@@ -1070,10 +1093,12 @@ if(sbIsNetErr(err)){ connFail(); throw new Error("تعذر الاتصال بقا
 throw err;
 });
 }
-/* كلمة مرور عشوائية قوية لحساب مندوب جديد: تُولّد بمولّد أرقام عشوائية آمن
+/* كلمة مرور عشوائية خاصة بكل مندوب على حدة: تُولّد بمولّد أرقام عشوائية آمن
    (crypto.getRandomValues) من حروف وأرقام بلا رموز ملتبسة الشكل، مع رمز @
-   وأرقام مضمونة — لا تتبع أي نمط مرتبط برقم المندوب فلا يمكن تخمينها،
-   وتُعرض للمشرف مرة واحدة في صندوق النتيجة بعد الإضافة ليعطيها للمندوب. */
+   وأرقام مضمونة — لا تتبع أي نمط مرتبط برقم المندوب فلا يمكن تخمينها من
+   الرقم ولا من كلمة مرور مندوب آخر، وتُعرض للمشرف مرة واحدة بعد الإضافة
+   لينسخها ويعطيها للمندوب. لا تُحفظ في الصفحة ولا تظهر في أي قائمة،
+   ويمكن لكل مندوب تغييرها بنفسه بعد الدخول من بطاقة ملفه. */
 function genDriverPassword(){
 var letters="ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz";
 var digits="23456789";
@@ -1085,6 +1110,43 @@ for(i=0;i<n;i++) out+=set.charAt(buf[i]%set.length);
 return out;
 }
 return pick(letters,5)+pick(digits,2)+"@"+pick(letters,4)+pick(digits,1);
+}
+var DRIVER_PANEL_URL="https://munzerkalafalla555-sudo.github.io/arjaa-delivery/#driver";
+function credText(name,no,pw){
+return "مرحباً "+name+"، تم إنشاء حسابك في نظام أرجاء اليمامة للتوصيل (ARJAA DELIVERY).\nرابط لوحة تحكم المندوب: "+DRIVER_PANEL_URL+"\nرقم المندوب: "+no+"\nكلمة المرور: "+pw+"\nادخل برقمك وكلمة المرور، وعند بدء العمل فعّل مشاركة الموقع من لوحتك.";
+}
+/* نسخ بيانات الدخول إلى الحافظة فقط — لا توضع كلمة المرور في أي رابط أو عنوان URL أبداً */
+function copyTextToClipboard(txt,okMsg){
+function done(){ toast(okMsg||"تم النسخ"); }
+function fallback(){
+var ta=document.createElement("textarea"); ta.value=txt; ta.style.position="fixed"; ta.style.opacity="0";
+document.body.appendChild(ta); ta.select();
+try{ document.execCommand("copy"); done(); }catch(e){ toast("تعذّر النسخ التلقائي — انسخ البيانات الظاهرة يدوياً"); }
+ta.remove();
+}
+if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done).catch(fallback); }
+else fallback();
+}
+var lastBulkCredText="";
+document.addEventListener("click", function(e){
+var b=e.target.closest("[data-copy-cred]");
+if(b){ copyTextToClipboard(credText(b.getAttribute("data-copy-name"), b.getAttribute("data-copy-no"), b.getAttribute("data-copy-pw")), "تم نسخ بيانات الدخول — الصقها للمندوب في واتساب بنفسك"); return; }
+if(e.target.closest("#bulkCopyBtn") && lastBulkCredText){ copyTextToClipboard(lastBulkCredText, "تم نسخ بيانات دخول كل المناديب الجدد — احفظها عندك والصق لكل مندوب بياناته"); }
+});
+/* تغيير المندوب كلمة مروره بنفسه وهو مسجل دخوله: طلب مصادقة على حسابه هو
+   بجلسة دخوله الحالية، فلا يستطيع أحد تغيير كلمة مرور غيره من المتصفح. */
+function sbUpdateOwnPassword(newPw){
+return sbFetch(SB_URL+"/auth/v1/user",{method:"PUT",headers:{"apikey":SB_KEY,"Authorization":"Bearer "+(sbSession?sbSession.access_token:""),"Content-Type":"application/json"},body:JSON.stringify({password:newPw})},1)
+.then(function(r){
+return r.text().then(function(t){
+var d=null; try{ d=JSON.parse(t);}catch(e){}
+if(!r.ok){ var m=(d&&(d.msg||d.error_description||d.message))||"تعذر تغيير كلمة المرور"; throw new Error(m); }
+return d;
+});
+}).catch(function(err){
+if(sbIsNetErr(err)) throw new Error("تعذر الاتصال بقاعدة البيانات — تحقق من اتصال الإنترنت وحاول مرة أخرى");
+throw err;
+});
 }
 /* إنشاء حساب دخول مندوب جديد في Supabase Auth من داخل لوحة المشرف:
    يُستدعى /auth/v1/signup بمفتاح anon فقط. جلسة المشرف محفوظة في متغير
@@ -1361,8 +1423,24 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
           });
         });
       }).catch(function(err){
-        er.textContent=(err && err.message) || "تعذر تسجيل الدخول"; er.classList.remove("hidden");
+        var m=(err && err.message) || "تعذر تسجيل الدخول";
+        if(/غير صحيحة/.test(m)) m+=" — تأكد من كتابة كلمة المرور تماماً كما أعطاك إياها المشرف، دون مسافات زائدة في أولها أو آخرها.";
+        er.textContent=m; er.classList.remove("hidden");
       }).then(function(){ btn.disabled=false; btn.textContent="دخول"; });
+    });
+    $("pwToggleBtn").addEventListener("click", function(){ $("pwForm").classList.toggle("hidden"); });
+    $("pwForm").addEventListener("submit", function(e){
+      e.preventDefault();
+      var np=$("newPw").value, msg=$("pwMsg");
+      if(np.length<8){ msg.textContent="كلمة المرور قصيرة — اكتب 8 أحرف أو أكثر"; msg.style.color="var(--red)"; msg.classList.remove("hidden"); return; }
+      var btn=e.target.querySelector('button[type="submit"]'); btn.disabled=true; btn.textContent="جارٍ الحفظ…";
+      sbUpdateOwnPassword(np).then(function(){
+        msg.textContent="تم تغيير كلمة مرورك بنجاح — استخدمها في تسجيل دخولك القادم، واحفظها في مكان آمن."; msg.style.color="var(--green-dark)"; msg.classList.remove("hidden");
+        $("newPw").value="";
+        return writeLog(null,"edited","غيّر المندوب "+(state.driverId||"")+" كلمة مرور دخوله بنفسه من لوحته");
+      }).catch(function(err){
+        msg.textContent=(err && err.message) || "تعذر تغيير كلمة المرور"; msg.style.color="var(--red)"; msg.classList.remove("hidden");
+      }).then(function(){ btn.disabled=false; btn.textContent="حفظ كلمة المرور الجديدة"; });
     });
     $("logoutBtn").addEventListener("click", function(){
       var c=courierById(state.driverId);
@@ -1892,7 +1970,8 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
           '<div style="flex:1;min-width:220px"><strong style="font-size:1.08rem">'+esc(c.name)+'</strong> '+(c.active?"":'<span class="chip chip-bad">الحساب موقوف</span>')+
           '<div class="muted small">رقم وظيفي: '+c.id+' · الهاتف: '+esc(c.phone||"—")+' · المركبة: '+esc(c.vehicle)+'</div>'+
           '<div class="small"><span class="status-dot '+(c.online?"on":"off")+'"></span>'+(c.online?"متصل الآن":"غير متصل")+' · طلبات منجزة اليوم: '+c.doneToday+' · طلبات مسندة حالياً: '+mine.filter(function(o){return ["new","accepted","picked","onway","arrived"].indexOf(o.status)>=0;}).length+'</div>'+
-          '<div class="small">'+ratingHtml(c)+' · آخر تحديث موقع: '+fmtDateTime(c.lastUpdate)+' · البطارية: '+(c.battery==null?"غير متاحة":c.battery+"%")+'</div></div>'+
+          '<div class="small">'+ratingHtml(c)+' · آخر تحديث موقع: '+fmtDateTime(c.lastUpdate)+' · البطارية: '+(c.battery==null?"غير متاحة":c.battery+"%")+'</div>'+
+          '</div>'+
           '<div class="btn-row" style="margin-top:0;flex:none">'+
           '<button class="'+(c.active?"btn-amber":"btn-green")+'" data-toggle-courier="'+c.id+'" type="button" style="min-width:110px;flex:none">'+(c.active?"إيقاف الحساب":"تفعيل الحساب")+'</button>'+
           '<button class="btn-ghost" data-edit-courier="'+c.id+'" type="button" style="min-width:110px;flex:none">تعديل البيانات</button>'+
@@ -1934,13 +2013,16 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
                   writeLog(null,"edited","عدّل المشرف بيانات المندوب "+body.name) ])
         .then(function(){ toast("تم حفظ تعديلات "+body.name); });
     });
+    $("ncPassword").value=genDriverPassword();
+    $("ncGenPw").addEventListener("click", function(){ $("ncPassword").value=genDriverPassword(); $("ncPassword").focus(); });
     $("addCourierForm").addEventListener("submit", function(e){
       e.preventDefault();
       var form=e.target;
       var name=$("ncName").value.trim();
       var vehicle=$("ncVehicle").value + ($("ncPlate").value.trim() ? " — "+$("ncPlate").value.trim() : "");
       var no=String(nextCourierSeq);
-      var pw=$("ncPassword").value.trim() || genDriverPassword();
+      var pw=$("ncPassword").value.trim();
+      if(pw.length<8){ toast("كلمة المرور قصيرة — يجب أن تكون 8 أحرف أو أكثر. اضغط «توليد أخرى» لكلمة جاهزة قوية"); $("ncPassword").focus(); return; }
       var email="driver"+no+"@arjaa.local";
       var cap=parseInt($("ncCapacity").value,10)||5;
       var phone=$("ncPhone").value.trim()||null;
@@ -1956,12 +2038,12 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
           return writeLog(null,"driver_added","أُضيف المندوب "+name+" برقم وظيفي "+no+(acc.exists?" (حساب الدخول كان موجوداً مسبقاً)":" وأُنشئ حساب دخوله تلقائياً")+" من لوحة المشرف");
         }).then(function(){ return acc; });
       }).then(function(acc){
-        form.reset();
+        form.reset(); $("ncPassword").value=genDriverPassword();
         return loadAllData().then(function(){ renderCurrent(); }).catch(function(){}).then(function(){
           if(acc.exists){
-            resBox.innerHTML="<strong>أُضيف المندوب "+esc(name)+"</strong> — رقمه الوظيفي <strong>"+no+"</strong>.<br />تنبيه: حساب الدخول لهذا الرقم كان موجوداً من قبل، فلم يُنشأ حساب جديد وكلمة المرور هي التي عُيّنت له سابقاً (ليست بالضرورة <span dir='ltr'>"+esc(pw)+"</span>).";
+            resBox.innerHTML="<strong>أُضيف المندوب "+esc(name)+"</strong> — رقمه الوظيفي <strong>"+no+"</strong>.<br />تنبيه: حساب الدخول لهذا الرقم كان موجوداً من قبل، فلم يُنشأ حساب جديد وكلمة المرور هي التي عُيّنت له عند إنشاء حسابه أول مرة (ليست التي في خانة كلمة المرور الآن).";
           }else{
-            resBox.innerHTML="<strong>تمت إضافة المندوب "+esc(name)+" وأُنشئ حساب دخوله بنجاح.</strong><br />أعطِ المندوب بيانات دخوله:<br />رقم المندوب: <strong>"+no+"</strong><br />كلمة المرور: <strong dir='ltr'>"+esc(pw)+"</strong><br />يدخل بها من رابط لوحة تحكم المندوب مباشرة.";
+            resBox.innerHTML="<strong>تمت إضافة المندوب "+esc(name)+" وأُنشئ حساب دخوله بنجاح.</strong><br />أعطِ المندوب بيانات دخوله:<br />رقم المندوب: <strong>"+no+"</strong><br />كلمة المرور: <strong dir='ltr'>"+esc(pw)+"</strong><br />يدخل بها من رابط لوحة تحكم المندوب مباشرة.<br /><strong>انسخ بيانات الدخول الآن — كلمة المرور لا تظهر مرة أخرى بعد هذه النتيجة.</strong><div class='btn-row'><button type='button' class='btn-navy' data-copy-cred data-copy-name='"+esc(name)+"' data-copy-no='"+no+"' data-copy-pw='"+esc(pw)+"'>نسخ بيانات الدخول</button></div>";
           }
           resBox.classList.remove("hidden");
           toast(acc.exists? "أُضيف المندوب "+name+" — حساب دخوله كان موجوداً مسبقاً" : "أُضيف المندوب "+name+" وأُنشئ حساب دخوله — رقمه "+no);
@@ -1969,6 +2051,75 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
       }).catch(function(err){
         toast("تعذر إكمال الإضافة: "+((err && err.message)||err)+" — لم يُحفظ المندوب، حاول مرة أخرى");
       }).then(function(){ btn.disabled=false; btn.textContent="إضافة المندوب وإنشاء حساب دخوله"; });
+    });
+
+    /* ============ Admin: إضافة جماعية — كل مندوب في سطر ============
+       تُنشأ الحسابات واحداً تلو الآخر بالترتيب حتى تأخذ الأرقام الوظيفية
+       تسلسلاً صحيحاً، ولكل مندوب كلمة مرور عشوائية خاصة به تُولّد لحظتها.
+       كل سطر مدخل يُحاسَب في النتيجة: مضاف جديد (بكلمة مروره الظاهرة مرة
+       واحدة)، أو حسابه كان موجوداً مسبقاً (كلمة مروره هي القديمة ولا
+       تُعرض)، أو فاشل بسبب واضح — فلا يضيع أي سطر بصمت. */
+    $("bulkAddBtn").addEventListener("click", function(){
+      var PHONE_RE=/(\+?966[\s-]?5\d{8}|05\d{8}|5\d{8})/;
+      var items=[], failed=[], totalLines=0;
+      $("bulkDrivers").value.split(/\n+/).forEach(function(raw){
+        var line=raw.trim(); if(!line) return;
+        totalLines++;
+        var pm=line.match(PHONE_RE);
+        var phone=pm?pm[1].replace(/[\s-]/g,""):"";
+        var nm=line.replace(PHONE_RE," ").replace(/[،,;؛\-–—|]/g," ").replace(/\s+/g," ").trim();
+        if(!nm){ failed.push({name:line, err:"سطر غير مفهوم — اكتب اسم المندوب ثم رقم جواله"}); return; }
+        items.push({name:nm, phone:phone||null});
+      });
+      if(!totalLines){ toast("اكتب المناديب أولاً — كل مندوب في سطر: الاسم ثم رقم الجوال"); return; }
+      var btn=$("bulkAddBtn"), prog=$("bulkProgress"), resBox=$("bulkResult");
+      btn.disabled=true; btn.textContent="جارٍ الإضافة…";
+      resBox.classList.add("hidden"); resBox.innerHTML="";
+      prog.classList.remove("hidden");
+      var seq=nextCourierSeq, done=[], existed=[];
+      function finish(){
+        writeLog(null,"driver_added","أُضيف "+done.length+" مندوباً دفعة واحدة من لوحة المشرف"+(existed.length? " و"+existed.length+" حساباتهم كانت موجودة مسبقاً":"")+(failed.length? " وتعذّرت إضافة "+failed.length:"")).then(function(){
+          return loadAllData();
+        }).then(function(){ renderCurrent(); }).catch(function(){}).then(function(){
+          prog.classList.add("hidden");
+          lastBulkCredText=done.map(function(d){ return credText(d.name,d.no,d.pw); }).join("\n\n");
+          var html="<strong>نتيجة الإضافة: من أصل "+totalLines+" سطراً — أُضيف "+done.length+" مندوباً جديداً"+(existed.length? "، و"+existed.length+" حسابه كان موجوداً مسبقاً":"")+(failed.length? "، وتعذّر "+failed.length:"")+".</strong>";
+          if(done.length){
+            html+="<br /><br /><strong>المناديب الجدد وبيانات دخولهم — انسخها الآن، كلمات المرور لا تظهر مرة أخرى:</strong><br />"+
+              done.map(function(d){ return "• "+esc(d.name)+" — الرقم: <strong>"+d.no+"</strong> · كلمة المرور: <strong dir='ltr'>"+esc(d.pw)+"</strong>"; }).join("<br />")+
+              "<div class='btn-row'><button type='button' class='btn-navy' id='bulkCopyBtn'>نسخ بيانات دخول كل الجدد</button></div>";
+          }
+          if(existed.length){
+            html+="<br /><br /><strong>أُضيف سجلهم لكن حساب دخولهم كان موجوداً من قبل</strong> — كلمة مرور كل منهم هي التي عُيّنت له عند إنشاء حسابه أول مرة وليست جديدة:<br />"+
+              existed.map(function(d){ return "• "+esc(d.name)+" — الرقم: <strong>"+d.no+"</strong>"; }).join("<br />");
+          }
+          if(failed.length){
+            html+="<br /><br /><strong>تعذّرت إضافة "+failed.length+":</strong><br />"+failed.map(function(f){ return "• "+esc(f.name)+" — "+esc(f.err); }).join("<br />");
+          }
+          resBox.innerHTML=html; resBox.classList.remove("hidden");
+          if(!failed.length && !existed.length) $("bulkDrivers").value="";
+          toast(done.length? "أُضيف "+done.length+" مندوباً بنجاح — انسخ بيانات دخولهم من النتيجة" : "راجع نتيجة الإضافة بالأسفل");
+          btn.disabled=false; btn.textContent="إضافة كل المناديب وإنشاء حسابات دخولهم";
+        });
+      }
+      function step(i){
+        if(i>=items.length){ finish(); return; }
+        var it=items[i], no=String(seq), pw=genDriverPassword();
+        prog.textContent="جارٍ إضافة "+(i+1)+" من "+items.length+": "+it.name+" (الرقم "+no+")…";
+        sbCreateDriverAccount("driver"+no+"@arjaa.local", pw).then(function(acc){
+          var body={driver_no:no, name:it.name, phone:it.phone, vehicle:"سيارة", capacity:5, is_online:false};
+          if(acc.userId) body.auth_user_id=acc.userId;
+          return sbInsert("drivers",body).then(function(){
+            if(acc.exists) existed.push({name:it.name, no:no});
+            else done.push({name:it.name, no:no, pw:pw});
+            seq++; step(i+1);
+          });
+        }).catch(function(err){
+          failed.push({name:it.name, err:String((err && err.message)||err||"خطأ غير معروف")});
+          step(i+1);
+        });
+      }
+      step(0);
     });
 
     /* ============ Admin: orders ============ */
