@@ -62,7 +62,8 @@
       .view-switch button.active{background:var(--bg);color:var(--navy);font-weight:700}
       @media (prefers-color-scheme: dark){.view-switch button.active{color:var(--ink)}}
 
-      /* ===== فصل اللوحتين: شاشة دخول مستقلة، ولكل لوحة رابطها وترويستها الخاصة ===== */
+      /* ===== فصل اللوحتين: شاشة دخول مستقلة، ولكل لوحة رابطها الخاص بلا أي رابط
+         رجوع داخلها — المندوب داخل لوحته لا يرى أي طريق إلى لوحة المشرفين ===== */
       .area-line{margin-top:12px;padding:.65rem 2px;color:#cfe0f2;font-weight:600;font-size:1rem}
       .entry-intro{margin-top:20px}
       .entry-intro h2{font-size:1.55rem}
@@ -80,14 +81,6 @@
       .entry-card.driver a{color:var(--green-dark)}
       .entry-card.admin a{color:var(--navy)}
       .entry-note{margin-top:16px;font-size:1.02rem;line-height:1.9}
-      .panel-head{display:flex;gap:12px;align-items:center;flex-wrap:wrap;border-radius:var(--radius);padding:14px 18px;margin-top:16px;border:1.5px solid var(--line);background:var(--surface);box-shadow:var(--shadow)}
-      .panel-head .ph-ic{width:50px;height:50px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;color:#fff}
-      .panel-head .ph-ic svg{width:28px;height:28px}
-      .panel-head.driver-head .ph-ic{background:var(--green)}
-      .panel-head.admin-head .ph-ic{background:var(--navy)}
-      .panel-head h2{font-size:1.3rem}
-      .panel-head p{margin:0;color:var(--ink-2);font-size:.98rem}
-      .panel-head a{margin-inline-start:auto;flex:none;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border-radius:12px;padding:.55rem 1.1rem;font-weight:700;min-height:48px;background:var(--surface-2);color:var(--ink);border:1.5px solid var(--line)}
 
       .demo-strip{background:var(--amber-soft);color:var(--ink);border-bottom:2px solid var(--amber);padding:.55rem 0;font-size:.95rem}
       .demo-strip .wrap{padding-bottom:0}
@@ -479,14 +472,6 @@
       <!-- ================= DRIVER VIEW ================= -->
       <section id="viewDriver" class="hidden">
 
-        <div class="panel-head driver-head">
-          <div class="ph-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/></svg></div>
-          <div style="flex:1;min-width:200px">
-            <h2>لوحة تحكم المندوب</h2>
-          </div>
-          <a href="#home">شاشة الدخول</a>
-        </div>
-
         <!-- Login -->
         <div class="card" id="driverLogin">
           <h2>تسجيل دخول المندوب</h2>
@@ -620,13 +605,6 @@
 
       <!-- ================= ADMIN VIEW ================= -->
       <section id="viewAdmin" class="hidden">
-        <div class="panel-head admin-head">
-          <div class="ph-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></div>
-          <div style="flex:1;min-width:200px">
-            <h2>لوحة تحكم المشرفين</h2>
-          </div>
-          <a href="#home">شاشة الدخول</a>
-        </div>
         <div class="card" id="adminLogin">
           <h2>تسجيل دخول المشرف</h2>
           
@@ -1320,7 +1298,9 @@ if(!document.hidden && sbSession) loadAllData().then(function(){ renderCurrent()
    ثلاث شاشات منفصلة: شاشة الدخول (home) ولوحة المندوب (driver) ولوحة
    المشرفين (admin). لكل لوحة رابطها الخاص: ‎#driver للوحة المندوب
    و‎#admin للوحة المشرفين، فيمكن فتح أي لوحة مباشرة أو حفظها أيقونة
-   مستقلة على الشاشة الرئيسية. بقية روابط المرساة داخل لوحة المندوب
+   مستقلة على الشاشة الرئيسية. وداخل كل لوحة لا يوجد أي رابط يعود إلى
+   شاشة الدخول أو إلى اللوحة الأخرى: المندوب داخل لوحته لا يستطيع الوصول
+   منها إلى لوحة المشرفين إطلاقاً. بقية روابط المرساة داخل لوحة المندوب
    (‎#drvOrders و‎#gpsCard وغيرها) روابط تنقّل داخلية ولا تغيّر اللوحة. */
 var currentView = "home";
 function routeTo(v){
