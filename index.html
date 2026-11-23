@@ -1090,7 +1090,7 @@ var couriers = [], companies = [], orders = [], notifications = [], opLog = [], 
 var driverByUuid = {}, driverByNo = {}, compIndexByUuid = {};
 var nextCourierSeq = 1001;
 var locallyDeactivated = {}; /* إيقاف حساب مندوب من اللوحة — يُحفظ داخل جلسة الصفحة (لا عمود له في الجدول بعد) */
-var state = { driverId:null, working:false, received:false, filter:"all", adminPage:"home", reportRange:"day", gpsWatch:null, gpsTrail:[], realPos:null, gpsLastSentAt:0, gpsSending:false, gpsOk:false, gpsRetry:null, gpsAlertShown:false};
+var state = { driverId:null, working:false, received:false, filter:"all", adminPage:"home", reportRange:"day", gpsWatch:null, gpsTrail:[], realPos:null, gpsLastSentAt:0, gpsSending:false, gpsOk:false, gpsRetry:null, gpsAlertShown:false, gpsLastFixAt:0, gpsMonitor:null, gpsProbing:false};
 var PRIO_TAG = " ";
 
 function courierById(id){ return driverByNo[id] || null;}
@@ -1308,6 +1308,7 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
             syncWorkState();
             $("driverLogin").classList.add("hidden"); $("driverApp").classList.remove("hidden");
             renderDriver(); startPolling();
+            if(state.working) startGpsAuto(); /* وردية جارية أصلاً (إعادة فتح الصفحة): استئناف التتبع والمراقبة فوراً */
             var c=courierById(state.driverId);
             toast("مرحباً "+(c?c.name:"")+" — سجلت دخولك بنجاح");
           });
@@ -1522,8 +1523,9 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
       sbUpdate("drivers","id=eq."+c.uuid,{last_lat:null,last_lng:null,last_loc_at:null}).catch(function(){});
     }
     function stopGps(){
+      stopGpsMonitor();
       if(state.gpsWatch!==null && navigator.geolocation){ navigator.geolocation.clearWatch(state.gpsWatch); }
-      state.gpsWatch=null; state.realPos=null; state.gpsLastSentAt=0;
+      state.gpsWatch=null; state.realPos=null; state.gpsLastSentAt=0; state.gpsLastFixAt=0; state.gpsProbing=false;
       if(state.gpsRetry!==null){ clearTimeout(state.gpsRetry); state.gpsRetry=null; }
       state.gpsOk=false;
       hideGpsAlert();
@@ -1535,7 +1537,15 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
        بصمت. التنبيه ثابت (لا يختفي وحده مثل الإشعار العابر) ويبقى ظاهراً
        طوال انقطاع الموقع، وتعيد اللوحة المحاولة تلقائياً كل 10 ثوانٍ
        وعند عودة المندوب إلى الصفحة، فبمجرد أن يفعّل الموقع يبدأ التتبع
-       ويختفي التنبيه من تلقاء نفسه دون أي زر أو إعادة تحميل. */
+       ويختفي التنبيه من تلقاء نفسه دون أي زر أو إعادة تحميل.
+       مراقبة مستمرة إضافية (gpsMonitor): عند إطفاء الموقع من الجوال أثناء
+       العمل واللوحة مفتوحة، تتوقف watchPosition في متصفحات كثيرة بصمت —
+       لا موقع جديد ولا خطأ — فلا تكفي إعادة المحاولة المرتبطة بالأخطاء.
+       لذلك يعمل أثناء العمل مؤقّت كل 10 ثوانٍ يفحص حداثة آخر موقع وردنا:
+       إن مرّت 30 ثانية بلا موقع جديد، أو توقفت المراقبة نفسها، يفحص
+       الموقع فحصاً مباشراً (getCurrentPosition) ويعيد تشغيل المراقبة؛
+       فإن فشل الفحص ظهر تنبيه «الموقع مغلق» فوراً، وإن نجح عاد التتبع
+       واختفى التنبيه — دون أن ينتظر المندوب خطأً أو عودةً إلى الصفحة. */
     function showGpsAlert(msg){
       var box=$("gpsAlert"); if(!box) return;
       $("gpsAlertText").textContent=msg;
@@ -1556,6 +1566,7 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
     }
     function onGpsPosition(pos){
       var lat=pos.coords.latitude, lng=pos.coords.longitude;
+      state.gpsLastFixAt=Date.now(); /* ختم حداثة يعتمد عليه المراقب المستمر لكشف انقطاع الموقع بصمت */
       state.realPos={lat:lat,lng:lng};
       state.gpsTrail.push({lat:lat,lng:lng,t:new Date()});
       var c=courierById(state.driverId); if(c){ c.lat=lat; c.lng=lng; c.lastUpdate=new Date(); }
@@ -1590,6 +1601,43 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
       if(state.gpsRetry!==null || !state.working) return;
       state.gpsRetry=setTimeout(function(){ state.gpsRetry=null; attemptGpsRetry(); }, 10000);
     }
+    /* ============ مراقب الموقع المستمر أثناء العمل ============
+       يعمل طوال فترة العمل ويفحص كل 10 ثوانٍ: هل ما زال الموقع يصلنا؟
+       يكشف الحالة التي عجزت عنها المراقبة وحدها: إطفاء الموقع من الجوال
+       أثناء العمل مع بقاء اللوحة مفتوحة، إذ تصمت watchPosition تماماً
+       (لا موقع ولا خطأ) فيبقى gpsOk خادعاً ولا يظهر أي تنبيه. */
+    function startGpsMonitor(){
+      if(state.gpsMonitor!==null) return;
+      state.gpsMonitor=setInterval(gpsMonitorTick, 10000);
+    }
+    function stopGpsMonitor(){
+      if(state.gpsMonitor!==null){ clearInterval(state.gpsMonitor); state.gpsMonitor=null; }
+    }
+    function gpsMonitorTick(){
+      if(!state.working || !("geolocation" in navigator) || state.gpsProbing) return;
+      var stale = !state.gpsLastFixAt || (Date.now()-state.gpsLastFixAt > 30000);
+      if(!stale && state.gpsWatch!==null) return; /* الموقع يصل حديثاً والمراقبة حيّة — لا شيء نفعله */
+      /* إما انقطع الموقع بصمت (30 ثانية بلا موقع جديد) أو ماتت المراقبة:
+         فحص مباشر الآن بدل انتظار خطأ قد لا يصل أبداً */
+      state.gpsProbing=true;
+      navigator.geolocation.getCurrentPosition(function(pos){
+        state.gpsProbing=false;
+        if(!state.working) return;
+        if(state.gpsWatch===null) startGpsWatch(); /* إحياء المراقبة إن كانت متوقفة */
+        onGpsPosition(pos); /* نجاح الفحص يخفي التنبيه ويجدّد ختم الحداثة */
+      }, function(err){
+        state.gpsProbing=false;
+        if(!state.working) return;
+        state.gpsOk=false;
+        showGpsAlert(gpsErrorMessage(err));
+        /* إعادة تشغيل المراقبة من الصفر: إن كان الموقع مطفأً ستصلنا
+           أخطاؤها أو تصمت فيعيد المراقب الفحص، وإن فُتح الموقع تعود
+           المواقع فوراً ويختفي التنبيه وحده */
+        if(state.gpsWatch!==null && navigator.geolocation){ navigator.geolocation.clearWatch(state.gpsWatch); state.gpsWatch=null; }
+        startGpsWatch();
+        scheduleGpsRetry();
+      }, {enableHighAccuracy:true, maximumAge:0, timeout:10000});
+    }
     /* عودة المندوب إلى الصفحة (مثلاً بعد تفعيل الموقع من الإعدادات):
        محاولة فورية بدل انتظار الدورة التالية */
     document.addEventListener("visibilitychange", function(){
@@ -1602,9 +1650,10 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
        إن كان الموقع مفتوحاً يعمل التتبع بصمت بلا أي رسالة، وإن كان مغلقاً
        يظهر تنبيه «الموقع مغلق» الثابت وتستمر إعادة المحاولة تلقائياً. */
     function startGpsAuto(){
-      if(!state.working || state.gpsWatch!==null) return;
+      if(!state.working) return;
       if(!("geolocation" in navigator)){ showGpsAlert("هذا المتصفح لا يدعم تحديد الموقع — افتح لوحة المندوب من متصفح Chrome على جوالك."); return; }
-      startGpsWatch();
+      startGpsWatch(); /* تحرس نفسها من التكرار إن كانت تعمل أصلاً */
+      startGpsMonitor(); /* مراقبة مستمرة: تنبيه فوري إن أُطفئ الموقع أثناء العمل */
     }
 
     /* ============ Driver: orders ============ */
