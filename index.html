@@ -711,11 +711,8 @@
               <div class="form-grid">
                 <div style="border:2px solid var(--green);border-radius:14px;padding:12px;background:var(--green-soft)"><label for="ncNo">١ — رقم المندوب (رقم الدخول)</label><input id="ncNo" required inputmode="numeric" autocomplete="off" placeholder="مثال: 1006" style="font-size:1.2rem;font-weight:800;text-align:center" /><p class="small" style="margin:4px 0 0">اكتب الرقم الذي تريده أنت لهذا المندوب — هو الرقم الذي سيدخل به. يظهر هنا اقتراح بالرقم التالي، ويمكنك تغييره لأي رقم غير مستخدم من قبل.</p></div>
                 <div style="border:2px solid var(--green);border-radius:14px;padding:12px;background:var(--green-soft)"><label for="ncPassword">٢ — كلمة المرور الموحّدة (واحدة لكل المناديب)</label>
-                  <div style="display:flex;gap:8px">
-                    <input id="ncPassword" type="text" dir="ltr" style="text-align:left;flex:1;font-size:1.15rem;font-weight:700" autocomplete="off" placeholder="اكتب كلمة المرور بنفسك" />
-                    <button class="btn-ghost" type="button" id="ncGenPw" style="flex:none">توليد كلمة قوية</button>
-                  </div>
-                  <p class="small" style="margin:4px 0 0">اكتب كلمة المرور بنفسك (٦ أحرف أو أكثر). تبقى كما كتبتها ولا تتغيّر تلقائياً بعد الإضافة، فتستخدمها نفسها للمندوب التالي والذي بعده — فقط غيّر رقم المندوب. زر «توليد كلمة قوية» اختياري إن أردت كلمة جاهزة.</p></div>
+                  <input id="ncPassword" type="text" dir="ltr" style="text-align:left;font-size:1.15rem;font-weight:700" autocomplete="off" placeholder="اكتب كلمة المرور بنفسك" />
+                  <p class="small" style="margin:4px 0 0">اكتب كلمة المرور بنفسك هنا — أنت من يكتبها، والنظام لا يكتب ولا يولّد أي كلمة بدلاً عنك (٦ أحرف أو أكثر). تبقى كما كتبتها ولا تتغيّر بعد الإضافة، فتستخدمها نفسها للمندوب التالي والذي بعده — فقط غيّر رقم المندوب.</p></div>
                 <div><label for="ncName">اسم المندوب</label><input id="ncName" required placeholder="مثال: محمد العنزي" /></div>
                 <div><label for="ncPhone">رقم الهاتف</label><input id="ncPhone" required inputmode="tel" placeholder="05xxxxxxxx" /></div>
                 <div><label for="ncVehicle">المركبة</label>
@@ -1097,24 +1094,9 @@ if(sbIsNetErr(err)){ connFail(); throw new Error("تعذر الاتصال بقا
 throw err;
 });
 }
-/* مولّد كلمة قوية اختياري لخانة كلمة المرور الموحّدة فقط: يُولّد بمولّد
-   أرقام عشوائية آمن (crypto.getRandomValues) من حروف وأرقام بلا رموز
-   ملتبسة الشكل، مع رمز @ وأرقام مضمونة. لا يُستخدم تلقائياً أبداً —
-   الأصل أن المشرف يكتب كلمة المرور الموحّدة بنفسه في خانة ncPassword
-   وتبقى كما هي لكل المناديب، وهذا المولّد يعمل فقط عند ضغط زر
-   «توليد كلمة قوية» فيضع كلمة جاهزة في نفس الخانة لتُستخدم موحّدة. */
-function genDriverPassword(){
-var letters="ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz";
-var digits="23456789";
-function pick(set,n){
-var out="", buf=new Uint32Array(n), i;
-if(window.crypto && crypto.getRandomValues) crypto.getRandomValues(buf);
-else for(i=0;i<n;i++) buf[i]=Math.floor(Math.random()*4294967296);
-for(i=0;i<n;i++) out+=set.charAt(buf[i]%set.length);
-return out;
-}
-return pick(letters,5)+pick(digits,2)+"@"+pick(letters,4)+pick(digits,1);
-}
+/* كلمة المرور الموحّدة يكتبها المشرف بنفسه دائماً في خانة ncPassword —
+   لا يوجد أي توليد تلقائي أو زر توليد في النظام، وتبقى الكلمة كما
+   كتبها المشرف حرفياً لكل المناديب. */
 var DRIVER_PANEL_URL="https://munzerkalafalla555-sudo.github.io/arjaa-delivery/#driver";
 function credText(name,no,pw){
 return "مرحباً "+name+"، تم إنشاء حسابك في نظام أرجاء اليمامة للتوصيل (ARJAA DELIVERY).\nرابط لوحة تحكم المندوب: "+DRIVER_PANEL_URL+"\nرقم المندوب: "+no+"\nكلمة المرور: "+pw+"\nادخل برقمك وكلمة المرور، وعند بدء العمل فعّل مشاركة الموقع من لوحتك.";
@@ -2065,7 +2047,6 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
       if(n) n.addEventListener("input", function(){ n.dataset.auto=""; });
       suggestNextCourierNo();
     })();
-    $("ncGenPw").addEventListener("click", function(){ var g=genDriverPassword(); $("ncPassword").value=g; syncSharedPw($("ncPassword")); $("ncPassword").focus(); toast("وُضعت كلمة قوية في خانة كلمة المرور الموحّدة — ستُستخدم كما هي لهذا المندوب ولمن بعده حتى تغيّرها بنفسك"); });
     $("addCourierForm").addEventListener("submit", function(e){
       e.preventDefault();
       var form=e.target;
