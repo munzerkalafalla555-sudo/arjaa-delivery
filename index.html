@@ -142,6 +142,12 @@
       .steps span.now{background:var(--navy);color:#fff}
       .proof-img{max-width:180px;border-radius:10px;margin-top:8px;border:1px solid var(--line)}
       .gps-box{background:var(--navy-soft);border-radius:12px;padding:14px;margin-top:10px}
+      /* تنبيه «الموقع مغلق» في لوحة المندوب: يظهر فقط أثناء العمل عندما يتعذر
+         تحديد الموقع (الإذن مرفوض أو GPS مطفأ)، ويختفي وحده فور عودة التتبع */
+      .gps-alert{display:flex;gap:12px;align-items:flex-start;background:var(--red-soft);border:2px solid var(--red);border-radius:16px;padding:16px 18px;margin-top:16px}
+      .gps-alert svg{width:30px;height:30px;flex:none;color:var(--red);margin-top:2px}
+      .gps-alert .gps-alert-title{font-family:"Cairo",sans-serif;font-weight:800;font-size:1.2rem;color:var(--red);line-height:1.5}
+      .gps-alert .gps-alert-text{font-weight:600;line-height:1.9}
       .checkline{display:flex;gap:10px;align-items:flex-start;background:var(--surface-2);border-radius:12px;padding:12px;margin-top:10px}
       .checkline input{width:26px;height:26px;flex:none;margin-top:4px}
 
@@ -510,6 +516,16 @@
               <button class="btn-red hidden" id="endWorkBtn" type="button" style="min-height:58px;font-size:1.1rem">إنهاء العمل</button>
             </div>
             <p class="small muted" id="shiftInfo"></p>
+          </div>
+
+          <!-- تنبيه الموقع المغلق: مخفي دائماً ما دام التتبع يعمل، ويظهر فقط
+               أثناء العمل إذا كان موقع الجوال مغلقاً أو إذنه مرفوضاً -->
+          <div class="gps-alert hidden" id="gpsAlert" role="alert">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6-7-11a7 7 0 1 1 14 0c0 5-7 11-7 11z"/><path d="M9.5 9.5l5 5M14.5 9.5l-5 5"/></svg>
+            <div>
+              <div class="gps-alert-title">الموقع مغلق — لا يتم تحديد موقعك الآن</div>
+              <div class="gps-alert-text" id="gpsAlertText">فعّل الموقع من جوالك حتى يتم تحديد موقعك وإرساله إلى المشرف.</div>
+            </div>
           </div>
 
           <!-- استلام طلبات اليوم -->
@@ -1074,7 +1090,7 @@ var couriers = [], companies = [], orders = [], notifications = [], opLog = [], 
 var driverByUuid = {}, driverByNo = {}, compIndexByUuid = {};
 var nextCourierSeq = 1001;
 var locallyDeactivated = {}; /* إيقاف حساب مندوب من اللوحة — يُحفظ داخل جلسة الصفحة (لا عمود له في الجدول بعد) */
-var state = { driverId:null, working:false, received:false, filter:"all", adminPage:"home", reportRange:"day", gpsWatch:null, gpsTrail:[], realPos:null, gpsLastSentAt:0, gpsSending:false};
+var state = { driverId:null, working:false, received:false, filter:"all", adminPage:"home", reportRange:"day", gpsWatch:null, gpsTrail:[], realPos:null, gpsLastSentAt:0, gpsSending:false, gpsOk:false, gpsRetry:null, gpsAlertShown:false};
 var PRIO_TAG = " ";
 
 function courierById(id){ return driverByNo[id] || null;}
@@ -1508,23 +1524,87 @@ $("adminApp").classList.add("hidden"); $("adminLogin").classList.remove("hidden"
     function stopGps(){
       if(state.gpsWatch!==null && navigator.geolocation){ navigator.geolocation.clearWatch(state.gpsWatch); }
       state.gpsWatch=null; state.realPos=null; state.gpsLastSentAt=0;
+      if(state.gpsRetry!==null){ clearTimeout(state.gpsRetry); state.gpsRetry=null; }
+      state.gpsOk=false;
+      hideGpsAlert();
     }
+    /* ============ تنبيه «الموقع مغلق» وإعادة المحاولة التلقائية ============
+       طلب المالك: أثناء العمل، إذا كان موقع الجوال مغلقاً (إذن الموقع مرفوض
+       أو GPS مطفأ) تصل المندوب رسالة واضحة ثابتة في لوحته أن الموقع مغلق
+       حتى يفعّله، وإذا كان الموقع مفتوحاً لا تصله أي رسالة ويعمل التتبع
+       بصمت. التنبيه ثابت (لا يختفي وحده مثل الإشعار العابر) ويبقى ظاهراً
+       طوال انقطاع الموقع، وتعيد اللوحة المحاولة تلقائياً كل 10 ثوانٍ
+       وعند عودة المندوب إلى الصفحة، فبمجرد أن يفعّل الموقع يبدأ التتبع
+       ويختفي التنبيه من تلقاء نفسه دون أي زر أو إعادة تحميل. */
+    function showGpsAlert(msg){
+      var box=$("gpsAlert"); if(!box) return;
+      $("gpsAlertText").textContent=msg;
+      box.classList.remove("hidden");
+      if(!state.gpsAlertShown){
+        state.gpsAlertShown=true;
+        toast("الموقع مغلق — فعّل الموقع من جوالك حتى يتم تحديد موقعك");
+      }
+    }
+    function hideGpsAlert(){
+      var box=$("gpsAlert"); if(box) box.classList.add("hidden");
+      state.gpsAlertShown=false;
+    }
+    function gpsErrorMessage(err){
+      if(err && err.code===1) return "لم تسمح بالموقع لهذا المتصفح. من إعدادات جوالك: التطبيقات ← المتصفح ← الأذونات ← الموقع ← «سماح»، ثم ارجع إلى هذه الصفحة وسيبدأ التتبع تلقائياً.";
+      if(err && err.code===2) return "فعّل الموقع (GPS) من إعدادات جوالك أو اسحب من أعلى الشاشة وفعّل أيقونة «الموقع»، ثم ارجع إلى هذه الصفحة وسيبدأ التتبع تلقائياً.";
+      return "تأكد أن الموقع مفعّل في جوالك وأنك في مكان تصله إشارة GPS — نحاول تحديد موقعك تلقائياً الآن.";
+    }
+    function onGpsPosition(pos){
+      var lat=pos.coords.latitude, lng=pos.coords.longitude;
+      state.realPos={lat:lat,lng:lng};
+      state.gpsTrail.push({lat:lat,lng:lng,t:new Date()});
+      var c=courierById(state.driverId); if(c){ c.lat=lat; c.lng=lng; c.lastUpdate=new Date(); }
+      if(!state.gpsOk){ state.gpsOk=true; hideGpsAlert(); }
+      maybeSendLocation(lat,lng);
+      if(window.__mapsReady) refreshMarkers();
+    }
+    function onGpsError(err){
+      state.gpsOk=false;
+      /* بعض المتصفحات توقف المراقبة بعد الرفض، فنلغيها هنا ونعتمد على
+         إعادة المحاولة الدورية حتى لا يموت التتبع نهائياً كما كان يحدث */
+      if(state.gpsWatch!==null && navigator.geolocation){ navigator.geolocation.clearWatch(state.gpsWatch); state.gpsWatch=null; }
+      showGpsAlert(gpsErrorMessage(err));
+      scheduleGpsRetry();
+    }
+    function startGpsWatch(){
+      if(state.gpsWatch!==null || !("geolocation" in navigator)) return;
+      state.gpsWatch = navigator.geolocation.watchPosition(onGpsPosition, onGpsError, {enableHighAccuracy:true, maximumAge:15000, timeout:20000});
+    }
+    function attemptGpsRetry(){
+      if(!state.working || state.gpsOk) return;
+      if(!("geolocation" in navigator)) return;
+      navigator.geolocation.getCurrentPosition(function(pos){
+        startGpsWatch();
+        onGpsPosition(pos);
+      }, function(err){
+        showGpsAlert(gpsErrorMessage(err));
+        scheduleGpsRetry();
+      }, {enableHighAccuracy:true, maximumAge:0, timeout:15000});
+    }
+    function scheduleGpsRetry(){
+      if(state.gpsRetry!==null || !state.working) return;
+      state.gpsRetry=setTimeout(function(){ state.gpsRetry=null; attemptGpsRetry(); }, 10000);
+    }
+    /* عودة المندوب إلى الصفحة (مثلاً بعد تفعيل الموقع من الإعدادات):
+       محاولة فورية بدل انتظار الدورة التالية */
+    document.addEventListener("visibilitychange", function(){
+      if(document.hidden || !state.working || state.gpsOk) return;
+      if(state.gpsRetry!==null){ clearTimeout(state.gpsRetry); state.gpsRetry=null; }
+      attemptGpsRetry();
+    });
     /* بدء التتبع تلقائياً عند بدء العمل: طلب watchPosition مباشرة يجعل
-       المتصفح يعرض على المندوب رسالة إذن فتح الموقع من جواله، دون أي زر. */
+       المتصفح يعرض على المندوب رسالة إذن فتح الموقع من جواله، دون أي زر.
+       إن كان الموقع مفتوحاً يعمل التتبع بصمت بلا أي رسالة، وإن كان مغلقاً
+       يظهر تنبيه «الموقع مغلق» الثابت وتستمر إعادة المحاولة تلقائياً. */
     function startGpsAuto(){
       if(!state.working || state.gpsWatch!==null) return;
-      if(!("geolocation" in navigator)) return;
-      state.gpsWatch = navigator.geolocation.watchPosition(function(pos){
-        var lat=pos.coords.latitude, lng=pos.coords.longitude;
-        state.realPos={lat:lat,lng:lng};
-        state.gpsTrail.push({lat:lat,lng:lng,t:new Date()});
-        var c=courierById(state.driverId); if(c){ c.lat=lat; c.lng=lng; c.lastUpdate=new Date(); }
-        maybeSendLocation(lat,lng);
-        if(window.__mapsReady) refreshMarkers();
-      }, function(err){
-        state.gpsWatch=null;
-        toast("تعذر الحصول على موقعك — فعّل إذن الموقع من إعدادات المتصفح ليصل موقعك إلى المشرف");
-      }, {enableHighAccuracy:true, maximumAge:15000, timeout:20000});
+      if(!("geolocation" in navigator)){ showGpsAlert("هذا المتصفح لا يدعم تحديد الموقع — افتح لوحة المندوب من متصفح Chrome على جوالك."); return; }
+      startGpsWatch();
     }
 
     /* ============ Driver: orders ============ */
