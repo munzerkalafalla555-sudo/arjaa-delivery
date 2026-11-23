@@ -569,6 +569,92 @@
       /* الشريط السفلي بخمس وجهات: خط وأيقونات أصغر قليلاً ليتسع دون ازدحام */
       #viewDriver .drv-bottomnav a{font-size:.78rem;min-height:64px}
       #viewDriver .drv-bottomnav a svg{width:24px;height:24px}
+
+      /* ===== طبقة خامسة — إعادة تصميم واجهة المندوب من جديد بهوية مختلفة كلياً:
+         «وحدة قيادة» داكنة موحّدة بدل البطاقات البيضاء السابقة: لوحة داكنة واحدة
+         تحتضن كل أقسام المندوب، شريط أرقام واحد متصل بدل بطاقات الإحصاء الخمس
+         المنفصلة الملوّنة، تفاصيل الطلب مكدّسة (عنوان صغير فوق قيمة كبيرة) بدل
+         صفوف الجدول، ترويسة ملف مسطّحة بخط أخضر سفلي، بطاقة استلام خضراء داكنة،
+         بلاطات سريعة بصف واحد من ثلاث، وشريط تنقّل سفلي عائم منفصل عن الحواف.
+         كل القواعد محصورة داخل #viewDriver بمتغيرات لون محلية: لا يتغيّر شكل
+         المشرف ولا شاشة الدخول العامة، ولا يُلمس أي منطق أو زر أو مرحلة طلب —
+         نفس العناصر والأزرار والبيانات الحقيقية، بمظهر وتخطيط مختلفين فقط. ===== */
+      #viewDriver{
+        --surface:#141f2b; --surface-2:#1e2c3c; --ink:#edf3f8; --ink-2:#9db2c4;
+        --line:#2b3f55; --navy-soft:#1e2c3c; --green-soft:#0f3527; --red-soft:#452723;
+        --amber-soft:#3d3115; --blue-soft:#1a3355;
+        color:#edf3f8; background:#0a121c;
+        margin:16px -14px 0; padding:10px 14px 28px;
+        border:1px solid #22344a; border-radius:26px;
+      }
+      #viewDriver .card{border-radius:18px;border-color:var(--line);box-shadow:0 10px 26px rgba(0,0,0,.35)}
+      #viewDriver .chip-new{color:#8fc1f5}
+      #viewDriver .chip-progress{color:#eec27a}
+      #viewDriver .chip-done{color:#3ecf8e}
+      #viewDriver .chip-bad{color:#f1948a}
+      #viewDriver .btn-navy{background:#1d4e79}
+      #viewDriver .kv dd a{color:#8fc1f5}
+
+      /* شاشة الدخول: بطاقة داكنة بخط أخضر علوي واسم تطبيق أبيض واضح */
+      #viewDriver #driverLogin{border-top:4px solid var(--green)}
+      #viewDriver #driverLogin .drv-app-brand .app-name{color:#fff}
+      #viewDriver #driverLogin .drv-app-brand .app-sub{color:#3ecf8e}
+
+      /* ترويسة المندوب: سطح مسطّح داكن بخط أخضر سفلي وصورة مربعة الحواف،
+         وزر الخروج إطار شفاف بدل الأحمر السابق (نفس الزر والوظيفة) */
+      #viewDriver #driverApp>.card:first-child{background:#101a26;border:1px solid var(--line);border-bottom:4px solid var(--green)}
+      #viewDriver #driverApp>.card:first-child .avatar{border-radius:18px}
+      #viewDriver #driverApp #logoutBtn{background:transparent;color:#cfe0f2;border:1.5px solid rgba(255,255,255,.45);box-shadow:none}
+
+      /* بطاقة استلام الطلبات: لوحة خضراء داكنة مميزة عن بقية الأقسام */
+      #viewDriver #receiptCard{background:#0d291d;border:1.5px solid var(--green)}
+      #viewDriver #receiptCard h2{color:#3ecf8e}
+      #viewDriver #receiptBody .kv dd strong{color:#fff}
+
+      /* الإحصاءات: شريط أرقام واحد متصل بفواصل رفيعة — نفس الأعداد الخمسة الحالية */
+      #viewDriver #drvStats{display:flex;gap:0;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px 4px;box-shadow:0 10px 26px rgba(0,0,0,.35)}
+      #viewDriver #drvStats .stat{flex:1 1 0;background:transparent;border:none;box-shadow:none;border-radius:0;padding:2px 2px}
+      #viewDriver #drvStats .stat+.stat{border-inline-start:1px solid var(--line)}
+      #viewDriver #drvStats .stat::before{display:none}
+      #viewDriver #drvStats .stat .num{font-size:1.5rem;color:#edf3f8}
+      #viewDriver #drvStats .stat.green .num{color:#3ecf8e}
+      #viewDriver #drvStats .stat.amber .num{color:#eec27a}
+      #viewDriver #drvStats .stat.red .num{color:#f1948a}
+      #viewDriver #drvStats .stat .lbl{font-size:.8rem;line-height:1.5;color:var(--ink-2)}
+      @media(max-width:400px){
+        #viewDriver #drvStats .stat .num{font-size:1.28rem}
+        #viewDriver #drvStats .stat .lbl{font-size:.72rem}
+      }
+
+      /* البلاطات السريعة: صف واحد من ثلاث بلاطات مدمجة بدل شبكة ٢×٢ */
+      #viewDriver #driverApp .drv-tiles{display:flex;gap:10px}
+      #viewDriver #driverApp .drv-tiles .tile{flex:1;min-height:0;padding:12px 6px 10px;gap:6px;border-radius:16px;background:var(--surface)}
+      #viewDriver #driverApp .drv-tiles .tile-ic{width:40px;height:40px;border-radius:12px}
+      #viewDriver #driverApp .drv-tiles .tile-ic svg{width:22px;height:22px}
+      #viewDriver #driverApp .drv-tiles .tile-lbl{font-size:.95rem}
+      #viewDriver #driverApp .drv-tiles .tile-blue .tile-ic{color:#8fc1f5}
+      #viewDriver #driverApp .drv-tiles .tile-amber .tile-ic{color:#eec27a}
+      #viewDriver #driverApp .drv-tiles .tile-green .tile-ic{color:#3ecf8e}
+
+      /* عنوان قسم المهام: شريط داكن مدمج كفاصل بين الأقسام */
+      #viewDriver #driverApp .drv-section-title{background:#101c28;border:1px solid var(--line);border-radius:14px;padding:12px 16px;color:#fff}
+
+      /* تفاصيل الطلب والاستلام: عرض مكدّس — عنوان صغير باهت فوق قيمة كبيرة واضحة */
+      #viewDriver #driverApp .kv{display:block;margin-top:2px}
+      #viewDriver #driverApp .kv dt{border:none;padding:0;margin-top:12px;font-size:.84rem}
+      #viewDriver #driverApp .kv dd{border:none;padding:0;font-size:1.07rem;font-weight:600}
+
+      /* بطاقات الطلبات: شريط حالة علوي ملوّن بدل الإطار الجانبي، وروابط موقع أوضح */
+      #viewDriver #drvOrders .order-card{border-top:4px solid #33506e;border-radius:18px}
+      #viewDriver #drvOrders .order-card:has(.chip-new){border:1.5px solid var(--blue);border-top:4px solid var(--blue)}
+      #viewDriver #drvOrders .order-card:has(.chip-done){border-top:4px solid var(--green)}
+      #viewDriver #drvOrders .kv dd a[href*="google.com/maps"]{background:#1d3a5f;color:#a8cdf7}
+
+      /* الشريط السفلي: قرص عائم منفصل عن حواف الشاشة بدل شريط ملتصق بعرض كامل */
+      #viewDriver #driverApp{padding-bottom:calc(126px + env(safe-area-inset-bottom))}
+      #viewDriver #driverApp .drv-bottomnav{inset-inline:10px;bottom:calc(10px + env(safe-area-inset-bottom));border-radius:20px;background:#0e1926;border:1px solid #2b3f55;box-shadow:0 14px 34px rgba(0,0,0,.5)}
+      #viewDriver #driverApp .drv-bottomnav a{color:#9db2c4}
+      #viewDriver #driverApp .drv-bottomnav a:active{color:#3ecf8e}
     </style>
   </head>
   <body>
